@@ -1,0 +1,22 @@
+{{- define "terms"}}
+    {{- template "page_header" . }}
+    <ul class="terms-tags">
+        {{ $domain := .Meta.SiteDomain }}
+        {{ $path:="" }}
+        {{if (eq .Meta.PageType "PAGE_TAG_LIST")}}
+            {{ $path = "tag"}}
+        {{else if (eq .Meta.PageType "PAGE_CATEGORY_LIST")}}
+            {{ $path = "category"}}
+        {{end}}
+        {{- range $index, $item := .List }}
+            {{- $name := $item.Name }}
+            {{- $count := $item.Count }}
+            {{- $slug := $item.Slug }}
+            <li>
+                <a href="{{(printf "%s/%s/%s" $domain $path $slug)}}">{{ $name }}
+                    <sup><strong><sup>{{ $count }}</sup></strong></sup>
+                </a>
+            </li>
+        {{- end }}
+    </ul>
+{{- end}}

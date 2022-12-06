@@ -1,0 +1,21 @@
+{{- define "page_header"}}
+    {{- if (eq .Meta.PageType "PAGE_HOME")}}
+        {{- template "home_info"}}
+    {{- else}}
+        <header class="page-header">
+            {{- if (eq .Meta.PageType "PAGE_CATEGORY_POST_LIST" "PAGE_TAG_POST_LIST")}}
+                <h1>
+                    <font style="vertical-align: inherit;">
+                        {{- if (eq .Meta.PageType "PAGE_CATEGORY_POST_LIST")}}
+                            <font style="vertical-align: inherit;">"{{- .Name}}" 下的所有文章</font>
+                        {{- end}}
+                        {{- if (eq .Meta.PageType "PAGE_TAG_POST_LIST")}}
+                            <font style="vertical-align: inherit;">{{- .Name}}</font>
+                        {{- end}}
+                    </font>
+                </h1>
+            {{- end}}
+        </header>
+    {{- end}}
+
+{{- end }}

@@ -1,0 +1,21 @@
+{{- define "post_list" }}
+    {{$domain:=.Meta.SiteDomain}}
+    {{- template "page_header" .}}
+    {{- range $index, $post := .PostList }}
+        <article class="post-entry">
+            <header class="entry-header">
+                <h2>
+                    {{- $post.Title }}
+                </h2>
+            </header>
+            <section class="entry-content">
+                <p>{{ $post.Abstract }}</p>
+            </section>
+            <footer class="entry-footer">
+                {{ $post.Info }}
+            </footer>
+            <a class="entry-link" aria-label="post link to {{- $post.Title }}" href="{{ $domain }}/archives/{{ $post.ID }}/"></a>
+        </article>
+    {{- end }}
+    {{- template "pagination" .}}
+{{- end }}

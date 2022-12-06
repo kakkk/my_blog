@@ -1,0 +1,25 @@
+{{- define "pagination"}}
+{{$domain:=.Meta.SiteDomain}}
+<footer class="page-footer">
+    {{$prevPage:=""}}
+    {{$nextPage:=""}}
+    {{if (eq .Meta.PageType "PAGE_HOME" "PAGE_POST_LIST")}}
+    {{$prevPage = (printf "%s/page/%s/" $domain .PrevPage )}}
+    {{$nextPage = (printf "%s/page/%s/" $domain .NextPage )}}
+    {{else if (eq .Meta.PageType "PAGE_TAG_POST_LIST")}}
+    {{$prevPage = (printf "%s/tag/%s/%s/" $domain .Name .PrevPage )}}
+    {{$nextPage = (printf "%s/tag/%s/%s/" $domain .Name .NextPage )}}
+    {{else if (eq .Meta.PageType "PAGE_CATEGORY_POST_LIST")}}
+    {{$prevPage = (printf "%s/category/%s/%s/" $domain .Slug .PrevPage )}}
+    {{$nextPage = (printf "%s/category/%s/%s/" $domain .Slug .NextPage )}}
+    {{end}}
+    <nav class="pagination">
+        {{- if (ne .PrevPage "") }}
+            <a class="prev" href="{{- $prevPage}}">« prev page</a>
+        {{- end }}
+        {{- if (ne .NextPage "") }}
+            <a class="next" href="{{- $nextPage}}">next page »</a>
+        {{- end }}
+    </nav>
+</footer>
+{{- end }}

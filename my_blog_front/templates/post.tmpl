@@ -1,0 +1,41 @@
+{{- define "post"}}
+    {{- $domain:=.Meta.SiteDomain}}
+    <article class="post-single">
+        <header class="post-header">
+            <h1 class="post-title">
+                {{- .Title }}
+            </h1>
+            <div class="post-meta">
+                {{- .Info }}
+            </div>
+        </header>
+        <div class="post-content">
+            {{- .Content | unescape }}
+        </div>
+        <footer class="post-footer">
+            {{- if .Tags }}
+                <ul class="post-tags">
+                    {{- range $index, $tag :=  .Tags }}
+                        <li><a href="{{- $domain}}/tag/{{- $tag}}/">{{- $tag }}</a></li>
+                    {{- end }}
+                </ul>
+            {{- end }}
+            <nav class="paginav">
+                {{- if (ne .PrevPage nil) }}
+                    <a class="prev" href="{{- $domain}}/archives/{{- .PrevPage.ID}}/">
+                        <span class="title">« PREV PAGE</span>
+                        <br>
+                        <span>{{ .PrevPage.Title }}</span>
+                    </a>
+                {{- end }}
+                {{- if (ne .NextPage nil) }}
+                    <a class="next" href="{{- $domain}}/archives/{{- .NextPage.ID}}/">
+                        <span class="title">NEXT PAGE »</span>
+                        <br>
+                        <span>{{ .NextPage.Title }}</span>
+                    </a>
+                {{- end }}
+            </nav>
+        </footer>
+    </article>
+{{- end}}

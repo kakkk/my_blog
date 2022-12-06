@@ -1,0 +1,29 @@
+{{- define "archives"}}
+    {{- template "page_header" . }}
+    {{- $domain:=.Meta.SiteDomain }}
+    {{- range $archiveByYear := .PostArchives }}
+        <div class="archive-year">
+            <h2 class="archive-year-header">
+                {{- $archiveByYear.Year }}<sup class="archive-count">&nbsp;&nbsp;{{ $archiveByYear.Count }}</sup>
+            </h2>
+            {{- range $archiveByMonth := $archiveByYear.Archives }}
+                <div class="archive-month">
+                    <h3 class="archive-month-header">{{- $archiveByMonth.Month }}<sup class="archive-count">&nbsp;&nbsp;{{ $archiveByMonth.Count }}</sup></h3>
+                    <div class="archive-posts">
+                        {{- range $post := $archiveByMonth.Posts }}
+                            <div class="archive-entry">
+                                <h3 class="archive-entry-title">
+                                    {{- $post.Title }}
+                                </h3>
+                                <div class="archive-meta">
+                                    {{- $post.Info }}
+                                </div>
+                                <a class="entry-link" aria-label="post link to {{- $post.Title }}" href="{{- $domain}}/archives/{{- $post.ID }}/"></a>
+                            </div>
+                        {{- end }}
+                    </div>
+                </div>
+            {{- end }}
+        </div>
+    {{- end }}
+{{- end}}

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh" dir="auto">
+
+<head>
+    {{- template "head" . }}
+</head>
+
+<body class="list light dark" id="top">
+{{- template "header" . }}
+<main class="main">
+    {{- if (eq .Meta.PageType "PAGE_HOME" "PAGE_POST_LIST" "PAGE_TAG_POST_LIST" "PAGE_CATEGORY_POST_LIST") }}
+        {{- template "post_list" . }}
+    {{else if (eq .Meta.PageType "PAGE_POST")}}
+        {{- template "post" .}}
+    {{else if (eq .Meta.PageType "PAGE_TAG_LIST" "PAGE_CATEGORY_LIST")}}
+        {{- template "terms" .}}
+    {{- else if (eq .Meta.PageType "PAGE_ARCHIVES")}}
+        {{- template "archives" .}}
+    {{- else if (eq .Meta.PageType "PAGE_SEARCH")}}
+        {{- template "search" .}}
+    {{- else if (eq .Meta.PageType "PAGE_ERROR")}}
+        {{- template "error" .}}
+    {{- end}}
+</main>
+{{template "footer" . }}
+</body>
+
+</html>

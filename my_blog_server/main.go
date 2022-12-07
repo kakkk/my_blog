@@ -3,12 +3,53 @@
 package main
 
 import (
+	"fmt"
+
+	"my_blog/biz/common/config"
+	"my_blog/biz/common/log"
+	"my_blog/biz/repository/mysql"
+	"my_blog/biz/repository/redis"
+
 	"github.com/cloudwego/hertz/pkg/app/server"
+	"github.com/cloudwego/hertz/pkg/common/hlog"
+	hertzlogrus "github.com/hertz-contrib/logger/logrus"
 )
 
 func main() {
-	h := server.Default()
+	// config
+	if err := config.InitConfig(); err != nil {
+		panic(err)
+	}
+	conf := config.GetAppConfig()
 
+	// logger
+	if err := log.InitLogger(conf.LogPath, conf.LogLevel); err != nil {
+		panic(err)
+	}
+
+	// mysql
+	if err := mysql.InitMySQL(); err != nil {
+		panic(err)
+	}
+
+	// redis
+	if err := redis.InitRedis(); err != nil {
+		panic(err)
+	}
+
+	// hertz
+	h := initHertz()
 	register(h)
 	h.Spin()
+}
+
+func initHertz() *server.Hertz {
+	conf := config.GetAppConfig()
+	h := server.Default(
+		server.WithHostPorts(fmt.Sprintf("127.0.0.1:%v", conf.Port)),
+	)
+	hlog.SetLogger(hertzlogrus.NewLogger(
+		hertzlogrus.WithLogger(log.GetLogger()),
+	))
+	return h
 }

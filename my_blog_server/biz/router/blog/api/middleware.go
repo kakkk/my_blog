@@ -3,12 +3,14 @@
 package Api
 
 import (
+	"my_blog/biz/middleware"
+
 	"github.com/cloudwego/hertz/pkg/app"
 )
 
 func rootMw() []app.HandlerFunc {
 	// your code...
-	return nil
+	return middleware.GetRootMW()
 }
 
 func _hellomethodMw() []app.HandlerFunc {

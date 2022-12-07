@@ -10,8 +10,14 @@ var conf *Config
 
 type Config struct {
 	App   *App   `yaml:"app"`
+	Site  *Site  `yaml:"site"`
 	MySQL *MySQL `yaml:"mysql"`
 	Redis *Redis `yaml:"redis"`
+}
+
+type Site struct {
+	SiteDomain string `yaml:"site_domain"`
+	CDNDomain  string `yaml:"cdn_domain"`
 }
 
 type App struct {
@@ -57,4 +63,8 @@ func GetMySQLConfig() *MySQL {
 
 func GetRedisConfig() *Redis {
 	return conf.Redis
+}
+
+func GetSiteConfig() *Site {
+	return conf.Site
 }

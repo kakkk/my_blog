@@ -3,22 +3,14 @@
 package Page
 
 import (
+	"my_blog/biz/middleware"
+
 	"github.com/cloudwego/hertz/pkg/app"
 )
 
 func rootMw() []app.HandlerFunc {
 	// your code...
-	return nil
-}
-
-func _pageindexMw() []app.HandlerFunc {
-	// your code...
-	return nil
-}
-
-func _pagecategoriesMw() []app.HandlerFunc {
-	// your code...
-	return nil
+	return middleware.GetRootMW()
 }
 
 func _indexpageMw() []app.HandlerFunc {
@@ -36,27 +28,12 @@ func _tagspageMw() []app.HandlerFunc {
 	return nil
 }
 
-func __rchivespageMw() []app.HandlerFunc {
-	// your code...
-	return nil
-}
-
 func _categoryMw() []app.HandlerFunc {
 	// your code...
 	return nil
 }
 
-func _categorypageMw() []app.HandlerFunc {
-	// your code...
-	return nil
-}
-
 func _tagMw() []app.HandlerFunc {
-	// your code...
-	return nil
-}
-
-func _tagpageMw() []app.HandlerFunc {
 	// your code...
 	return nil
 }

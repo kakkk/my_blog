@@ -13,14 +13,14 @@ var (
 	client *redis.Client
 )
 
-func InitRedis(ctx context.Context) (err error) {
+func InitRedis() (err error) {
 	conf := config.GetRedisConfig()
 	client = redis.NewClient(&redis.Options{
 		Addr:     fmt.Sprintf("%s:%s", conf.Host, conf.Port),
 		Password: conf.Password, // no password set
 		DB:       conf.DB,       // use default DB
 	})
-	_, err = client.Ping(ctx).Result()
+	_, err = client.Ping(context.Background()).Result()
 	if err != nil {
 		return
 	}

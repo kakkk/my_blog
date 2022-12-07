@@ -1,11 +1,11 @@
-package model
+package mysql
 
 import (
 	"fmt"
 	"time"
 
 	"my_blog/biz/common/config"
-	"my_blog/biz/common/logger"
+	"my_blog/biz/common/log"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -16,10 +16,11 @@ var (
 )
 
 // InitMySQL 初始化MySQL
-func InitMySQL(cfg *config.MySQL) error {
+func InitMySQL() error {
+	cfg := config.GetMySQLConfig()
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local", cfg.User, cfg.Password, cfg.Host, cfg.Port, cfg.DB)
 	gormDB, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
-		Logger: logger.NewGORMLogger(),
+		Logger: log.NewGORMLogger(),
 	})
 	if err != nil {
 		return err

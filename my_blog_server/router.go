@@ -5,7 +5,8 @@ package main
 import (
 	"html/template"
 
-	handler "my_blog/biz/handler"
+	"my_blog/biz/handler"
+	"my_blog/biz/middleware"
 
 	"github.com/cloudwego/hertz/pkg/app/server"
 )
@@ -19,7 +20,7 @@ func customizedRegister(r *server.Hertz) {
 	})
 	r.LoadHTMLGlob("../templates/*")
 	r.Static("/assets", "../")
-	r.NoRoute(handler.NotFoundHandler)
+	r.NoRoute(append(middleware.GetRootMW(), handler.NotFoundHandler)...)
 	r.GET("/ping", handler.Ping)
 
 }

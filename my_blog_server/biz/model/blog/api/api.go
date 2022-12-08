@@ -8,26 +8,34 @@ import (
 	"github.com/apache/thrift/lib/go/thrift"
 )
 
-type TestReq struct {
-	Name string `thrift:"Name,1" form:"Name" json:"Name" query:"Name"`
+type BaseResp struct {
+	StatusCode    int32  `thrift:"status_code,1,required" form:"status_code,required" json:"status_code,required" query:"status_code,required"`
+	StatusMessage string `thrift:"status_message,2,required" form:"status_message,required" json:"status_message,required" query:"status_message,required"`
 }
 
-func NewTestReq() *TestReq {
-	return &TestReq{}
+func NewBaseResp() *BaseResp {
+	return &BaseResp{}
 }
 
-func (p *TestReq) GetName() (v string) {
-	return p.Name
+func (p *BaseResp) GetStatusCode() (v int32) {
+	return p.StatusCode
 }
 
-var fieldIDToName_TestReq = map[int16]string{
-	1: "Name",
+func (p *BaseResp) GetStatusMessage() (v string) {
+	return p.StatusMessage
 }
 
-func (p *TestReq) Read(iprot thrift.TProtocol) (err error) {
+var fieldIDToName_BaseResp = map[int16]string{
+	1: "status_code",
+	2: "status_message",
+}
+
+func (p *BaseResp) Read(iprot thrift.TProtocol) (err error) {
 
 	var fieldTypeId thrift.TType
 	var fieldId int16
+	var issetStatusCode bool = false
+	var issetStatusMessage bool = false
 
 	if _, err = iprot.ReadStructBegin(); err != nil {
 		goto ReadStructBeginError
@@ -44,10 +52,22 @@ func (p *TestReq) Read(iprot thrift.TProtocol) (err error) {
 
 		switch fieldId {
 		case 1:
-			if fieldTypeId == thrift.STRING {
+			if fieldTypeId == thrift.I32 {
 				if err = p.ReadField1(iprot); err != nil {
 					goto ReadFieldError
 				}
+				issetStatusCode = true
+			} else {
+				if err = iprot.Skip(fieldTypeId); err != nil {
+					goto SkipFieldError
+				}
+			}
+		case 2:
+			if fieldTypeId == thrift.STRING {
+				if err = p.ReadField2(iprot); err != nil {
+					goto ReadFieldError
+				}
+				issetStatusMessage = true
 			} else {
 				if err = iprot.Skip(fieldTypeId); err != nil {
 					goto SkipFieldError
@@ -67,13 +87,22 @@ func (p *TestReq) Read(iprot thrift.TProtocol) (err error) {
 		goto ReadStructEndError
 	}
 
+	if !issetStatusCode {
+		fieldId = 1
+		goto RequiredFieldNotSetError
+	}
+
+	if !issetStatusMessage {
+		fieldId = 2
+		goto RequiredFieldNotSetError
+	}
 	return nil
 ReadStructBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T read struct begin error: ", p), err)
 ReadFieldBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T read field %d begin error: ", p, fieldId), err)
 ReadFieldError:
-	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_TestReq[fieldId]), err)
+	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_BaseResp[fieldId]), err)
 SkipFieldError:
 	return thrift.PrependError(fmt.Sprintf("%T field %d skip type %d error: ", p, fieldId, fieldTypeId), err)
 
@@ -81,25 +110,40 @@ ReadFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T read field end error", p), err)
 ReadStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+RequiredFieldNotSetError:
+	return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field %s is not set", fieldIDToName_BaseResp[fieldId]))
 }
 
-func (p *TestReq) ReadField1(iprot thrift.TProtocol) error {
-	if v, err := iprot.ReadString(); err != nil {
+func (p *BaseResp) ReadField1(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadI32(); err != nil {
 		return err
 	} else {
-		p.Name = v
+		p.StatusCode = v
 	}
 	return nil
 }
 
-func (p *TestReq) Write(oprot thrift.TProtocol) (err error) {
+func (p *BaseResp) ReadField2(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return err
+	} else {
+		p.StatusMessage = v
+	}
+	return nil
+}
+
+func (p *BaseResp) Write(oprot thrift.TProtocol) (err error) {
 	var fieldId int16
-	if err = oprot.WriteStructBegin("TestReq"); err != nil {
+	if err = oprot.WriteStructBegin("BaseResp"); err != nil {
 		goto WriteStructBeginError
 	}
 	if p != nil {
 		if err = p.writeField1(oprot); err != nil {
 			fieldId = 1
+			goto WriteFieldError
+		}
+		if err = p.writeField2(oprot); err != nil {
+			fieldId = 2
 			goto WriteFieldError
 		}
 
@@ -121,11 +165,11 @@ WriteStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write struct end error: ", p), err)
 }
 
-func (p *TestReq) writeField1(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("Name", thrift.STRING, 1); err != nil {
+func (p *BaseResp) writeField1(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("status_code", thrift.I32, 1); err != nil {
 		goto WriteFieldBeginError
 	}
-	if err := oprot.WriteString(p.Name); err != nil {
+	if err := oprot.WriteI32(p.StatusCode); err != nil {
 		return err
 	}
 	if err = oprot.WriteFieldEnd(); err != nil {
@@ -138,33 +182,59 @@ WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 1 end error: ", p), err)
 }
 
-func (p *TestReq) String() string {
+func (p *BaseResp) writeField2(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("status_message", thrift.STRING, 2); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteString(p.StatusMessage); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 2 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 2 end error: ", p), err)
+}
+
+func (p *BaseResp) String() string {
 	if p == nil {
 		return "<nil>"
 	}
-	return fmt.Sprintf("TestReq(%+v)", *p)
+	return fmt.Sprintf("BaseResp(%+v)", *p)
 }
 
-type TestResp struct {
-	RespBody string `thrift:"RespBody,1" form:"RespBody" json:"RespBody" query:"RespBody"`
+// 登录
+type LoginRequest struct {
+	UserName string `thrift:"user_name,1,required" form:"user_name,required" json:"user_name,required" query:"user_name,required"`
+	Password string `thrift:"password,2,required" form:"password,required" json:"password,required" query:"password,required"`
 }
 
-func NewTestResp() *TestResp {
-	return &TestResp{}
+func NewLoginRequest() *LoginRequest {
+	return &LoginRequest{}
 }
 
-func (p *TestResp) GetRespBody() (v string) {
-	return p.RespBody
+func (p *LoginRequest) GetUserName() (v string) {
+	return p.UserName
 }
 
-var fieldIDToName_TestResp = map[int16]string{
-	1: "RespBody",
+func (p *LoginRequest) GetPassword() (v string) {
+	return p.Password
 }
 
-func (p *TestResp) Read(iprot thrift.TProtocol) (err error) {
+var fieldIDToName_LoginRequest = map[int16]string{
+	1: "user_name",
+	2: "password",
+}
+
+func (p *LoginRequest) Read(iprot thrift.TProtocol) (err error) {
 
 	var fieldTypeId thrift.TType
 	var fieldId int16
+	var issetUserName bool = false
+	var issetPassword bool = false
 
 	if _, err = iprot.ReadStructBegin(); err != nil {
 		goto ReadStructBeginError
@@ -185,6 +255,18 @@ func (p *TestResp) Read(iprot thrift.TProtocol) (err error) {
 				if err = p.ReadField1(iprot); err != nil {
 					goto ReadFieldError
 				}
+				issetUserName = true
+			} else {
+				if err = iprot.Skip(fieldTypeId); err != nil {
+					goto SkipFieldError
+				}
+			}
+		case 2:
+			if fieldTypeId == thrift.STRING {
+				if err = p.ReadField2(iprot); err != nil {
+					goto ReadFieldError
+				}
+				issetPassword = true
 			} else {
 				if err = iprot.Skip(fieldTypeId); err != nil {
 					goto SkipFieldError
@@ -204,13 +286,22 @@ func (p *TestResp) Read(iprot thrift.TProtocol) (err error) {
 		goto ReadStructEndError
 	}
 
+	if !issetUserName {
+		fieldId = 1
+		goto RequiredFieldNotSetError
+	}
+
+	if !issetPassword {
+		fieldId = 2
+		goto RequiredFieldNotSetError
+	}
 	return nil
 ReadStructBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T read struct begin error: ", p), err)
 ReadFieldBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T read field %d begin error: ", p, fieldId), err)
 ReadFieldError:
-	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_TestResp[fieldId]), err)
+	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_LoginRequest[fieldId]), err)
 SkipFieldError:
 	return thrift.PrependError(fmt.Sprintf("%T field %d skip type %d error: ", p, fieldId, fieldTypeId), err)
 
@@ -218,25 +309,40 @@ ReadFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T read field end error", p), err)
 ReadStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+RequiredFieldNotSetError:
+	return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field %s is not set", fieldIDToName_LoginRequest[fieldId]))
 }
 
-func (p *TestResp) ReadField1(iprot thrift.TProtocol) error {
+func (p *LoginRequest) ReadField1(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadString(); err != nil {
 		return err
 	} else {
-		p.RespBody = v
+		p.UserName = v
 	}
 	return nil
 }
 
-func (p *TestResp) Write(oprot thrift.TProtocol) (err error) {
+func (p *LoginRequest) ReadField2(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return err
+	} else {
+		p.Password = v
+	}
+	return nil
+}
+
+func (p *LoginRequest) Write(oprot thrift.TProtocol) (err error) {
 	var fieldId int16
-	if err = oprot.WriteStructBegin("TestResp"); err != nil {
+	if err = oprot.WriteStructBegin("LoginRequest"); err != nil {
 		goto WriteStructBeginError
 	}
 	if p != nil {
 		if err = p.writeField1(oprot); err != nil {
 			fieldId = 1
+			goto WriteFieldError
+		}
+		if err = p.writeField2(oprot); err != nil {
+			fieldId = 2
 			goto WriteFieldError
 		}
 
@@ -258,11 +364,11 @@ WriteStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write struct end error: ", p), err)
 }
 
-func (p *TestResp) writeField1(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("RespBody", thrift.STRING, 1); err != nil {
+func (p *LoginRequest) writeField1(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("user_name", thrift.STRING, 1); err != nil {
 		goto WriteFieldBeginError
 	}
-	if err := oprot.WriteString(p.RespBody); err != nil {
+	if err := oprot.WriteString(p.UserName); err != nil {
 		return err
 	}
 	if err = oprot.WriteFieldEnd(); err != nil {
@@ -275,15 +381,238 @@ WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 1 end error: ", p), err)
 }
 
-func (p *TestResp) String() string {
+func (p *LoginRequest) writeField2(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("password", thrift.STRING, 2); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteString(p.Password); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 2 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 2 end error: ", p), err)
+}
+
+func (p *LoginRequest) String() string {
 	if p == nil {
 		return "<nil>"
 	}
-	return fmt.Sprintf("TestResp(%+v)", *p)
+	return fmt.Sprintf("LoginRequest(%+v)", *p)
+}
+
+type LoginResponse struct {
+	TestMsg  string    `thrift:"test_msg,1,required" form:"test_msg,required" json:"test_msg,required" query:"test_msg,required"`
+	BaseResp *BaseResp `thrift:"BaseResp,255,required" json:"-" form:"BaseResp,required" query:"BaseResp,required"`
+}
+
+func NewLoginResponse() *LoginResponse {
+	return &LoginResponse{}
+}
+
+func (p *LoginResponse) GetTestMsg() (v string) {
+	return p.TestMsg
+}
+
+var LoginResponse_BaseResp_DEFAULT *BaseResp
+
+func (p *LoginResponse) GetBaseResp() (v *BaseResp) {
+	if !p.IsSetBaseResp() {
+		return LoginResponse_BaseResp_DEFAULT
+	}
+	return p.BaseResp
+}
+
+var fieldIDToName_LoginResponse = map[int16]string{
+	1:   "test_msg",
+	255: "BaseResp",
+}
+
+func (p *LoginResponse) IsSetBaseResp() bool {
+	return p.BaseResp != nil
+}
+
+func (p *LoginResponse) Read(iprot thrift.TProtocol) (err error) {
+
+	var fieldTypeId thrift.TType
+	var fieldId int16
+	var issetTestMsg bool = false
+	var issetBaseResp bool = false
+
+	if _, err = iprot.ReadStructBegin(); err != nil {
+		goto ReadStructBeginError
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err = iprot.ReadFieldBegin()
+		if err != nil {
+			goto ReadFieldBeginError
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+
+		switch fieldId {
+		case 1:
+			if fieldTypeId == thrift.STRING {
+				if err = p.ReadField1(iprot); err != nil {
+					goto ReadFieldError
+				}
+				issetTestMsg = true
+			} else {
+				if err = iprot.Skip(fieldTypeId); err != nil {
+					goto SkipFieldError
+				}
+			}
+		case 255:
+			if fieldTypeId == thrift.STRUCT {
+				if err = p.ReadField255(iprot); err != nil {
+					goto ReadFieldError
+				}
+				issetBaseResp = true
+			} else {
+				if err = iprot.Skip(fieldTypeId); err != nil {
+					goto SkipFieldError
+				}
+			}
+		default:
+			if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
+		}
+
+		if err = iprot.ReadFieldEnd(); err != nil {
+			goto ReadFieldEndError
+		}
+	}
+	if err = iprot.ReadStructEnd(); err != nil {
+		goto ReadStructEndError
+	}
+
+	if !issetTestMsg {
+		fieldId = 1
+		goto RequiredFieldNotSetError
+	}
+
+	if !issetBaseResp {
+		fieldId = 255
+		goto RequiredFieldNotSetError
+	}
+	return nil
+ReadStructBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T read struct begin error: ", p), err)
+ReadFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T read field %d begin error: ", p, fieldId), err)
+ReadFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_LoginResponse[fieldId]), err)
+SkipFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T field %d skip type %d error: ", p, fieldId, fieldTypeId), err)
+
+ReadFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T read field end error", p), err)
+ReadStructEndError:
+	return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+RequiredFieldNotSetError:
+	return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field %s is not set", fieldIDToName_LoginResponse[fieldId]))
+}
+
+func (p *LoginResponse) ReadField1(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return err
+	} else {
+		p.TestMsg = v
+	}
+	return nil
+}
+
+func (p *LoginResponse) ReadField255(iprot thrift.TProtocol) error {
+	p.BaseResp = NewBaseResp()
+	if err := p.BaseResp.Read(iprot); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (p *LoginResponse) Write(oprot thrift.TProtocol) (err error) {
+	var fieldId int16
+	if err = oprot.WriteStructBegin("LoginResponse"); err != nil {
+		goto WriteStructBeginError
+	}
+	if p != nil {
+		if err = p.writeField1(oprot); err != nil {
+			fieldId = 1
+			goto WriteFieldError
+		}
+		if err = p.writeField255(oprot); err != nil {
+			fieldId = 255
+			goto WriteFieldError
+		}
+
+	}
+	if err = oprot.WriteFieldStop(); err != nil {
+		goto WriteFieldStopError
+	}
+	if err = oprot.WriteStructEnd(); err != nil {
+		goto WriteStructEndError
+	}
+	return nil
+WriteStructBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+WriteFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T write field %d error: ", p, fieldId), err)
+WriteFieldStopError:
+	return thrift.PrependError(fmt.Sprintf("%T write field stop error: ", p), err)
+WriteStructEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write struct end error: ", p), err)
+}
+
+func (p *LoginResponse) writeField1(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("test_msg", thrift.STRING, 1); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteString(p.TestMsg); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 1 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 1 end error: ", p), err)
+}
+
+func (p *LoginResponse) writeField255(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("BaseResp", thrift.STRUCT, 255); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := p.BaseResp.Write(oprot); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 255 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 255 end error: ", p), err)
+}
+
+func (p *LoginResponse) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("LoginResponse(%+v)", *p)
 }
 
 type APIService interface {
-	HelloMethod(ctx context.Context, request *TestReq) (r *TestResp, err error)
+	LoginAPI(ctx context.Context, request *LoginRequest) (r *LoginResponse, err error)
 }
 
 type APIServiceClient struct {
@@ -312,11 +641,11 @@ func (p *APIServiceClient) Client_() thrift.TClient {
 	return p.c
 }
 
-func (p *APIServiceClient) HelloMethod(ctx context.Context, request *TestReq) (r *TestResp, err error) {
-	var _args APIServiceHelloMethodArgs
+func (p *APIServiceClient) LoginAPI(ctx context.Context, request *LoginRequest) (r *LoginResponse, err error) {
+	var _args APIServiceLoginAPIArgs
 	_args.Request = request
-	var _result APIServiceHelloMethodResult
-	if err = p.Client_().Call(ctx, "HelloMethod", &_args, &_result); err != nil {
+	var _result APIServiceLoginAPIResult
+	if err = p.Client_().Call(ctx, "LoginAPI", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil
@@ -342,7 +671,7 @@ func (p *APIServiceProcessor) ProcessorMap() map[string]thrift.TProcessorFunctio
 
 func NewAPIServiceProcessor(handler APIService) *APIServiceProcessor {
 	self := &APIServiceProcessor{handler: handler, processorMap: make(map[string]thrift.TProcessorFunction)}
-	self.AddToProcessorMap("HelloMethod", &aPIServiceProcessorHelloMethod{handler: handler})
+	self.AddToProcessorMap("LoginAPI", &aPIServiceProcessorLoginAPI{handler: handler})
 	return self
 }
 func (p *APIServiceProcessor) Process(ctx context.Context, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
@@ -363,16 +692,16 @@ func (p *APIServiceProcessor) Process(ctx context.Context, iprot, oprot thrift.T
 	return false, x
 }
 
-type aPIServiceProcessorHelloMethod struct {
+type aPIServiceProcessorLoginAPI struct {
 	handler APIService
 }
 
-func (p *aPIServiceProcessorHelloMethod) Process(ctx context.Context, seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
-	args := APIServiceHelloMethodArgs{}
+func (p *aPIServiceProcessorLoginAPI) Process(ctx context.Context, seqId int32, iprot, oprot thrift.TProtocol) (success bool, err thrift.TException) {
+	args := APIServiceLoginAPIArgs{}
 	if err = args.Read(iprot); err != nil {
 		iprot.ReadMessageEnd()
 		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
-		oprot.WriteMessageBegin("HelloMethod", thrift.EXCEPTION, seqId)
+		oprot.WriteMessageBegin("LoginAPI", thrift.EXCEPTION, seqId)
 		x.Write(oprot)
 		oprot.WriteMessageEnd()
 		oprot.Flush(ctx)
@@ -381,11 +710,11 @@ func (p *aPIServiceProcessorHelloMethod) Process(ctx context.Context, seqId int3
 
 	iprot.ReadMessageEnd()
 	var err2 error
-	result := APIServiceHelloMethodResult{}
-	var retval *TestResp
-	if retval, err2 = p.handler.HelloMethod(ctx, args.Request); err2 != nil {
-		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing HelloMethod: "+err2.Error())
-		oprot.WriteMessageBegin("HelloMethod", thrift.EXCEPTION, seqId)
+	result := APIServiceLoginAPIResult{}
+	var retval *LoginResponse
+	if retval, err2 = p.handler.LoginAPI(ctx, args.Request); err2 != nil {
+		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing LoginAPI: "+err2.Error())
+		oprot.WriteMessageBegin("LoginAPI", thrift.EXCEPTION, seqId)
 		x.Write(oprot)
 		oprot.WriteMessageEnd()
 		oprot.Flush(ctx)
@@ -393,7 +722,7 @@ func (p *aPIServiceProcessorHelloMethod) Process(ctx context.Context, seqId int3
 	} else {
 		result.Success = retval
 	}
-	if err2 = oprot.WriteMessageBegin("HelloMethod", thrift.REPLY, seqId); err2 != nil {
+	if err2 = oprot.WriteMessageBegin("LoginAPI", thrift.REPLY, seqId); err2 != nil {
 		err = err2
 	}
 	if err2 = result.Write(oprot); err == nil && err2 != nil {
@@ -411,32 +740,32 @@ func (p *aPIServiceProcessorHelloMethod) Process(ctx context.Context, seqId int3
 	return true, err
 }
 
-type APIServiceHelloMethodArgs struct {
-	Request *TestReq `thrift:"request,1"`
+type APIServiceLoginAPIArgs struct {
+	Request *LoginRequest `thrift:"request,1"`
 }
 
-func NewAPIServiceHelloMethodArgs() *APIServiceHelloMethodArgs {
-	return &APIServiceHelloMethodArgs{}
+func NewAPIServiceLoginAPIArgs() *APIServiceLoginAPIArgs {
+	return &APIServiceLoginAPIArgs{}
 }
 
-var APIServiceHelloMethodArgs_Request_DEFAULT *TestReq
+var APIServiceLoginAPIArgs_Request_DEFAULT *LoginRequest
 
-func (p *APIServiceHelloMethodArgs) GetRequest() (v *TestReq) {
+func (p *APIServiceLoginAPIArgs) GetRequest() (v *LoginRequest) {
 	if !p.IsSetRequest() {
-		return APIServiceHelloMethodArgs_Request_DEFAULT
+		return APIServiceLoginAPIArgs_Request_DEFAULT
 	}
 	return p.Request
 }
 
-var fieldIDToName_APIServiceHelloMethodArgs = map[int16]string{
+var fieldIDToName_APIServiceLoginAPIArgs = map[int16]string{
 	1: "request",
 }
 
-func (p *APIServiceHelloMethodArgs) IsSetRequest() bool {
+func (p *APIServiceLoginAPIArgs) IsSetRequest() bool {
 	return p.Request != nil
 }
 
-func (p *APIServiceHelloMethodArgs) Read(iprot thrift.TProtocol) (err error) {
+func (p *APIServiceLoginAPIArgs) Read(iprot thrift.TProtocol) (err error) {
 
 	var fieldTypeId thrift.TType
 	var fieldId int16
@@ -485,7 +814,7 @@ ReadStructBeginError:
 ReadFieldBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T read field %d begin error: ", p, fieldId), err)
 ReadFieldError:
-	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_APIServiceHelloMethodArgs[fieldId]), err)
+	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_APIServiceLoginAPIArgs[fieldId]), err)
 SkipFieldError:
 	return thrift.PrependError(fmt.Sprintf("%T field %d skip type %d error: ", p, fieldId, fieldTypeId), err)
 
@@ -495,17 +824,17 @@ ReadStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
 }
 
-func (p *APIServiceHelloMethodArgs) ReadField1(iprot thrift.TProtocol) error {
-	p.Request = NewTestReq()
+func (p *APIServiceLoginAPIArgs) ReadField1(iprot thrift.TProtocol) error {
+	p.Request = NewLoginRequest()
 	if err := p.Request.Read(iprot); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (p *APIServiceHelloMethodArgs) Write(oprot thrift.TProtocol) (err error) {
+func (p *APIServiceLoginAPIArgs) Write(oprot thrift.TProtocol) (err error) {
 	var fieldId int16
-	if err = oprot.WriteStructBegin("HelloMethod_args"); err != nil {
+	if err = oprot.WriteStructBegin("LoginAPI_args"); err != nil {
 		goto WriteStructBeginError
 	}
 	if p != nil {
@@ -532,7 +861,7 @@ WriteStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write struct end error: ", p), err)
 }
 
-func (p *APIServiceHelloMethodArgs) writeField1(oprot thrift.TProtocol) (err error) {
+func (p *APIServiceLoginAPIArgs) writeField1(oprot thrift.TProtocol) (err error) {
 	if err = oprot.WriteFieldBegin("request", thrift.STRUCT, 1); err != nil {
 		goto WriteFieldBeginError
 	}
@@ -549,39 +878,39 @@ WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 1 end error: ", p), err)
 }
 
-func (p *APIServiceHelloMethodArgs) String() string {
+func (p *APIServiceLoginAPIArgs) String() string {
 	if p == nil {
 		return "<nil>"
 	}
-	return fmt.Sprintf("APIServiceHelloMethodArgs(%+v)", *p)
+	return fmt.Sprintf("APIServiceLoginAPIArgs(%+v)", *p)
 }
 
-type APIServiceHelloMethodResult struct {
-	Success *TestResp `thrift:"success,0,optional"`
+type APIServiceLoginAPIResult struct {
+	Success *LoginResponse `thrift:"success,0,optional"`
 }
 
-func NewAPIServiceHelloMethodResult() *APIServiceHelloMethodResult {
-	return &APIServiceHelloMethodResult{}
+func NewAPIServiceLoginAPIResult() *APIServiceLoginAPIResult {
+	return &APIServiceLoginAPIResult{}
 }
 
-var APIServiceHelloMethodResult_Success_DEFAULT *TestResp
+var APIServiceLoginAPIResult_Success_DEFAULT *LoginResponse
 
-func (p *APIServiceHelloMethodResult) GetSuccess() (v *TestResp) {
+func (p *APIServiceLoginAPIResult) GetSuccess() (v *LoginResponse) {
 	if !p.IsSetSuccess() {
-		return APIServiceHelloMethodResult_Success_DEFAULT
+		return APIServiceLoginAPIResult_Success_DEFAULT
 	}
 	return p.Success
 }
 
-var fieldIDToName_APIServiceHelloMethodResult = map[int16]string{
+var fieldIDToName_APIServiceLoginAPIResult = map[int16]string{
 	0: "success",
 }
 
-func (p *APIServiceHelloMethodResult) IsSetSuccess() bool {
+func (p *APIServiceLoginAPIResult) IsSetSuccess() bool {
 	return p.Success != nil
 }
 
-func (p *APIServiceHelloMethodResult) Read(iprot thrift.TProtocol) (err error) {
+func (p *APIServiceLoginAPIResult) Read(iprot thrift.TProtocol) (err error) {
 
 	var fieldTypeId thrift.TType
 	var fieldId int16
@@ -630,7 +959,7 @@ ReadStructBeginError:
 ReadFieldBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T read field %d begin error: ", p, fieldId), err)
 ReadFieldError:
-	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_APIServiceHelloMethodResult[fieldId]), err)
+	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_APIServiceLoginAPIResult[fieldId]), err)
 SkipFieldError:
 	return thrift.PrependError(fmt.Sprintf("%T field %d skip type %d error: ", p, fieldId, fieldTypeId), err)
 
@@ -640,17 +969,17 @@ ReadStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
 }
 
-func (p *APIServiceHelloMethodResult) ReadField0(iprot thrift.TProtocol) error {
-	p.Success = NewTestResp()
+func (p *APIServiceLoginAPIResult) ReadField0(iprot thrift.TProtocol) error {
+	p.Success = NewLoginResponse()
 	if err := p.Success.Read(iprot); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (p *APIServiceHelloMethodResult) Write(oprot thrift.TProtocol) (err error) {
+func (p *APIServiceLoginAPIResult) Write(oprot thrift.TProtocol) (err error) {
 	var fieldId int16
-	if err = oprot.WriteStructBegin("HelloMethod_result"); err != nil {
+	if err = oprot.WriteStructBegin("LoginAPI_result"); err != nil {
 		goto WriteStructBeginError
 	}
 	if p != nil {
@@ -677,7 +1006,7 @@ WriteStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write struct end error: ", p), err)
 }
 
-func (p *APIServiceHelloMethodResult) writeField0(oprot thrift.TProtocol) (err error) {
+func (p *APIServiceLoginAPIResult) writeField0(oprot thrift.TProtocol) (err error) {
 	if p.IsSetSuccess() {
 		if err = oprot.WriteFieldBegin("success", thrift.STRUCT, 0); err != nil {
 			goto WriteFieldBeginError
@@ -696,9 +1025,9 @@ WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 0 end error: ", p), err)
 }
 
-func (p *APIServiceHelloMethodResult) String() string {
+func (p *APIServiceLoginAPIResult) String() string {
 	if p == nil {
 		return "<nil>"
 	}
-	return fmt.Sprintf("APIServiceHelloMethodResult(%+v)", *p)
+	return fmt.Sprintf("APIServiceLoginAPIResult(%+v)", *p)
 }

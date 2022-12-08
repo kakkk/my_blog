@@ -5,23 +5,27 @@ package api
 import (
 	"context"
 
-	api "my_blog/biz/model/blog/api"
+	serviceResp "my_blog/biz/common/resp"
+	"my_blog/biz/model/blog/api"
 
 	"github.com/cloudwego/hertz/pkg/app"
 )
 
-// HelloMethod .
-// @router /test [GET]
-func HelloMethod(ctx context.Context, c *app.RequestContext) {
+// LoginAPI .
+// @router /api/login [POST]
+func LoginAPI(ctx context.Context, c *app.RequestContext) {
 	var err error
-	var req api.TestReq
+	var req api.LoginRequest
 	err = c.BindAndValidate(&req)
 	if err != nil {
 		c.String(400, err.Error())
 		return
 	}
 
-	resp := new(api.TestResp)
+	resp := &api.LoginResponse{
+		TestMsg:  "test",
+		BaseResp: serviceResp.GetBaseResp(0, ""),
+	}
 
-	c.HTML(200, "", resp)
+	c.JSON(200, serviceResp.GetAPIResponse(resp.GetBaseResp(), resp))
 }

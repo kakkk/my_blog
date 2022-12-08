@@ -17,5 +17,8 @@ import (
 func Register(r *server.Hertz) {
 
 	root := r.Group("/", rootMw()...)
-	root.GET("/test", append(_hellomethodMw(), api.HelloMethod)...)
+	{
+		_api := root.Group("/api", _apiMw()...)
+		_api.POST("/login", append(_login_piMw(), api.LoginAPI)...)
+	}
 }

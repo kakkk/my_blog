@@ -1,0 +1,10 @@
+export const UPDATE_LIST = 'tag_update_list';
+export const UPDATE_LOADING = 'tag_update_loading';
+export const UPDATE_SEARCH_KEYWORD = 'tag_update_keyword';
+export const TOGGLE_VISIBLE = 'tag_toggle_visible';
+export const CLEAR_EDIT_MODAL_CONTENT = 'tag_clear_modal_content';
+export const TOGGLE_CONFIRM_LOADING = 'toggle_confirm_loading';
+export const ADD_LIST_ITEM = 'add_tag_list_item';
+export const UPDATE_EDIT_MODAL_CONTENT = 'update_tag_edit_modal_content';
+export const UPDATE_PAGINATION = 'tag_update_pagination';
+export const UPDATE_FORM_PARAMS = 'tag_update_formParams';

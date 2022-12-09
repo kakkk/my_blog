@@ -13,17 +13,17 @@ func rootMw() []app.HandlerFunc {
 	return middleware.GetRootMW()
 }
 
-func _hellomethodMw() []app.HandlerFunc {
-	// your code...
-	return nil
-}
-
 func _apiMw() []app.HandlerFunc {
 	// your code...
 	return nil
 }
 
 func _login_piMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _adminMw() []app.HandlerFunc {
 	// your code...
 	return nil
 }

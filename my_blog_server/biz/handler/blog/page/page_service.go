@@ -6,6 +6,7 @@ import (
 	"context"
 
 	"my_blog/biz/facade"
+	_ "my_blog/biz/model/blog/page"
 
 	"github.com/cloudwego/hertz/pkg/app"
 )

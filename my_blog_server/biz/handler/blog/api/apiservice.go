@@ -23,7 +23,6 @@ func LoginAPI(ctx context.Context, c *app.RequestContext) {
 	}
 
 	resp := &api.LoginResponse{
-		TestMsg:  "test",
 		BaseResp: serviceResp.GetBaseResp(0, ""),
 	}
 

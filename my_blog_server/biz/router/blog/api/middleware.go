@@ -15,7 +15,9 @@ func rootMw() []app.HandlerFunc {
 
 func _apiMw() []app.HandlerFunc {
 	// your code...
-	return nil
+	return []app.HandlerFunc{
+		middleware.SessionMW(),
+	}
 }
 
 func _login_piMw() []app.HandlerFunc {

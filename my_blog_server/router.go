@@ -21,6 +21,6 @@ func customizedRegister(r *server.Hertz) {
 	r.LoadHTMLGlob("../templates/*")
 	r.Static("/assets", "../")
 	r.NoRoute(append(middleware.GetRootMW(), handler.NotFoundHandler)...)
-	r.GET("/ping", handler.Ping)
+	r.GET("/ping", middleware.RequestIdMW(), middleware.SessionMW(), middleware.SessionAuthMW(), handler.Ping)
 
 }

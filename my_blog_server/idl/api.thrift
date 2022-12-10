@@ -1,9 +1,11 @@
 namespace go blog.api
 
+include "common.thrift"
+
 
 struct BaseResp {
-    1: required i32 StatusCode
-    2: required string StatusMessage
+    1: required common.RespCode Code
+    2: required string Msg
 }
 
 // 登录

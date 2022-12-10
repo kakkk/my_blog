@@ -1,24 +1,50 @@
 package resp
 
-import "my_blog/biz/model/blog/api"
+import (
+	"my_blog/biz/model/blog/api"
+	"my_blog/biz/model/blog/common"
+)
 
 type APIResponse struct {
-	Code int32  `json:"code"`
-	Msg  string `json:"msg"`
-	Data any    `json:"data"`
+	Code common.RespCode `json:"code"`
+	Msg  string          `json:"msg"`
+	Data any             `json:"data"`
 }
 
-func GetBaseResp(code int32, msg string) *api.BaseResp {
+func NewBaseResponse(code common.RespCode, msg string) *api.BaseResp {
 	return &api.BaseResp{
-		StatusCode:    code,
-		StatusMessage: msg,
+		Code: code,
+		Msg:  msg,
 	}
 }
 
-func GetAPIResponse(base *api.BaseResp, resp any) *APIResponse {
+func NewAPIResponse(base *api.BaseResp, resp any) *APIResponse {
+	if base.GetCode() != common.RespCode_Success {
+		return &APIResponse{
+			Code: base.Code,
+			Msg:  base.Msg,
+			Data: nil,
+		}
+	}
 	return &APIResponse{
-		Code: base.StatusCode,
-		Msg:  base.StatusMessage,
+		Code: base.Code,
+		Msg:  base.Msg,
 		Data: resp,
+	}
+}
+
+func NewInternalErrorResp() *APIResponse {
+	return &APIResponse{
+		Code: common.RespCode_InternalError,
+		Msg:  "Internal Error",
+		Data: nil,
+	}
+}
+
+func NewParameterErrorResp() *APIResponse {
+	return &APIResponse{
+		Code: common.RespCode_ParameterError,
+		Msg:  "Parameter Error",
+		Data: nil,
 	}
 }

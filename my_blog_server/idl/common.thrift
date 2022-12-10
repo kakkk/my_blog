@@ -1,5 +1,17 @@
 namespace go blog.common
 
+
+// =========错误码=========
+
+enum RespCode {
+    Success         = 0
+    Fail            = 1
+    LoginFail       = 200001
+    ParameterError  = 400000
+    Unauthorized    = 400100
+    InternalError   = 500000
+}
+
 // =========Extra信息===========
 
 enum ExtraInfo {

@@ -7,6 +7,7 @@ import (
 
 	"my_blog/biz/common/config"
 	"my_blog/biz/common/log"
+	"my_blog/biz/middleware"
 	"my_blog/biz/repository/mysql"
 	"my_blog/biz/repository/redis"
 
@@ -34,6 +35,11 @@ func main() {
 
 	// redis
 	if err := redis.InitRedis(); err != nil {
+		panic(err)
+	}
+
+	// session
+	if err := middleware.InitSession(); err != nil {
 		panic(err)
 	}
 

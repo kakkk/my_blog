@@ -8,6 +8,68 @@ import (
 	"fmt"
 )
 
+type RespCode int64
+
+const (
+	RespCode_Success        RespCode = 0
+	RespCode_Fail           RespCode = 1
+	RespCode_LoginFail      RespCode = 200001
+	RespCode_ParameterError RespCode = 400000
+	RespCode_Unauthorized   RespCode = 400100
+	RespCode_InternalError  RespCode = 500000
+)
+
+func (p RespCode) String() string {
+	switch p {
+	case RespCode_Success:
+		return "Success"
+	case RespCode_Fail:
+		return "Fail"
+	case RespCode_LoginFail:
+		return "LoginFail"
+	case RespCode_ParameterError:
+		return "ParameterError"
+	case RespCode_Unauthorized:
+		return "Unauthorized"
+	case RespCode_InternalError:
+		return "InternalError"
+	}
+	return "<UNSET>"
+}
+
+func RespCodeFromString(s string) (RespCode, error) {
+	switch s {
+	case "Success":
+		return RespCode_Success, nil
+	case "Fail":
+		return RespCode_Fail, nil
+	case "LoginFail":
+		return RespCode_LoginFail, nil
+	case "ParameterError":
+		return RespCode_ParameterError, nil
+	case "Unauthorized":
+		return RespCode_Unauthorized, nil
+	case "InternalError":
+		return RespCode_InternalError, nil
+	}
+	return RespCode(0), fmt.Errorf("not a valid RespCode string")
+}
+
+func RespCodePtr(v RespCode) *RespCode { return &v }
+func (p *RespCode) Scan(value interface{}) (err error) {
+	var result sql.NullInt64
+	err = result.Scan(value)
+	*p = RespCode(result.Int64)
+	return
+}
+
+func (p *RespCode) Value() (driver.Value, error) {
+	if p == nil {
+		return nil, nil
+	}
+	return int64(*p), nil
+}
+
 type ExtraInfo int64
 
 const (

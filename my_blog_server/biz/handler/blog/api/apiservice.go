@@ -4,9 +4,11 @@ package api
 
 import (
 	"context"
+	"net/http"
 
 	serviceResp "my_blog/biz/common/resp"
 	"my_blog/biz/model/blog/api"
+	"my_blog/biz/service"
 
 	"github.com/cloudwego/hertz/pkg/app"
 )
@@ -18,13 +20,14 @@ func LoginAPI(ctx context.Context, c *app.RequestContext) {
 	var req api.LoginRequest
 	err = c.BindAndValidate(&req)
 	if err != nil {
-		c.String(400, err.Error())
+		c.JSON(http.StatusBadRequest, serviceResp.NewParameterErrorResp())
 		return
 	}
 
-	resp := &api.LoginResponse{
-		BaseResp: serviceResp.GetBaseResp(0, ""),
+	resp, err := service.LoginAPI(ctx, c, req)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, serviceResp.NewInternalErrorResp())
+		return
 	}
-
-	c.JSON(200, serviceResp.GetAPIResponse(resp.GetBaseResp(), resp))
+	c.JSON(http.StatusOK, serviceResp.NewAPIResponse(resp.GetBaseResp(), resp))
 }

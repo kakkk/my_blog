@@ -6,6 +6,5 @@ func GetRootMW() []app.HandlerFunc {
 	return []app.HandlerFunc{
 		RequestIdMW(),
 		HertzLoggerMW(),
-		HertzRecoverMW(),
 	}
 }

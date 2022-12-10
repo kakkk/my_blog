@@ -48,3 +48,7 @@ func NewParameterErrorResp() *APIResponse {
 		Data: nil,
 	}
 }
+
+func NewFailBaseResp() *api.BaseResp {
+	return NewBaseResponse(common.RespCode_Fail, "fail")
+}

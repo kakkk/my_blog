@@ -4,11 +4,8 @@ package api
 
 import (
 	"context"
-	"net/http"
 
-	serviceResp "my_blog/biz/common/resp"
-	"my_blog/biz/model/blog/api"
-	"my_blog/biz/service"
+	"my_blog/biz/facade"
 
 	"github.com/cloudwego/hertz/pkg/app"
 )
@@ -16,18 +13,11 @@ import (
 // LoginAPI .
 // @router /api/login [POST]
 func LoginAPI(ctx context.Context, c *app.RequestContext) {
-	var err error
-	var req api.LoginRequest
-	err = c.BindAndValidate(&req)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, serviceResp.NewParameterErrorResp())
-		return
-	}
+	c.JSON(facade.LoginAPI(ctx, c))
+}
 
-	resp, err := service.LoginAPI(ctx, c, req)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, serviceResp.NewInternalErrorResp())
-		return
-	}
-	c.JSON(http.StatusOK, serviceResp.NewAPIResponse(resp.GetBaseResp(), resp))
+// GetUserInfoAPI .
+// @router /api/admin/user/info [GET]
+func GetUserInfoAPI(ctx context.Context, c *app.RequestContext) {
+	c.JSON(facade.GetUserInfoAPI(ctx, c))
 }

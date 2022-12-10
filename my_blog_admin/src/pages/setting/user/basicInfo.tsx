@@ -14,8 +14,6 @@ export default function BasicInfo() {
   const [form] = Form.useForm();
   const onReset = () => {
     form.setFieldValue('nickname', userInfo.nickname);
-    form.setFieldValue('email', userInfo.email);
-    form.setFieldValue('description', userInfo.description);
   };
   const updateUserInfo = async (info: any) => {
     try {
@@ -23,7 +21,6 @@ export default function BasicInfo() {
         ...info,
         id: userInfo.id,
         username: userInfo.username,
-        role: userInfo.role,
         avatar: userInfo.avatar,
       };
       const res: any = await apiUpdateInfo(newInfo);

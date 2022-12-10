@@ -24,8 +24,10 @@ func InitSession() error {
 		return err
 	}
 	s.Options(sessions.Options{
-		Path:   "/",
-		MaxAge: 604800, // 7天
+		Path:     "/",
+		MaxAge:   604800, // 7天
+		Secure:   true,
+		SameSite: http.SameSiteNoneMode,
 	})
 	store = s
 	return nil
@@ -41,6 +43,7 @@ func SessionAuthMW() app.HandlerFunc {
 		session := sessions.Default(c)
 		userIDFromSession := session.Get("user_id")
 		if userIDFromSession == nil {
+			logger.Warnf("session is nil")
 			c.JSON(http.StatusUnauthorized, resp.NewBaseResponse(common.RespCode_Unauthorized, ""))
 			c.Abort()
 			return
@@ -53,11 +56,13 @@ func SessionAuthMW() app.HandlerFunc {
 			return
 		}
 		if userID == 0 {
+			logger.Warnf("session user_id is 0")
 			c.JSON(http.StatusUnauthorized, resp.NewBaseResponse(common.RespCode_Unauthorized, ""))
 			c.Abort()
 			return
 		}
 		logger.Infof("session user_id:[%v]", userID)
 		ctx = context.WithValue(ctx, "user_id", userID)
+		c.Next(ctx)
 	}
 }

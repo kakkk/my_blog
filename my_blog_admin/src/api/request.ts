@@ -3,7 +3,13 @@ import { Notification } from '@arco-design/web-react';
 
 export const request = (config) => {
   const http = axios.create({
-    baseURL: 'http://localhost:8080/api/v1',
+    baseURL: 'http://localhost:8888/api',
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Credentials': 'true',
+      'Content-Type': 'application/json',
+    },
+    withCredentials: true,
     // timeout: 5000,
   });
 
@@ -11,10 +17,6 @@ export const request = (config) => {
   http.interceptors.request.use(
     (config) => {
       console.log('config', config);
-      const token = localStorage.getItem('token');
-      config.headers = {
-        Authorization: `${token}`,
-      };
       return config;
     },
     () => {}
@@ -25,11 +27,9 @@ export const request = (config) => {
     (res) => {
       console.log('res-------', res);
       if (!(res.data.code === 0)) {
+        Notification.error({ title: '权限错误', content: res.data.msg });
         switch (res.data.code) {
-          case -4:
-            location.href = '/403';
-            break;
-          case -3:
+          case 400100:
             location.href = '/login';
             break;
           default:
@@ -48,9 +48,9 @@ export const request = (config) => {
           Notification.error({ title: '权限错误', content: response.data.msg });
         }
         if (response.status === 401) {
-          localStorage.removeItem('token');
+          localStorage.removeItem('login');
           location.href = '/login';
-          Notification.error({ title: 'Token错误', content: 'token过期，请重新登录' });
+          Notification.error({ title: '登陆过期', content: '登陆过期，请重新登录' });
         }
       }
     }

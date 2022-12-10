@@ -1,3 +1,3 @@
 export default () => {
-  return localStorage.getItem('token');
+  return localStorage.getItem('login');
 };

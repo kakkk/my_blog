@@ -12,15 +12,14 @@ export default function LoginForm() {
   const [loading, setLoading] = useState(false);
   const [rememberPassword, setRememberPassword] = useState(false);
 
-  function afterLoginSuccess(params, resp) {
+  function afterLoginSuccess(params) {
     // 记住密码
     if (rememberPassword) {
       localStorage.setItem('loginParams', JSON.stringify(params));
     } else {
       localStorage.removeItem('loginParams');
     }
-    localStorage.setItem('token', resp.data.token);
-    localStorage.setItem('role', resp.data.role);
+    localStorage.setItem('login', 'true');
     // 跳转首页
     window.location.href = history.createHref({
       pathname: '/',
@@ -31,11 +30,11 @@ export default function LoginForm() {
     setErrorMessage('');
     setLoading(true);
     try {
-      const res: any = await adminLogin(params);
+      const res: any = await adminLogin(params.userName, params.password);
       console.log(res);
       if (res.data) {
         if (res.code === 0) {
-          afterLoginSuccess(params, res);
+          afterLoginSuccess(params);
         }
       } else {
         setErrorMessage(res.msg);

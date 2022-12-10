@@ -21,10 +21,7 @@ export interface GlobalState {
     id?: number;
     username?: string;
     nickname?: string;
-    email?: string;
-    role?: string;
     avatar?: string;
-    description?: string;
   };
 }
 
@@ -35,10 +32,7 @@ const initialState: GlobalState = {
     id: 0,
     username: '',
     nickname: '',
-    email: '',
-    role: '',
     avatar: '',
-    description: '',
   },
 };
 

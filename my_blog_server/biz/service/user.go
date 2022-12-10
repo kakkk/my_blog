@@ -10,12 +10,9 @@ import (
 	"my_blog/biz/model/blog/api"
 	"my_blog/biz/model/blog/common"
 	"my_blog/biz/repository/mysql"
-
-	"github.com/cloudwego/hertz/pkg/app"
-	"github.com/hertz-contrib/sessions"
 )
 
-func LoginAPI(ctx context.Context, c *app.RequestContext, req api.LoginRequest) (*api.LoginResponse, error) {
+func LoginAPI(ctx context.Context, req *api.LoginRequest) (*api.LoginResponse, error) {
 	logger := log.GetLoggerWithCtx(ctx)
 	user, err := mysql.SelectUserByUsername(ctx, mysql.GetDB(), req.GetUsername())
 	if err != nil {
@@ -33,19 +30,39 @@ func LoginAPI(ctx context.Context, c *app.RequestContext, req api.LoginRequest) 
 			BaseResp: resp.NewBaseResponse(common.RespCode_LoginFail, "login fail"),
 		}, nil
 	}
-	session := sessions.Default(c)
-	session.Set("user_id", user.Id)
-	err = session.Save()
-	if err != nil {
-		logger.Errorf("set session error:[%v]", err)
-		return &api.LoginResponse{
-			BaseResp: resp.NewBaseResponse(common.RespCode_Fail, "fail"),
-		}, nil
-	}
+
 	return &api.LoginResponse{
 		UserID:   user.Id,
 		Username: user.Username,
 		Nickname: user.Nickname,
+		Avatar:   user.Avatar,
+		BaseResp: resp.NewBaseResponse(common.RespCode_Success, ""),
+	}, nil
+}
+
+func GetUserInfoAPI(ctx context.Context) (*api.GetUserInfoAPIResponse, error) {
+	logger := log.GetLoggerWithCtx(ctx)
+
+	userID, err := utils.GetUserIDByCtx(ctx)
+	if err != nil {
+		return &api.GetUserInfoAPIResponse{
+			BaseResp: resp.NewFailBaseResp(),
+		}, nil
+	}
+
+	user, err := mysql.SelectUserByID(ctx, mysql.GetDB(), userID)
+	if err != nil {
+		logger.Errorf("get user by id error: %v", err)
+		return &api.GetUserInfoAPIResponse{
+			BaseResp: resp.NewFailBaseResp(),
+		}, nil
+	}
+
+	return &api.GetUserInfoAPIResponse{
+		UserID:   user.Id,
+		Username: user.Username,
+		Nickname: user.Nickname,
+		Avatar:   user.Avatar,
 		BaseResp: resp.NewBaseResponse(common.RespCode_Success, ""),
 	}, nil
 }

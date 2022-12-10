@@ -54,6 +54,8 @@ github.com/henrylee2cn/ameda v1.4.10 h1:JdvI2Ekq7tapdPsuhrc4CaFiqw6QXFvZIULWJgQy
 github.com/henrylee2cn/ameda v1.4.10/go.mod h1:liZulR8DgHxdK+MEwvZIylGnmcjzQ6N6f2PlWe7nEO4=
 github.com/henrylee2cn/goutil v0.0.0-20210127050712-89660552f6f8 h1:yE9ULgp02BhYIrO6sdV/FPe0xQM6fNHkVQW2IAymfM0=
 github.com/henrylee2cn/goutil v0.0.0-20210127050712-89660552f6f8/go.mod h1:Nhe/DM3671a5udlv2AdV2ni/MZzgfv2qrPL5nIi3EGQ=
+github.com/hertz-contrib/csrf v0.1.1 h1:53HxseVzpW4JEUJ7ONAaQCyNBWXl+rn42LVqgwEQzRg=
+github.com/hertz-contrib/csrf v0.1.1/go.mod h1:z6CW935kPp1qy1XHXL7memdWInXXTc3OiMLp/cEmZQY=
 github.com/hertz-contrib/logger/logrus v1.0.0 h1:OeyYIGtMcn38W5e6XilogTVRIJVHbbcNC9Uk/mRHpgU=
 github.com/hertz-contrib/logger/logrus v1.0.0/go.mod h1:SqDYLwVq5hTItYqimgZQbFCYPOIGNvBTq0Ip2OQwMcY=
 github.com/hertz-contrib/sessions v1.0.1 h1:2puqvNqzyuPC3+5gzMRS+xhvGdNq3Ux7OVEewLSJbAk=

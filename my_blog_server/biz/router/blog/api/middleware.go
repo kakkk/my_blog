@@ -29,3 +29,15 @@ func _adminMw() []app.HandlerFunc {
 	// your code...
 	return nil
 }
+
+func _userMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _getuserinfo_piMw() []app.HandlerFunc {
+	// your code...
+	return []app.HandlerFunc{
+		middleware.SessionAuthMW(),
+	}
+}

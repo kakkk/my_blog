@@ -1,19 +1,24 @@
 namespace go blog.common
 
 
-// =========错误码=========
+// ======DeleteFlag=======
+enum DeleteFlag {
+    Exist   = 0     // 存在
+    Delete  = 1     // 删除
+}
 
+// =========错误码=========
 enum RespCode {
-    Success         = 0
-    Fail            = 1
-    LoginFail       = 200001
-    ParameterError  = 400000
-    Unauthorized    = 400100
-    InternalError   = 500000
+    Success         = 0         // 成功
+    Fail            = 1         // 失败
+    LoginFail       = 200001    // 登录失败
+    HasExist        = 200002    // 已存在
+    ParameterError  = 400000    // 参数错误
+    Unauthorized    = 400100    // 未登录
+    InternalError   = 500000    // 服务错误
 }
 
 // =========Extra信息===========
-
 enum ExtraInfo {
     CategoryOrder = 1 // 分类排序
 }

@@ -6,13 +6,9 @@ import (
 )
 
 func GetUserIDByCtx(ctx context.Context) (int64, error) {
-	userIDFromCtx := ctx.Value("user_id")
-	if userIDFromCtx == nil {
-		return 0, fmt.Errorf("get from ctx fail")
-	}
-	userID, ok := userIDFromCtx.(int64)
+	userID, ok := ctx.Value("user_id").(int64)
 	if !ok {
-		return 0, fmt.Errorf("convert user_id fail")
+		return 0, fmt.Errorf("get user_id by context fail")
 	}
 	return userID, nil
 }

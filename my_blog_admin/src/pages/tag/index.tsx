@@ -113,12 +113,15 @@ function Tag(props) {
         dispatch({
           type: UPDATE_LIST,
           payload: {
-            data: res.data != null ? res.data : [],
-            pagination: {
-              pageSize: res.pagination.limit,
-              current: res.pagination.page,
-              total: res.pagination.total,
-            },
+            data: res.data != null ? res.data.tag_list : [],
+            pagination:
+              res.data != null
+                ? {
+                    pageSize: res.data.pagination.limit,
+                    current: res.data.pagination.page,
+                    total: res.data.pagination.total,
+                  }
+                : {},
           },
         });
         dispatch({ type: UPDATE_SEARCH_KEYWORD, payload: { searchKeyWord: keyword } });

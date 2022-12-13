@@ -8,12 +8,55 @@ import (
 	"fmt"
 )
 
+type DeleteFlag int64
+
+const (
+	DeleteFlag_Exist  DeleteFlag = 0
+	DeleteFlag_Delete DeleteFlag = 1
+)
+
+func (p DeleteFlag) String() string {
+	switch p {
+	case DeleteFlag_Exist:
+		return "Exist"
+	case DeleteFlag_Delete:
+		return "Delete"
+	}
+	return "<UNSET>"
+}
+
+func DeleteFlagFromString(s string) (DeleteFlag, error) {
+	switch s {
+	case "Exist":
+		return DeleteFlag_Exist, nil
+	case "Delete":
+		return DeleteFlag_Delete, nil
+	}
+	return DeleteFlag(0), fmt.Errorf("not a valid DeleteFlag string")
+}
+
+func DeleteFlagPtr(v DeleteFlag) *DeleteFlag { return &v }
+func (p *DeleteFlag) Scan(value interface{}) (err error) {
+	var result sql.NullInt64
+	err = result.Scan(value)
+	*p = DeleteFlag(result.Int64)
+	return
+}
+
+func (p *DeleteFlag) Value() (driver.Value, error) {
+	if p == nil {
+		return nil, nil
+	}
+	return int64(*p), nil
+}
+
 type RespCode int64
 
 const (
 	RespCode_Success        RespCode = 0
 	RespCode_Fail           RespCode = 1
 	RespCode_LoginFail      RespCode = 200001
+	RespCode_HasExist       RespCode = 200002
 	RespCode_ParameterError RespCode = 400000
 	RespCode_Unauthorized   RespCode = 400100
 	RespCode_InternalError  RespCode = 500000
@@ -27,6 +70,8 @@ func (p RespCode) String() string {
 		return "Fail"
 	case RespCode_LoginFail:
 		return "LoginFail"
+	case RespCode_HasExist:
+		return "HasExist"
 	case RespCode_ParameterError:
 		return "ParameterError"
 	case RespCode_Unauthorized:
@@ -45,6 +90,8 @@ func RespCodeFromString(s string) (RespCode, error) {
 		return RespCode_Fail, nil
 	case "LoginFail":
 		return RespCode_LoginFail, nil
+	case "HasExist":
+		return RespCode_HasExist, nil
 	case "ParameterError":
 		return RespCode_ParameterError, nil
 	case "Unauthorized":

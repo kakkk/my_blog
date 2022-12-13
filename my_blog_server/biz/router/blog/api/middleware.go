@@ -41,3 +41,25 @@ func _getuserinfo_piMw() []app.HandlerFunc {
 		middleware.SessionAuthMW(),
 	}
 }
+
+func _tagMw() []app.HandlerFunc {
+	// your code...
+	return []app.HandlerFunc{
+		middleware.SessionAuthMW(),
+	}
+}
+
+func _updatetag_piMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _deletetag_piMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _gettaglist_piMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}

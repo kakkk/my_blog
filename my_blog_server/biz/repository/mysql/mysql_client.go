@@ -1,6 +1,7 @@
 package mysql
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -37,6 +38,6 @@ func InitMySQL() error {
 	return nil
 }
 
-func GetDB() *gorm.DB {
-	return db
+func GetDB(ctx context.Context) *gorm.DB {
+	return db.WithContext(ctx)
 }

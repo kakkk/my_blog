@@ -2,7 +2,7 @@ import { request } from './request';
 
 export async function getTagList(keyword: string, page: number, limit: number) {
   return request({
-    url: `admin/tags?keyword=${keyword}&page=${page}&limit=${limit}`,
+    url: `admin/tag/list?keyword=${keyword}&page=${page}&limit=${limit}`,
     method: 'GET',
   });
 }

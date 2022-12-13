@@ -14,7 +14,7 @@ import (
 
 func LoginAPI(ctx context.Context, req *api.LoginRequest) (*api.LoginResponse, error) {
 	logger := log.GetLoggerWithCtx(ctx)
-	user, err := mysql.SelectUserByUsername(ctx, mysql.GetDB(), req.GetUsername())
+	user, err := mysql.SelectUserByUsername(mysql.GetDB(ctx), req.GetUsername())
 	if err != nil {
 		if err == consts.ErrRecordNotFound {
 			logger.Warnf("login fail: user not found, username:[%v], password:[%v]", req.GetUsername(), req.GetPassword())
@@ -32,11 +32,11 @@ func LoginAPI(ctx context.Context, req *api.LoginRequest) (*api.LoginResponse, e
 	}
 
 	return &api.LoginResponse{
-		UserID:   user.Id,
+		UserID:   user.ID,
 		Username: user.Username,
 		Nickname: user.Nickname,
 		Avatar:   user.Avatar,
-		BaseResp: resp.NewBaseResponse(common.RespCode_Success, ""),
+		BaseResp: resp.NewSuccessBaseResp(),
 	}, nil
 }
 
@@ -50,7 +50,7 @@ func GetUserInfoAPI(ctx context.Context) (*api.GetUserInfoAPIResponse, error) {
 		}, nil
 	}
 
-	user, err := mysql.SelectUserByID(ctx, mysql.GetDB(), userID)
+	user, err := mysql.SelectUserByID(mysql.GetDB(ctx), userID)
 	if err != nil {
 		logger.Errorf("get user by id error: %v", err)
 		return &api.GetUserInfoAPIResponse{
@@ -59,10 +59,10 @@ func GetUserInfoAPI(ctx context.Context) (*api.GetUserInfoAPIResponse, error) {
 	}
 
 	return &api.GetUserInfoAPIResponse{
-		UserID:   user.Id,
+		UserID:   user.ID,
 		Username: user.Username,
 		Nickname: user.Nickname,
 		Avatar:   user.Avatar,
-		BaseResp: resp.NewBaseResponse(common.RespCode_Success, ""),
+		BaseResp: resp.NewSuccessBaseResp(),
 	}, nil
 }

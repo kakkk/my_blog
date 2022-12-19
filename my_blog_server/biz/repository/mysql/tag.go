@@ -1,6 +1,8 @@
 package mysql
 
 import (
+	"time"
+
 	"my_blog/biz/entity"
 	"my_blog/biz/model/blog/common"
 
@@ -12,6 +14,7 @@ const (
 )
 
 func CreateTag(db *gorm.DB, tag *entity.Tag) (*entity.Tag, error) {
+	tag.UpdateAt = time.Now()
 	err := db.Model(&entity.Tag{}).Create(tag).Error
 	if err != nil {
 		return nil, parseError(err)
@@ -23,7 +26,8 @@ func UpdateTagByID(db *gorm.DB, id int64, tag *entity.Tag) error {
 	err := db.Model(&entity.Tag{}).
 		Where("id = ?", id).
 		Updates(map[string]any{
-			"name": tag.TagName,
+			"name":      tag.TagName,
+			"update_at": time.Now(),
 		}).Error
 	if err != nil {
 		return parseError(err)
@@ -37,6 +41,7 @@ func DeleteTagByID(db *gorm.DB, id int64) error {
 		Updates(
 			map[string]any{
 				"delete_flag": common.DeleteFlag_Delete,
+				"update_at":   time.Now(),
 			},
 		).Error
 	if err != nil {

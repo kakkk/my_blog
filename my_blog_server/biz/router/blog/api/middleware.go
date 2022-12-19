@@ -63,3 +63,30 @@ func _gettaglist_piMw() []app.HandlerFunc {
 	// your code...
 	return nil
 }
+
+func _categoryMw() []app.HandlerFunc {
+	// your code...
+	return []app.HandlerFunc{
+		middleware.SessionAuthMW(),
+	}
+}
+
+func _updatecategory_piMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _deletecategory_piMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _getcategorylist_piMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _updatecategoryorder_piMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}

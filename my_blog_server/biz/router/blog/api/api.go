@@ -21,6 +21,12 @@ func Register(r *server.Hertz) {
 		_api := root.Group("/api", _apiMw()...)
 		{
 			_admin := _api.Group("/admin", _adminMw()...)
+			_admin.POST("/category", append(_categoryMw(), api.CreateCategoryAPI)...)
+			_category := _admin.Group("/category", _categoryMw()...)
+			_category.PUT("/:category_id", append(_updatecategory_piMw(), api.UpdateCategoryAPI)...)
+			_category.DELETE("/:category_id", append(_deletecategory_piMw(), api.DeleteCategoryAPI)...)
+			_category.GET("/list", append(_getcategorylist_piMw(), api.GetCategoryListAPI)...)
+			_category.PUT("/order", append(_updatecategoryorder_piMw(), api.UpdateCategoryOrderAPI)...)
 			_admin.POST("/login", append(_login_piMw(), api.LoginAPI)...)
 			_admin.POST("/tag", append(_tagMw(), api.CreateTagAPI)...)
 			_tag := _admin.Group("/tag", _tagMw()...)

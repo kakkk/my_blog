@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"time"
 
 	"my_blog/biz/common/consts"
 	"my_blog/biz/common/log"
@@ -17,8 +16,7 @@ func CreateTagAPI(ctx context.Context, req *api.CreateTagAPIRequest) (*api.Creat
 	logger := log.GetLoggerWithCtx(ctx)
 
 	tag, err := mysql.CreateTag(mysql.GetDB(ctx), &entity.Tag{
-		TagName:  req.Name,
-		UpdateAt: time.Now(),
+		TagName: req.Name,
 	})
 	if err != nil {
 		if err == consts.ErrHasExist {
@@ -44,8 +42,7 @@ func CreateTagAPI(ctx context.Context, req *api.CreateTagAPIRequest) (*api.Creat
 func UpdateTagAPI(ctx context.Context, req *api.UpdateTagAPIRequest) (*api.CommonResponse, error) {
 	logger := log.GetLoggerWithCtx(ctx)
 	err := mysql.UpdateTagByID(mysql.GetDB(ctx), req.GetID(), &entity.Tag{
-		TagName:  req.Name,
-		UpdateAt: time.Now(),
+		TagName: req.Name,
 	})
 	if err != nil {
 		if err == consts.ErrHasExist {

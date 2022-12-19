@@ -46,3 +46,33 @@ func DeleteTagAPI(ctx context.Context, c *app.RequestContext) {
 func GetTagListAPI(ctx context.Context, c *app.RequestContext) {
 	c.JSON(facade.GetTagListAPI(ctx, c))
 }
+
+// CreateCategoryAPI .
+// @router /api/admin/category [POST]
+func CreateCategoryAPI(ctx context.Context, c *app.RequestContext) {
+	c.JSON(facade.CreateCategoryAPI(ctx, c))
+}
+
+// UpdateCategoryAPI .
+// @router /api/admin/category/:category_id [PUT]
+func UpdateCategoryAPI(ctx context.Context, c *app.RequestContext) {
+	c.JSON(facade.UpdateCategoryAPI(ctx, c))
+}
+
+// DeleteCategoryAPI .
+// @router /api/admin/category/:category_id [DELETE]
+func DeleteCategoryAPI(ctx context.Context, c *app.RequestContext) {
+	c.JSON(facade.DeleteCategoryAPI(ctx, c))
+}
+
+// UpdateCategoryOrderAPI .
+// @router /api/admin/category/order [PUT]
+func UpdateCategoryOrderAPI(ctx context.Context, c *app.RequestContext) {
+	c.JSON(facade.UpdateCategoryOrderAPI(ctx, c))
+}
+
+// GetCategoryListAPI .
+// @router /api/admin/category/list [GET]
+func GetCategoryListAPI(ctx context.Context, c *app.RequestContext) {
+	c.JSON(facade.GetCategoryListAPI(ctx, c))
+}

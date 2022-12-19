@@ -21,7 +21,8 @@ func InitMySQL() error {
 	cfg := config.GetMySQLConfig()
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local", cfg.User, cfg.Password, cfg.Host, cfg.Port, cfg.DB)
 	gormDB, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
-		Logger: log.NewGORMLogger(),
+		Logger:      log.NewGORMLogger(),
+		QueryFields: true,
 	})
 	if err != nil {
 		return err

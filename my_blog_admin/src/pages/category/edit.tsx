@@ -3,14 +3,12 @@ import { Form, Input, Message, Modal } from '@arco-design/web-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ReducerState } from '../../redux';
 import {
-  ADD_LIST_ITEM,
   CLEAR_EDIT_MODAL_CONTENT,
   TOGGLE_CONFIRM_LOADING,
   TOGGLE_VISIBLE,
   UPDATE_LIST,
 } from './redux/actionTypes';
 import { createCategory, updateCategoryById } from '../../api/category';
-import getUrlParams from '../../utils/getUrlParams';
 
 const FormItem = Form.Item;
 
@@ -35,7 +33,6 @@ export default function EditCategory(props) {
   const onSetField = () => {
     form.setFieldValue('name', editModalContent.name);
     form.setFieldValue('slug', editModalContent.slug);
-    form.setFieldValue('description', editModalContent.description);
   };
 
   useEffect(onSetField, [visible]);
@@ -46,12 +43,10 @@ export default function EditCategory(props) {
   };
 
   const addCategory = async (data) => {
-    const urlParams = getUrlParams();
     try {
-      const res: any = await createCategory(data, urlParams.parent);
+      const res: any = await createCategory(data);
       if (res.code === 0) {
         Message.success('添加成功！');
-        dispatch({ type: ADD_LIST_ITEM, payload: { item: res.data } });
       } else {
         Message.error(res.msg);
       }
@@ -60,11 +55,9 @@ export default function EditCategory(props) {
   };
 
   const updateCategory = async (id: number, data) => {
-    const urlParams = getUrlParams();
     try {
       const res: any = await updateCategoryById(id, {
         ...data,
-        parent: urlParams.parent,
       });
       if (res.code === 0) {
         Message.success('修改成功！');
@@ -75,7 +68,6 @@ export default function EditCategory(props) {
               id,
               ...data,
               count: ret[i].count,
-              children: ret[i].children,
             };
             break;
           }
@@ -123,9 +115,6 @@ export default function EditCategory(props) {
           rules={[{ required: true, message: '请输入缩略名' }]}
         >
           <Input placeholder="请输入缩略名" />
-        </FormItem>
-        <FormItem label="描述：" field="description">
-          <Input placeholder="描述" />
         </FormItem>
       </Form>
     </Modal>

@@ -10,21 +10,20 @@ import {
   UPDATE_LIST,
   UPDATE_LOADING,
 } from './redux/actionTypes';
-import { deleteCategory, getCategoryById, getCategoryList } from '../../api/category';
-import getUrlParams from '../../utils/getUrlParams';
+import { deleteCategory, getCategoryList } from '../../api/category';
 import history from '../../history';
 import EditCategory from './edit';
 
 function Category(props) {
   const categoryState = useSelector((state: ReducerState) => state.category);
 
-  const { data, loading } = categoryState;
+  const { data, loading, visible } = categoryState;
 
   const dispatch = useDispatch();
 
   useEffect(() => {
     fetchData();
-  }, [props.location]);
+  }, [props.location, visible]);
   const onDelete = async (row) => {
     try {
       const res: any = await deleteCategory(row.id);
@@ -39,35 +38,28 @@ function Category(props) {
     }
   };
   const onEdit = async (row) => {
-    try {
-      const res: any = await getCategoryById(row.id);
-      if (res.code === 0) {
-        dispatch({ type: UPDATE_EDIT_MODAL_CONTENT, payload: { content: res.data } });
-        dispatch({ type: TOGGLE_VISIBLE, payload: { visible: true } });
-      } else {
-        Message.error(res.msg);
-        dispatch({ type: TOGGLE_VISIBLE, payload: { visible: false } });
-      }
-    } catch (error) {
-    } finally {
-    }
+    dispatch({
+      type: UPDATE_EDIT_MODAL_CONTENT,
+      payload: {
+        content: {
+          id: row.id,
+          name: row.name,
+          slug: row.slug,
+        },
+      },
+    });
+    dispatch({ type: TOGGLE_VISIBLE, payload: { visible: true } });
   };
 
   async function fetchData() {
-    const urlParams = getUrlParams();
     dispatch({ type: UPDATE_LOADING, payload: { loading: true } });
     try {
-      let res: any;
-      if (urlParams.parent) {
-        res = await getCategoryList(urlParams.parent);
-      } else {
-        res = await getCategoryList(0);
-      }
+      const res: any = await getCategoryList();
       if (res.code === 0) {
         if (res.data === null) {
           dispatch({ type: UPDATE_LIST, payload: { data: [] } });
         } else {
-          dispatch({ type: UPDATE_LIST, payload: { data: res.data } });
+          dispatch({ type: UPDATE_LIST, payload: { data: res.data.category_list } });
         }
         dispatch({ type: UPDATE_LOADING, payload: { loading: false } });
       } else {
@@ -91,25 +83,6 @@ function Category(props) {
     {
       title: '缩略名',
       dataIndex: 'slug',
-    },
-    {
-      title: '子分类',
-      dataIndex: 'children',
-      width: 200,
-      align: 'center',
-      render: (_, record) => (
-        <div>
-          <Button
-            type="text"
-            size="small"
-            onClick={() => {
-              history.push(`/category?parent=${record.id}`);
-            }}
-          >
-            {record.children === 0 ? '新增' : record.children}
-          </Button>
-        </div>
-      ),
     },
     {
       title: '文章数量',
@@ -162,7 +135,6 @@ function Category(props) {
             分类管理
           </a>
         </Breadcrumb.Item>
-        {getUrlParams().parent && <Breadcrumb.Item>子分类</Breadcrumb.Item>}
       </Breadcrumb>
       <Card bordered={false}>
         <div className={styles.toolbar}>

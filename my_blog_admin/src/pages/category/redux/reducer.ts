@@ -17,8 +17,6 @@ const initialState = {
     id: 0,
     name: '',
     slug: '',
-    description: '',
-    parentId: 0,
   },
 };
 
@@ -30,8 +28,6 @@ interface EditModalContent {
   id?: number;
   name?: string;
   slug?: string;
-  description?: string;
-  parentId?: number;
 }
 
 export interface CategoryState {
@@ -78,7 +74,6 @@ export default function(state = initialState, action) {
             name: item.name,
             slug: item.slug,
             count: 0,
-            children: 0,
           },
         ],
       };
@@ -90,22 +85,17 @@ export default function(state = initialState, action) {
           id: 0,
           name: '',
           slug: '',
-          description: '',
-          parentId: 0,
         },
       };
     }
     case UPDATE_EDIT_MODAL_CONTENT: {
       const { content } = action.payload;
-      console.log(content);
       return {
         ...state,
         editModalContent: {
           id: content.id,
           name: content.name,
           slug: content.slug,
-          description: content.description,
-          parentId: content.parent.id,
         },
       };
     }

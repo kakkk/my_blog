@@ -82,8 +82,7 @@ func SearchPage(ctx context.Context, c *app.RequestContext) {
 }
 
 // PostPage .
-// @router /archives/:id [GET]
+// @router /archives/:post_id [GET]
 func PostPage(ctx context.Context, c *app.RequestContext) {
-	resp, code := facade.PostPage(ctx, c)
-	c.HTML(code, "index.tmpl", resp)
+	c.HTML(facade.PostPage(ctx, c))
 }

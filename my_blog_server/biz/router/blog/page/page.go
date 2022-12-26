@@ -20,7 +20,7 @@ func Register(r *server.Hertz) {
 	root.GET("/", append(_indexpageMw(), page.IndexPage)...)
 	root.GET("/archives", append(_archivesMw(), page.ArchivesPage)...)
 	_archives := root.Group("/archives", _archivesMw()...)
-	_archives.GET("/:id", append(_postpageMw(), page.PostPage)...)
+	_archives.GET("/:post_id", append(_postpageMw(), page.PostPage)...)
 	root.GET("/categories", append(_categoriespageMw(), page.CategoriesPage)...)
 	root.GET("/search", append(_searchpageMw(), page.SearchPage)...)
 	root.GET("/tags", append(_tagspageMw(), page.TagsPage)...)

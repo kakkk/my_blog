@@ -130,16 +130,11 @@ func GetPostAPI(ctx context.Context, req *api.GetPostAPIRequest) *api.GetPostAPI
 		})
 	}
 
-	// 获取分类
-	tagIDs, err := mysql.SelectTagIDsByArticleID(db, req.GetID())
+	// 标签
+	tagList, err := getTagListByArticleID(ctx, req.GetID())
 	if err != nil {
-		logger.Errorf("select tag_id error:[%v]", err)
+		logger.Errorf("select tag list error:[%v]", err)
 		return failResp
-	}
-	tagMap, err := mysql.MSelectTagByID(db, tagIDs)
-	var tagList []string
-	for _, tag := range tagMap {
-		tagList = append(tagList, tag.TagName)
 	}
 
 	return &api.GetPostAPIResponse{

@@ -220,7 +220,7 @@ func ErrorPageMocker(code string) *page.BasicPageResp {
 	}
 }
 
-func PostPageMocker(id string) *page.PostPageResp {
+func PostPageMocker(id string) *page.PostPageResponse {
 	file, err := ioutil.ReadFile("../mock_post.md")
 	// mock测试，错误直接panic
 	if err != nil {
@@ -231,7 +231,7 @@ func PostPageMocker(id string) *page.PostPageResp {
 		file,
 		blackfriday.WithExtensions(blackfriday.CommonExtensions|blackfriday.HardLineBreak),
 	))
-	return &page.PostPageResp{
+	return &page.PostPageResponse{
 		Title:   "测试文章" + id,
 		Info:    "November 25, 2022 · 1 min · kakkk",
 		Content: content,

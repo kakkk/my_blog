@@ -13,7 +13,7 @@ export default function Dashboard() {
           欢迎
         </Typography.Title>
         <Typography.Text type="secondary">
-          {userInfo.nickname}, 这里是dBlog后台管理系统
+          {userInfo.nickname}, 这里是 Blog 后台管理系统
         </Typography.Text>
       </div>
       <div className={styles.content}>

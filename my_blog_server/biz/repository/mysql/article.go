@@ -1,6 +1,7 @@
 package mysql
 
 import (
+	"fmt"
 	"time"
 
 	"my_blog/biz/common/consts"
@@ -138,4 +139,41 @@ func DeleteArticleByID(db *gorm.DB, id int64) error {
 		return parseError(err)
 	}
 	return nil
+}
+
+func SelectPostWithPublishByID(db *gorm.DB, id int64) (*entity.Article, error) {
+	post := &entity.Article{}
+	err := db.Model(&entity.Article{}).
+		Where("id = ?", id).
+		Where("article_type = ?", common.ArticleType_Post).
+		Where("article_status = ?", common.ArticleStatus_PUBLISH).
+		Where("delete_flag = ?", common.DeleteFlag_Exist).
+		First(post).Error
+	if err != nil {
+		return nil, parseError(err)
+	}
+	return post, nil
+}
+
+func SelectPrevNextPostByPublishAt(db *gorm.DB, publishAt time.Time) (*entity.Article, *entity.Article, error) {
+	prev := &entity.Article{}
+	next := &entity.Article{}
+	prevErr := db.Model(&entity.Article{}).
+		Where("publish_at > ?", publishAt).
+		Where("article_type = ?", common.ArticleType_Post).
+		Where("article_status = ?", common.ArticleStatus_PUBLISH).
+		Where("delete_flag = ?", common.DeleteFlag_Exist).
+		Order("publish_at asc").
+		First(prev).Error
+	nextErr := db.Model(&entity.Article{}).
+		Where("publish_at < ?", publishAt).
+		Where("article_type = ?", common.ArticleType_Post).
+		Where("article_status = ?", common.ArticleStatus_PUBLISH).
+		Where("delete_flag = ?", common.DeleteFlag_Exist).
+		Order("publish_at desc").
+		First(next).Error
+	if prevErr != nil || nextErr != nil {
+		return prev, next, fmt.Errorf("db err: prev:[%v], next:[%v]", parseError(prevErr), parseError(nextErr))
+	}
+	return prev, next, nil
 }

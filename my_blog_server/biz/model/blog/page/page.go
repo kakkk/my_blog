@@ -2779,7 +2779,152 @@ func (p *PostNav) String() string {
 	return fmt.Sprintf("PostNav(%+v)", *p)
 }
 
-type PostPageResp struct {
+type PostPageRequest struct {
+	ID int64 `thrift:"ID,1,required" json:"ID,required" path:"post_id,required"`
+}
+
+func NewPostPageRequest() *PostPageRequest {
+	return &PostPageRequest{}
+}
+
+func (p *PostPageRequest) GetID() (v int64) {
+	return p.ID
+}
+
+var fieldIDToName_PostPageRequest = map[int16]string{
+	1: "ID",
+}
+
+func (p *PostPageRequest) Read(iprot thrift.TProtocol) (err error) {
+
+	var fieldTypeId thrift.TType
+	var fieldId int16
+	var issetID bool = false
+
+	if _, err = iprot.ReadStructBegin(); err != nil {
+		goto ReadStructBeginError
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err = iprot.ReadFieldBegin()
+		if err != nil {
+			goto ReadFieldBeginError
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+
+		switch fieldId {
+		case 1:
+			if fieldTypeId == thrift.I64 {
+				if err = p.ReadField1(iprot); err != nil {
+					goto ReadFieldError
+				}
+				issetID = true
+			} else {
+				if err = iprot.Skip(fieldTypeId); err != nil {
+					goto SkipFieldError
+				}
+			}
+		default:
+			if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
+		}
+
+		if err = iprot.ReadFieldEnd(); err != nil {
+			goto ReadFieldEndError
+		}
+	}
+	if err = iprot.ReadStructEnd(); err != nil {
+		goto ReadStructEndError
+	}
+
+	if !issetID {
+		fieldId = 1
+		goto RequiredFieldNotSetError
+	}
+	return nil
+ReadStructBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T read struct begin error: ", p), err)
+ReadFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T read field %d begin error: ", p, fieldId), err)
+ReadFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_PostPageRequest[fieldId]), err)
+SkipFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T field %d skip type %d error: ", p, fieldId, fieldTypeId), err)
+
+ReadFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T read field end error", p), err)
+ReadStructEndError:
+	return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+RequiredFieldNotSetError:
+	return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field %s is not set", fieldIDToName_PostPageRequest[fieldId]))
+}
+
+func (p *PostPageRequest) ReadField1(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadI64(); err != nil {
+		return err
+	} else {
+		p.ID = v
+	}
+	return nil
+}
+
+func (p *PostPageRequest) Write(oprot thrift.TProtocol) (err error) {
+	var fieldId int16
+	if err = oprot.WriteStructBegin("PostPageRequest"); err != nil {
+		goto WriteStructBeginError
+	}
+	if p != nil {
+		if err = p.writeField1(oprot); err != nil {
+			fieldId = 1
+			goto WriteFieldError
+		}
+
+	}
+	if err = oprot.WriteFieldStop(); err != nil {
+		goto WriteFieldStopError
+	}
+	if err = oprot.WriteStructEnd(); err != nil {
+		goto WriteStructEndError
+	}
+	return nil
+WriteStructBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+WriteFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T write field %d error: ", p, fieldId), err)
+WriteFieldStopError:
+	return thrift.PrependError(fmt.Sprintf("%T write field stop error: ", p), err)
+WriteStructEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write struct end error: ", p), err)
+}
+
+func (p *PostPageRequest) writeField1(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("ID", thrift.I64, 1); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteI64(p.ID); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 1 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 1 end error: ", p), err)
+}
+
+func (p *PostPageRequest) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("PostPageRequest(%+v)", *p)
+}
+
+type PostPageResponse struct {
 	Title    string    `thrift:"Title,1,required" form:"Title,required" json:"Title,required" query:"Title,required"`
 	Info     string    `thrift:"Info,2,required" form:"Info,required" json:"Info,required" query:"Info,required"`
 	Content  string    `thrift:"Content,3,required" form:"Content,required" json:"Content,required" query:"Content,required"`
@@ -2789,59 +2934,59 @@ type PostPageResp struct {
 	Meta     *PageMeta `thrift:"Meta,255,required" form:"Meta,required" json:"Meta,required" query:"Meta,required"`
 }
 
-func NewPostPageResp() *PostPageResp {
-	return &PostPageResp{}
+func NewPostPageResponse() *PostPageResponse {
+	return &PostPageResponse{}
 }
 
-func (p *PostPageResp) GetTitle() (v string) {
+func (p *PostPageResponse) GetTitle() (v string) {
 	return p.Title
 }
 
-func (p *PostPageResp) GetInfo() (v string) {
+func (p *PostPageResponse) GetInfo() (v string) {
 	return p.Info
 }
 
-func (p *PostPageResp) GetContent() (v string) {
+func (p *PostPageResponse) GetContent() (v string) {
 	return p.Content
 }
 
-var PostPageResp_Tags_DEFAULT []string
+var PostPageResponse_Tags_DEFAULT []string
 
-func (p *PostPageResp) GetTags() (v []string) {
+func (p *PostPageResponse) GetTags() (v []string) {
 	if !p.IsSetTags() {
-		return PostPageResp_Tags_DEFAULT
+		return PostPageResponse_Tags_DEFAULT
 	}
 	return p.Tags
 }
 
-var PostPageResp_PrevPage_DEFAULT *PostNav
+var PostPageResponse_PrevPage_DEFAULT *PostNav
 
-func (p *PostPageResp) GetPrevPage() (v *PostNav) {
+func (p *PostPageResponse) GetPrevPage() (v *PostNav) {
 	if !p.IsSetPrevPage() {
-		return PostPageResp_PrevPage_DEFAULT
+		return PostPageResponse_PrevPage_DEFAULT
 	}
 	return p.PrevPage
 }
 
-var PostPageResp_NextPage_DEFAULT *PostNav
+var PostPageResponse_NextPage_DEFAULT *PostNav
 
-func (p *PostPageResp) GetNextPage() (v *PostNav) {
+func (p *PostPageResponse) GetNextPage() (v *PostNav) {
 	if !p.IsSetNextPage() {
-		return PostPageResp_NextPage_DEFAULT
+		return PostPageResponse_NextPage_DEFAULT
 	}
 	return p.NextPage
 }
 
-var PostPageResp_Meta_DEFAULT *PageMeta
+var PostPageResponse_Meta_DEFAULT *PageMeta
 
-func (p *PostPageResp) GetMeta() (v *PageMeta) {
+func (p *PostPageResponse) GetMeta() (v *PageMeta) {
 	if !p.IsSetMeta() {
-		return PostPageResp_Meta_DEFAULT
+		return PostPageResponse_Meta_DEFAULT
 	}
 	return p.Meta
 }
 
-var fieldIDToName_PostPageResp = map[int16]string{
+var fieldIDToName_PostPageResponse = map[int16]string{
 	1:   "Title",
 	2:   "Info",
 	3:   "Content",
@@ -2851,23 +2996,23 @@ var fieldIDToName_PostPageResp = map[int16]string{
 	255: "Meta",
 }
 
-func (p *PostPageResp) IsSetTags() bool {
+func (p *PostPageResponse) IsSetTags() bool {
 	return p.Tags != nil
 }
 
-func (p *PostPageResp) IsSetPrevPage() bool {
+func (p *PostPageResponse) IsSetPrevPage() bool {
 	return p.PrevPage != nil
 }
 
-func (p *PostPageResp) IsSetNextPage() bool {
+func (p *PostPageResponse) IsSetNextPage() bool {
 	return p.NextPage != nil
 }
 
-func (p *PostPageResp) IsSetMeta() bool {
+func (p *PostPageResponse) IsSetMeta() bool {
 	return p.Meta != nil
 }
 
-func (p *PostPageResp) Read(iprot thrift.TProtocol) (err error) {
+func (p *PostPageResponse) Read(iprot thrift.TProtocol) (err error) {
 
 	var fieldTypeId thrift.TType
 	var fieldId int16
@@ -3003,7 +3148,7 @@ ReadStructBeginError:
 ReadFieldBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T read field %d begin error: ", p, fieldId), err)
 ReadFieldError:
-	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_PostPageResp[fieldId]), err)
+	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_PostPageResponse[fieldId]), err)
 SkipFieldError:
 	return thrift.PrependError(fmt.Sprintf("%T field %d skip type %d error: ", p, fieldId, fieldTypeId), err)
 
@@ -3012,10 +3157,10 @@ ReadFieldEndError:
 ReadStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
 RequiredFieldNotSetError:
-	return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field %s is not set", fieldIDToName_PostPageResp[fieldId]))
+	return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field %s is not set", fieldIDToName_PostPageResponse[fieldId]))
 }
 
-func (p *PostPageResp) ReadField1(iprot thrift.TProtocol) error {
+func (p *PostPageResponse) ReadField1(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadString(); err != nil {
 		return err
 	} else {
@@ -3024,7 +3169,7 @@ func (p *PostPageResp) ReadField1(iprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *PostPageResp) ReadField2(iprot thrift.TProtocol) error {
+func (p *PostPageResponse) ReadField2(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadString(); err != nil {
 		return err
 	} else {
@@ -3033,7 +3178,7 @@ func (p *PostPageResp) ReadField2(iprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *PostPageResp) ReadField3(iprot thrift.TProtocol) error {
+func (p *PostPageResponse) ReadField3(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadString(); err != nil {
 		return err
 	} else {
@@ -3042,7 +3187,7 @@ func (p *PostPageResp) ReadField3(iprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *PostPageResp) ReadField4(iprot thrift.TProtocol) error {
+func (p *PostPageResponse) ReadField4(iprot thrift.TProtocol) error {
 	_, size, err := iprot.ReadListBegin()
 	if err != nil {
 		return err
@@ -3064,7 +3209,7 @@ func (p *PostPageResp) ReadField4(iprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *PostPageResp) ReadField5(iprot thrift.TProtocol) error {
+func (p *PostPageResponse) ReadField5(iprot thrift.TProtocol) error {
 	p.PrevPage = NewPostNav()
 	if err := p.PrevPage.Read(iprot); err != nil {
 		return err
@@ -3072,7 +3217,7 @@ func (p *PostPageResp) ReadField5(iprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *PostPageResp) ReadField6(iprot thrift.TProtocol) error {
+func (p *PostPageResponse) ReadField6(iprot thrift.TProtocol) error {
 	p.NextPage = NewPostNav()
 	if err := p.NextPage.Read(iprot); err != nil {
 		return err
@@ -3080,7 +3225,7 @@ func (p *PostPageResp) ReadField6(iprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *PostPageResp) ReadField255(iprot thrift.TProtocol) error {
+func (p *PostPageResponse) ReadField255(iprot thrift.TProtocol) error {
 	p.Meta = NewPageMeta()
 	if err := p.Meta.Read(iprot); err != nil {
 		return err
@@ -3088,9 +3233,9 @@ func (p *PostPageResp) ReadField255(iprot thrift.TProtocol) error {
 	return nil
 }
 
-func (p *PostPageResp) Write(oprot thrift.TProtocol) (err error) {
+func (p *PostPageResponse) Write(oprot thrift.TProtocol) (err error) {
 	var fieldId int16
-	if err = oprot.WriteStructBegin("PostPageResp"); err != nil {
+	if err = oprot.WriteStructBegin("PostPageResponse"); err != nil {
 		goto WriteStructBeginError
 	}
 	if p != nil {
@@ -3141,7 +3286,7 @@ WriteStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write struct end error: ", p), err)
 }
 
-func (p *PostPageResp) writeField1(oprot thrift.TProtocol) (err error) {
+func (p *PostPageResponse) writeField1(oprot thrift.TProtocol) (err error) {
 	if err = oprot.WriteFieldBegin("Title", thrift.STRING, 1); err != nil {
 		goto WriteFieldBeginError
 	}
@@ -3158,7 +3303,7 @@ WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 1 end error: ", p), err)
 }
 
-func (p *PostPageResp) writeField2(oprot thrift.TProtocol) (err error) {
+func (p *PostPageResponse) writeField2(oprot thrift.TProtocol) (err error) {
 	if err = oprot.WriteFieldBegin("Info", thrift.STRING, 2); err != nil {
 		goto WriteFieldBeginError
 	}
@@ -3175,7 +3320,7 @@ WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 2 end error: ", p), err)
 }
 
-func (p *PostPageResp) writeField3(oprot thrift.TProtocol) (err error) {
+func (p *PostPageResponse) writeField3(oprot thrift.TProtocol) (err error) {
 	if err = oprot.WriteFieldBegin("Content", thrift.STRING, 3); err != nil {
 		goto WriteFieldBeginError
 	}
@@ -3192,7 +3337,7 @@ WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 3 end error: ", p), err)
 }
 
-func (p *PostPageResp) writeField4(oprot thrift.TProtocol) (err error) {
+func (p *PostPageResponse) writeField4(oprot thrift.TProtocol) (err error) {
 	if p.IsSetTags() {
 		if err = oprot.WriteFieldBegin("Tags", thrift.LIST, 4); err != nil {
 			goto WriteFieldBeginError
@@ -3219,7 +3364,7 @@ WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 4 end error: ", p), err)
 }
 
-func (p *PostPageResp) writeField5(oprot thrift.TProtocol) (err error) {
+func (p *PostPageResponse) writeField5(oprot thrift.TProtocol) (err error) {
 	if p.IsSetPrevPage() {
 		if err = oprot.WriteFieldBegin("PrevPage", thrift.STRUCT, 5); err != nil {
 			goto WriteFieldBeginError
@@ -3238,7 +3383,7 @@ WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 5 end error: ", p), err)
 }
 
-func (p *PostPageResp) writeField6(oprot thrift.TProtocol) (err error) {
+func (p *PostPageResponse) writeField6(oprot thrift.TProtocol) (err error) {
 	if p.IsSetNextPage() {
 		if err = oprot.WriteFieldBegin("NextPage", thrift.STRUCT, 6); err != nil {
 			goto WriteFieldBeginError
@@ -3257,7 +3402,7 @@ WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 6 end error: ", p), err)
 }
 
-func (p *PostPageResp) writeField255(oprot thrift.TProtocol) (err error) {
+func (p *PostPageResponse) writeField255(oprot thrift.TProtocol) (err error) {
 	if err = oprot.WriteFieldBegin("Meta", thrift.STRUCT, 255); err != nil {
 		goto WriteFieldBeginError
 	}
@@ -3274,11 +3419,11 @@ WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 255 end error: ", p), err)
 }
 
-func (p *PostPageResp) String() string {
+func (p *PostPageResponse) String() string {
 	if p == nil {
 		return "<nil>"
 	}
-	return fmt.Sprintf("PostPageResp(%+v)", *p)
+	return fmt.Sprintf("PostPageResponse(%+v)", *p)
 }
 
 type PageService interface {
@@ -3304,7 +3449,7 @@ type PageService interface {
 	// ==============单页面=================
 	SearchPage(ctx context.Context) (r *BasicPageResp, err error)
 	// ==============文章页=================
-	PostPage(ctx context.Context) (r *PostPageResp, err error)
+	PostPage(ctx context.Context, request *PostPageRequest) (r *PostPageResponse, err error)
 }
 
 type PageServiceClient struct {
@@ -3413,8 +3558,9 @@ func (p *PageServiceClient) SearchPage(ctx context.Context) (r *BasicPageResp, e
 	}
 	return _result.GetSuccess(), nil
 }
-func (p *PageServiceClient) PostPage(ctx context.Context) (r *PostPageResp, err error) {
+func (p *PageServiceClient) PostPage(ctx context.Context, request *PostPageRequest) (r *PostPageResponse, err error) {
 	var _args PageServicePostPageArgs
+	_args.Request = request
 	var _result PageServicePostPageResult
 	if err = p.Client_().Call(ctx, "PostPage", &_args, &_result); err != nil {
 		return
@@ -3972,8 +4118,8 @@ func (p *pageServiceProcessorPostPage) Process(ctx context.Context, seqId int32,
 	iprot.ReadMessageEnd()
 	var err2 error
 	result := PageServicePostPageResult{}
-	var retval *PostPageResp
-	if retval, err2 = p.handler.PostPage(ctx); err2 != nil {
+	var retval *PostPageResponse
+	if retval, err2 = p.handler.PostPage(ctx, args.Request); err2 != nil {
 		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing PostPage: "+err2.Error())
 		oprot.WriteMessageBegin("PostPage", thrift.EXCEPTION, seqId)
 		x.Write(oprot)
@@ -6282,13 +6428,29 @@ func (p *PageServiceSearchPageResult) String() string {
 }
 
 type PageServicePostPageArgs struct {
+	Request *PostPageRequest `thrift:"request,1"`
 }
 
 func NewPageServicePostPageArgs() *PageServicePostPageArgs {
 	return &PageServicePostPageArgs{}
 }
 
-var fieldIDToName_PageServicePostPageArgs = map[int16]string{}
+var PageServicePostPageArgs_Request_DEFAULT *PostPageRequest
+
+func (p *PageServicePostPageArgs) GetRequest() (v *PostPageRequest) {
+	if !p.IsSetRequest() {
+		return PageServicePostPageArgs_Request_DEFAULT
+	}
+	return p.Request
+}
+
+var fieldIDToName_PageServicePostPageArgs = map[int16]string{
+	1: "request",
+}
+
+func (p *PageServicePostPageArgs) IsSetRequest() bool {
+	return p.Request != nil
+}
 
 func (p *PageServicePostPageArgs) Read(iprot thrift.TProtocol) (err error) {
 
@@ -6307,8 +6469,22 @@ func (p *PageServicePostPageArgs) Read(iprot thrift.TProtocol) (err error) {
 		if fieldTypeId == thrift.STOP {
 			break
 		}
-		if err = iprot.Skip(fieldTypeId); err != nil {
-			goto SkipFieldTypeError
+
+		switch fieldId {
+		case 1:
+			if fieldTypeId == thrift.STRUCT {
+				if err = p.ReadField1(iprot); err != nil {
+					goto ReadFieldError
+				}
+			} else {
+				if err = iprot.Skip(fieldTypeId); err != nil {
+					goto SkipFieldError
+				}
+			}
+		default:
+			if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
 		}
 
 		if err = iprot.ReadFieldEnd(); err != nil {
@@ -6324,8 +6500,10 @@ ReadStructBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T read struct begin error: ", p), err)
 ReadFieldBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T read field %d begin error: ", p, fieldId), err)
-SkipFieldTypeError:
-	return thrift.PrependError(fmt.Sprintf("%T skip field type %d error", p, fieldTypeId), err)
+ReadFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_PageServicePostPageArgs[fieldId]), err)
+SkipFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T field %d skip type %d error: ", p, fieldId, fieldTypeId), err)
 
 ReadFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T read field end error", p), err)
@@ -6333,11 +6511,24 @@ ReadStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
 }
 
+func (p *PageServicePostPageArgs) ReadField1(iprot thrift.TProtocol) error {
+	p.Request = NewPostPageRequest()
+	if err := p.Request.Read(iprot); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (p *PageServicePostPageArgs) Write(oprot thrift.TProtocol) (err error) {
+	var fieldId int16
 	if err = oprot.WriteStructBegin("PostPage_args"); err != nil {
 		goto WriteStructBeginError
 	}
 	if p != nil {
+		if err = p.writeField1(oprot); err != nil {
+			fieldId = 1
+			goto WriteFieldError
+		}
 
 	}
 	if err = oprot.WriteFieldStop(); err != nil {
@@ -6349,10 +6540,29 @@ func (p *PageServicePostPageArgs) Write(oprot thrift.TProtocol) (err error) {
 	return nil
 WriteStructBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+WriteFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T write field %d error: ", p, fieldId), err)
 WriteFieldStopError:
 	return thrift.PrependError(fmt.Sprintf("%T write field stop error: ", p), err)
 WriteStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write struct end error: ", p), err)
+}
+
+func (p *PageServicePostPageArgs) writeField1(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("request", thrift.STRUCT, 1); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := p.Request.Write(oprot); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 1 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 1 end error: ", p), err)
 }
 
 func (p *PageServicePostPageArgs) String() string {
@@ -6363,16 +6573,16 @@ func (p *PageServicePostPageArgs) String() string {
 }
 
 type PageServicePostPageResult struct {
-	Success *PostPageResp `thrift:"success,0,optional"`
+	Success *PostPageResponse `thrift:"success,0,optional"`
 }
 
 func NewPageServicePostPageResult() *PageServicePostPageResult {
 	return &PageServicePostPageResult{}
 }
 
-var PageServicePostPageResult_Success_DEFAULT *PostPageResp
+var PageServicePostPageResult_Success_DEFAULT *PostPageResponse
 
-func (p *PageServicePostPageResult) GetSuccess() (v *PostPageResp) {
+func (p *PageServicePostPageResult) GetSuccess() (v *PostPageResponse) {
 	if !p.IsSetSuccess() {
 		return PageServicePostPageResult_Success_DEFAULT
 	}
@@ -6447,7 +6657,7 @@ ReadStructEndError:
 }
 
 func (p *PageServicePostPageResult) ReadField0(iprot thrift.TProtocol) error {
-	p.Success = NewPostPageResp()
+	p.Success = NewPostPageResponse()
 	if err := p.Success.Read(iprot); err != nil {
 		return err
 	}

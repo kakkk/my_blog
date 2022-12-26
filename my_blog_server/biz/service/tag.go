@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"fmt"
 
 	"my_blog/biz/common/consts"
 	"my_blog/biz/common/log"
@@ -146,4 +147,22 @@ func GetTagListAPI(ctx context.Context, req *api.GetTagListAPIRequest) (*api.Get
 		TagList:  tagList,
 		BaseResp: resp.NewSuccessBaseResp(),
 	}, nil
+}
+
+func getTagListByArticleID(ctx context.Context, articleID int64) ([]string, error) {
+	db := mysql.GetDB(ctx)
+	// 获取标签
+	tagIDs, err := mysql.SelectTagIDsByArticleID(db, articleID)
+	if err != nil {
+		return nil, fmt.Errorf("select tag_id error:[%v]", err)
+	}
+	tagMap, err := mysql.MSelectTagByID(db, tagIDs)
+	if err != nil {
+		return nil, fmt.Errorf("select tag error:[%v]", err)
+	}
+	var tagList []string
+	for _, tag := range tagMap {
+		tagList = append(tagList, tag.TagName)
+	}
+	return tagList, nil
 }

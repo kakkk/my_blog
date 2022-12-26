@@ -6,6 +6,10 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+const (
+	DefaultUserName = "kakkk"
+)
+
 var conf *Config
 
 type Config struct {

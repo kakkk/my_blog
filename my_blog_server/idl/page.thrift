@@ -89,7 +89,12 @@ struct PostNav {
     2: required string Title
 }
 
-struct PostPageResp {
+struct PostPageRequest {
+    1: required i64 ID (api.path="post_id")
+
+}
+
+struct PostPageResponse {
     1: required string Title
     2: required string Info
     3: required string Content
@@ -124,8 +129,6 @@ service PageService {
     BasicPageResp SearchPage() (api.get="/search")
 
     // ==============文章页=================
-    PostPageResp PostPage() (api.get="/archives/:id")
-
-
+    PostPageResponse PostPage(1: PostPageRequest request) (api.get="/archives/:post_id")
 
 }

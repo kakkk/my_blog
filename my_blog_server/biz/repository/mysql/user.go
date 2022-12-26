@@ -29,3 +29,19 @@ func SelectUserByID(db *gorm.DB, userID int64) (*entity.User, error) {
 	}
 	return user, nil
 }
+
+func MSelectUserByIDs(db *gorm.DB, userIDs []int64) (map[int64]*entity.User, error) {
+	var users []*entity.User
+	err := db.Model(&entity.User{}).
+		Where("id in (?)", userIDs).
+		First(&users).
+		Error
+	if err != nil {
+		return nil, parseError(err)
+	}
+	result := make(map[int64]*entity.User, len(userIDs))
+	for _, user := range users {
+		result[user.ID] = user
+	}
+	return result, nil
+}

@@ -19,8 +19,8 @@ func (Category) TableName() string {
 }
 
 type ArticleCategory struct {
-	PostID     int               `gorm:"column:article_id"`
-	CategoryID int               `gorm:"column:category_id"`
+	PostID     int64             `gorm:"column:article_id"`
+	CategoryID int64             `gorm:"column:category_id"`
 	DeleteFlag common.DeleteFlag `gorm:"column:delete_flag"`
 }
 

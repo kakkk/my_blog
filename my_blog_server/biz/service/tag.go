@@ -77,7 +77,7 @@ func DeleteTagAPI(ctx context.Context, req *api.DeleteTagAPIRequest) (*api.Commo
 		}, nil
 	}
 
-	err = mysql.DeleteTagArticleByTagID(tx, req.GetID())
+	err = mysql.DeleteArticleTagRelationByTagID(tx, req.GetID())
 	if err != nil {
 		logger.Errorf("delete article_tag fail, error:[%v]", err)
 		tx.Rollback()

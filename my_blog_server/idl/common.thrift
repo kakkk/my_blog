@@ -13,6 +13,7 @@ enum RespCode {
     Fail            = 1         // 失败
     LoginFail       = 200001    // 登录失败
     HasExist        = 200002    // 已存在
+    NotFound        = 200003    // 不存在
     ParameterError  = 400000    // 参数错误
     Unauthorized    = 400100    // 未登录
     InternalError   = 500000    // 服务错误
@@ -20,7 +21,8 @@ enum RespCode {
 
 // =========Extra信息===========
 enum ExtraInfo {
-    CategoryOrder = 1 // 分类排序
+    CategoryOrder   = 1     // 分类排序
+    DefaultCategory = 2     // 默认分类
 }
 
 //==========文章相关============
@@ -32,7 +34,7 @@ enum ArticleType {
 
 enum ArticleStatus {
     DRAFT   = 1     // 草稿
-    PUBLIST = 2     // 发布
+    PUBLISH = 2     // 发布
     OFFLINE = 3     // 下线
     DELETE  = 4     // 删除
 }

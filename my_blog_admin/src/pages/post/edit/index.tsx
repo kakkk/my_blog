@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Dayjs } from 'dayjs';
 import {
   Breadcrumb,
   Button,
   Card,
   Checkbox,
-  DatePicker,
   Form,
   Input,
   Message,
@@ -15,14 +13,13 @@ import {
 import Editor, { Themes } from 'md-editor-rt';
 import { useSelector } from 'react-redux';
 import { IconClose } from '@arco-design/web-react/icon';
-import { dayjs } from '@arco-design/web-react/es/_util/dayjs';
 import styles from './style/index.module.less';
 import 'md-editor-rt/lib/style.css';
 
 import { ReducerState } from '../../../redux';
 import { getCategoryList } from '../../../api/category';
 import { getTagList } from '../../../api/tag';
-import { addPost, getPost, updatePost, updatePostPublish } from '../../../api/post';
+import { addPost, getPost, updatePost, updatePostStatus } from '../../../api/post';
 import getUrlParams from '../../../utils/getUrlParams';
 import history from '../../../history';
 
@@ -36,8 +33,6 @@ export default function PostEdit(props) {
   const [title, setTitle] = useState('');
   const [categories, setCategories] = useState([] as number[]);
   const [label, setLabel] = useState([] as string[]);
-  const [publishAt, setPublishAt] = useState(null as Dayjs);
-  const [publish, setPublish] = useState(false);
   const fetchData = async (id: number) => {
     try {
       const res: any = await getPost(id);
@@ -45,17 +40,15 @@ export default function PostEdit(props) {
         setTitle(res.data.title);
         setText(res.data.content);
         const cts: number[] = new Array(0);
-        for (const category of res.data.categories) {
+        for (const category of res.data.category_list) {
           cts.push(category.id);
         }
         setCategories(cts);
         const ls: string[] = new Array(0);
         for (const tag of res.data.tags) {
-          ls.push(tag.name);
+          ls.push(tag);
         }
         setLabel(ls);
-        setPublishAt(dayjs.unix(res.data.publish_at));
-        setPublish(res.data.publish);
       } else {
         Message.error(res.msg);
       }
@@ -65,10 +58,10 @@ export default function PostEdit(props) {
 
   const getCategory = async () => {
     try {
-      const res: any = await getCategoryList(-1);
+      const res: any = await getCategoryList();
       if (res.code === 0) {
         const options: { label: string; value: number }[] = new Array(0);
-        for (const c of res.data) {
+        for (const c of res.data.category_list) {
           options.push({ label: c.name, value: c.id });
         }
         setCategoryOptions(options);
@@ -86,20 +79,15 @@ export default function PostEdit(props) {
     }
   }, [props.location]);
 
-  const onUpdate = async () => {
+  const onUpdate = async (publish: boolean) => {
     try {
-      const res: any = await updatePost(
-        getUrlParams().id,
-        title,
-        text,
-        categories,
-        label,
-        publishAt.unix()
-      );
+      const res: any = await updatePost(getUrlParams().id, title, text, categories, label);
       if (res.code === 0) {
+        if (publish) {
+          await updatePostStatus(getUrlParams().id, 2);
+        }
         Message.success('保存成功');
         setVisible(false);
-        await updatePostPublish(getUrlParams().id, publish);
       } else {
         Message.error(res.msg);
       }
@@ -109,12 +97,11 @@ export default function PostEdit(props) {
 
   const onPublish = async () => {
     if (getUrlParams().id) {
-      setPublish(true);
-      await onUpdate();
+      await onUpdate(true);
       return;
     }
     try {
-      const res: any = await addPost(title, text, true, categories, label, publishAt.unix());
+      const res: any = await addPost(title, text, true, categories, label);
       if (res.code === 0) {
         Message.success('发布成功');
         setVisible(false);
@@ -128,14 +115,15 @@ export default function PostEdit(props) {
 
   const onSave = async () => {
     if (getUrlParams().id) {
-      await onUpdate();
+      await onUpdate(false);
       return;
     }
     try {
-      const res: any = await addPost(title, text, false, categories, label, publishAt.unix());
+      const res: any = await addPost(title, text, false, categories, label);
       if (res.code === 0) {
         Message.success('保存成功');
         setVisible(false);
+        history.push(`/post/edit?id=${res.data.id}`);
       } else {
         Message.error(res.msg);
       }
@@ -151,7 +139,7 @@ export default function PostEdit(props) {
           setLabelOptions([]);
         }
         const options: string[] = new Array(0);
-        for (const tag of res.data) {
+        for (const tag of res.data.tag_list) {
           options.push(tag.name);
         }
         setLabelOptions(options);
@@ -237,16 +225,6 @@ export default function PostEdit(props) {
                           if (!visible) {
                             setLabelOptions([]);
                           }
-                        }}
-                      />
-                    </FormItem>
-                    <FormItem label="发布日期">
-                      <DatePicker
-                        style={{ width: '100%' }}
-                        showTime
-                        value={publishAt}
-                        onChange={(_, date) => {
-                          setPublishAt(date);
                         }}
                       />
                     </FormItem>

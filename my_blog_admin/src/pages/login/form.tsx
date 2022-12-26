@@ -64,7 +64,7 @@ export default function LoginForm() {
 
   return (
     <div className={styles['login-form-wrapper']}>
-      <div className={styles['login-form-title']}>dBlog Login</div>
+      <div className={styles['login-form-title']}>Admin Login</div>
       <div className={styles['login-form-error-msg']}>{errorMessage}</div>
       <Form className={styles['login-form']} layout="vertical" ref={formRef}>
         <Form.Item field="userName" rules={[{ required: true, message: '用户名不能为空' }]}>

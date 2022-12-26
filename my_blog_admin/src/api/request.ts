@@ -27,12 +27,13 @@ export const request = (config) => {
     (res) => {
       console.log('res-------', res);
       if (!(res.data.code === 0)) {
-        Notification.error({ title: '权限错误', content: res.data.msg });
         switch (res.data.code) {
           case 400100:
+            Notification.error({ title: '登录已过期', content: res.data.msg });
             location.href = '/login';
             break;
           default:
+            Notification.error({ title: '操作失败', content: res.data.msg });
             break;
         }
       }

@@ -57,6 +57,7 @@ const (
 	RespCode_Fail           RespCode = 1
 	RespCode_LoginFail      RespCode = 200001
 	RespCode_HasExist       RespCode = 200002
+	RespCode_NotFound       RespCode = 200003
 	RespCode_ParameterError RespCode = 400000
 	RespCode_Unauthorized   RespCode = 400100
 	RespCode_InternalError  RespCode = 500000
@@ -72,6 +73,8 @@ func (p RespCode) String() string {
 		return "LoginFail"
 	case RespCode_HasExist:
 		return "HasExist"
+	case RespCode_NotFound:
+		return "NotFound"
 	case RespCode_ParameterError:
 		return "ParameterError"
 	case RespCode_Unauthorized:
@@ -92,6 +95,8 @@ func RespCodeFromString(s string) (RespCode, error) {
 		return RespCode_LoginFail, nil
 	case "HasExist":
 		return RespCode_HasExist, nil
+	case "NotFound":
+		return RespCode_NotFound, nil
 	case "ParameterError":
 		return RespCode_ParameterError, nil
 	case "Unauthorized":
@@ -120,13 +125,16 @@ func (p *RespCode) Value() (driver.Value, error) {
 type ExtraInfo int64
 
 const (
-	ExtraInfo_CategoryOrder ExtraInfo = 1
+	ExtraInfo_CategoryOrder   ExtraInfo = 1
+	ExtraInfo_DefaultCategory ExtraInfo = 2
 )
 
 func (p ExtraInfo) String() string {
 	switch p {
 	case ExtraInfo_CategoryOrder:
 		return "CategoryOrder"
+	case ExtraInfo_DefaultCategory:
+		return "DefaultCategory"
 	}
 	return "<UNSET>"
 }
@@ -135,6 +143,8 @@ func ExtraInfoFromString(s string) (ExtraInfo, error) {
 	switch s {
 	case "CategoryOrder":
 		return ExtraInfo_CategoryOrder, nil
+	case "DefaultCategory":
+		return ExtraInfo_DefaultCategory, nil
 	}
 	return ExtraInfo(0), fmt.Errorf("not a valid ExtraInfo string")
 }
@@ -200,7 +210,7 @@ type ArticleStatus int64
 
 const (
 	ArticleStatus_DRAFT   ArticleStatus = 1
-	ArticleStatus_PUBLIST ArticleStatus = 2
+	ArticleStatus_PUBLISH ArticleStatus = 2
 	ArticleStatus_OFFLINE ArticleStatus = 3
 	ArticleStatus_DELETE  ArticleStatus = 4
 )
@@ -209,8 +219,8 @@ func (p ArticleStatus) String() string {
 	switch p {
 	case ArticleStatus_DRAFT:
 		return "DRAFT"
-	case ArticleStatus_PUBLIST:
-		return "PUBLIST"
+	case ArticleStatus_PUBLISH:
+		return "PUBLISH"
 	case ArticleStatus_OFFLINE:
 		return "OFFLINE"
 	case ArticleStatus_DELETE:
@@ -223,8 +233,8 @@ func ArticleStatusFromString(s string) (ArticleStatus, error) {
 	switch s {
 	case "DRAFT":
 		return ArticleStatus_DRAFT, nil
-	case "PUBLIST":
-		return ArticleStatus_PUBLIST, nil
+	case "PUBLISH":
+		return ArticleStatus_PUBLISH, nil
 	case "OFFLINE":
 		return ArticleStatus_OFFLINE, nil
 	case "DELETE":

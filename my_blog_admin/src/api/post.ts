@@ -5,8 +5,7 @@ export async function addPost(
   content: string,
   publish: boolean,
   categoryIds: number[],
-  tags: string[],
-  publishAt: number
+  tags: string[]
 ) {
   return request({
     url: '/admin/post',
@@ -14,10 +13,9 @@ export async function addPost(
     data: {
       title,
       content,
-      publish,
-      categories_id: categoryIds,
+      category_list: categoryIds,
       tags,
-      publish_at: publishAt,
+      status: publish ? 2 : 1,
     },
   });
 }
@@ -34,8 +32,7 @@ export async function updatePost(
   title: string,
   content: string,
   categoryIds: number[],
-  tags: string[],
-  publishAt: number
+  tags: string[]
 ) {
   return request({
     url: `/admin/post/${id}`,
@@ -43,27 +40,39 @@ export async function updatePost(
     data: {
       title,
       content,
-      categories_id: categoryIds,
+      category_list: categoryIds,
       tags,
-      publish_at: publishAt,
     },
   });
 }
 
-export async function updatePostPublish(id: number, publish: boolean) {
+export async function updatePostStatus(id: number, status: number) {
   return request({
-    url: `/admin/post/${id}/publish`,
+    url: `/admin/post/${id}/status`,
     method: 'PUT',
     data: {
-      publish,
+      status,
     },
   });
 }
 
-export async function getPostList(title: string, page: number, limit: number) {
+export async function getPostList(
+  title: string,
+  categories: string[],
+  tags: string[],
+  page: number,
+  limit: number
+) {
   return request({
-    url: `admin/posts?keyword=${title}&page=${page}&limit=${limit}`,
-    method: 'GET',
+    url: `admin/post/list`,
+    method: 'POST',
+    data: {
+      keyword: title,
+      page,
+      limit,
+      categories,
+      tags,
+    },
   });
 }
 

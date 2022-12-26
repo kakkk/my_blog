@@ -140,6 +140,98 @@ struct GetCategoryListAPIResponse {
 }
 
 
+// ==========文章相关=============
+
+// 创建文章
+struct CreatePostAPIRequest {
+    1: required string Title
+    2: required string Content
+    3: required common.ArticleStatus Status
+    4: required list<i64> CategoryList
+    5: required list<string> Tags
+
+}
+
+// 创建文章
+struct CreatePostAPIResponse {
+    1: required i64 ID
+
+    255: required BaseResp BaseResp (go.tag="json:\"-\"")
+}
+
+// 获取文章
+struct GetPostAPIRequest {
+    1: required i64 ID (api.path="post_id")
+}
+
+// 获取文章 - 分类
+struct CategoriesItem {
+    1: required i64 ID
+    2: required string Name
+}
+
+// 获取文章
+struct GetPostAPIResponse {
+    1: required i64 ID
+    2: required string Title
+    3: required string Content
+    4: required common.ArticleStatus Status
+    5: required list<CategoriesItem> CategoryList
+    6: required list<string> Tags
+
+    255: required BaseResp BaseResp (go.tag="json:\"-\"")
+}
+
+// 更新文章
+struct UpdatePostAPIRequest {
+    1: required i64 ID (api.path="post_id")
+    2: required string Title
+    3: required string Content
+    4: required list<i64> CategoryList
+    5: required list<string> Tags
+
+}
+
+// 更新文章状态
+struct UpdatePostStatusAPIRequest {
+    1: required i64 ID (api.path="post_id")
+    2: required common.ArticleStatus Status
+}
+
+// 获取文章列表
+struct GetPostListAPIRequest {
+    1: optional string Keyword (api.query="keyword")
+    2: optional list<string> Categories (api.query="categories")
+    3: optional list<string> Tags (api.query="tags")
+    4: optional i32 Page (api.query="page")
+    5: optional i32 Limit (api.query="limit")
+}
+
+// 文章列表
+struct PostListItem {
+    1: required i64 ID
+    2: required string Title
+    3: required list<string> CategoryList
+    4: required string Editor
+    5: required common.ArticleStatus Status
+    6: required i64 PV
+    7: required i64 UpdateAt
+    8: required i64 PublishAt
+
+}
+
+// 获取文章列表
+struct GetPostListAPIResponse {
+    1: required Pagination Pagination
+    2: optional list<PostListItem> PostList
+
+    255: required BaseResp BaseResp (go.tag="json:\"-\"")
+}
+
+// 删除文章
+struct DeletePostAPIRequest {
+    1: required i64 ID (api.path="post_id")
+}
 
 
 service APIService {
@@ -168,4 +260,17 @@ service APIService {
     CommonResponse UpdateCategoryOrderAPI(1:UpdateCategoryOrderAPIRequest request) (api.put="/api/admin/category/order")
     // 获取分类列表
     GetCategoryListAPIResponse GetCategoryListAPI() (api.get="/api/admin/category/list")
+    // ==========文章相关=============
+    // 创建文章
+    CreatePostAPIResponse CreatePostAPI(1:CreatePostAPIRequest request) (api.post="/api/admin/post")
+    // 获取文章
+    GetPostAPIResponse GetPostAPI(1:GetPostAPIRequest request) (api.get="/api/admin/post/:post_id")
+    // 更新文章
+    CommonResponse UpdatePostAPI(1:UpdatePostAPIRequest request) (api.put="/api/admin/post/:post_id")
+    // 更新文章状态
+    CommonResponse UpdatePostStatusAPI(1:UpdatePostStatusAPIRequest request) (api.put="/api/admin/post/:post_id/status")
+    // 获取文章列表
+    GetPostListAPIResponse GetPostListAPI(1:GetPostListAPIRequest request) (api.post="/api/admin/post/list")
+    // 删除文章
+    CommonResponse DeletePostAPI(1:DeletePostAPIRequest request) (api.delete="/api/admin/post/:post_id")
 }

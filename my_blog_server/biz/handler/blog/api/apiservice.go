@@ -76,3 +76,39 @@ func UpdateCategoryOrderAPI(ctx context.Context, c *app.RequestContext) {
 func GetCategoryListAPI(ctx context.Context, c *app.RequestContext) {
 	c.JSON(facade.GetCategoryListAPI(ctx, c))
 }
+
+// CreatePostAPI .
+// @router /api/admin/post [POST]
+func CreatePostAPI(ctx context.Context, c *app.RequestContext) {
+	c.JSON(facade.CreatePostAPI(ctx, c))
+}
+
+// GetPostAPI .
+// @router /api/admin/post [GET]
+func GetPostAPI(ctx context.Context, c *app.RequestContext) {
+	c.JSON(facade.GetPostAPI(ctx, c))
+}
+
+// UpdatePostAPI .
+// @router /api/admin/post/:post_id [PUT]
+func UpdatePostAPI(ctx context.Context, c *app.RequestContext) {
+	c.JSON(facade.UpdatePostAPI(ctx, c))
+}
+
+// UpdatePostStatusAPI .
+// @router /api/admin/post/:post_id/status [PUT]
+func UpdatePostStatusAPI(ctx context.Context, c *app.RequestContext) {
+	c.JSON(facade.UpdatePostStatusAPI(ctx, c))
+}
+
+// GetPostListAPI .
+// @router /api/admin/post/list [POST]
+func GetPostListAPI(ctx context.Context, c *app.RequestContext) {
+	c.JSON(facade.GetPostListAPI(ctx, c))
+}
+
+// DeletePostAPI .
+// @router /api/admin/post/:post_id [DELETE]
+func DeletePostAPI(ctx context.Context, c *app.RequestContext) {
+	c.JSON(facade.DeletePostAPI(ctx, c))
+}

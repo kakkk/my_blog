@@ -18,8 +18,8 @@ func (Tag) TableName() string {
 }
 
 type ArticleTag struct {
-	PostID     int               `gorm:"column:article_id"`
-	TagID      int               `gorm:"column:tag_id"`
+	PostID     int64             `gorm:"column:article_id"`
+	TagID      int64             `gorm:"column:tag_id"`
 	DeleteFlag common.DeleteFlag `gorm:"column:delete_flag"`
 }
 

@@ -90,3 +90,40 @@ func _updatecategoryorder_piMw() []app.HandlerFunc {
 	// your code...
 	return nil
 }
+
+func _getpost_piMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _postMw() []app.HandlerFunc {
+	// your code...
+	return []app.HandlerFunc{
+		middleware.SessionAuthMW(),
+	}
+}
+
+func _updatepost_piMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _post_idMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _updatepoststatus_piMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _getpostlist_piMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _deletepost_piMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}

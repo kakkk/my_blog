@@ -336,7 +336,14 @@ export default function PostList(props) {
               boxSizing: 'border-box',
             }}
           >
-            <Button type="primary">添加文章</Button>
+            <Button
+              type="primary"
+              onClick={() => {
+                history.push('/post/edit');
+              }}
+            >
+              添加文章
+            </Button>
           </div>
           <Form
             labelAlign="left"

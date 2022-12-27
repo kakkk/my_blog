@@ -185,6 +185,7 @@ func SelectArticleIDsByCategoryIDs(db *gorm.DB, categoryIDs []int64) ([]int64, e
 	err := db.Model(&entity.ArticleCategory{}).
 		Select("article_id").
 		Where("category_id in (?)", categoryIDs).
+		Where("delete_flag = ?", common.DeleteFlag_Exist).
 		Find(&results).Error
 	if err != nil {
 		return nil, parseError(err)

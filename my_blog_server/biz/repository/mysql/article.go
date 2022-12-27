@@ -96,7 +96,7 @@ func SearchPostListByLimit(db *gorm.DB, keyword *string, ids []int64, page *int3
 	}
 	err := tx.Limit(limit).
 		Offset(offset).
-		Order("update_at desc").
+		Order("id desc").
 		Find(&result).Error
 	if err != nil {
 		return nil, parseError(err)

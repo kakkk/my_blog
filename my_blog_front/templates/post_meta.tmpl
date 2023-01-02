@@ -1,0 +1,58 @@
+{{define "post_meta"}}
+    <style >
+
+    </style>
+    <ul class="meta-info">
+
+        <li class="meta-author">
+            <span class="post-icons">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16px" height="16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            </span>
+            <span class="meta-value">
+                {{.Info.Author}}
+            </span>
+        </li>
+
+        <li class="meta-time">
+            <span class="post-icons">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16px" height="16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-clock"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            </span>
+            <span class="meta-value">
+                {{.Info.PublishAt}}
+            </span>
+        </li>
+
+        <li class="meta-view">
+            <span class="post-icons">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16px" height="16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-eye"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            </span>
+            <span class="meta-value">
+                {{.Info.UV}}
+            </span>
+        </li>
+
+        <li class="meta-word">
+            <span class="post-icons">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16px" height="16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-pen-tool"><path d="M12 19l7-7 3 3-7 7-3-3z"></path><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path><path d="M2 2l7.586 7.586"></path><circle cx="11" cy="11" r="2"></circle></svg>
+            </span>
+            <span class="meta-value">
+                {{.Info.WordCount}}
+            </span>
+        </li>
+
+        <li class="meta-category">
+            <span class="post-icons">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16px" height="16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-hash"><line x1="4" y1="9" x2="20" y2="9"></line><line x1="4" y1="15" x2="20" y2="15"></line><line x1="10" y1="3" x2="8" y2="21"></line><line x1="16" y1="3" x2="14" y2="21"></line></svg>
+            </span>
+            <span class="meta-value">
+                {{$domain:=.Meta.SiteDomain}}
+                {{- range $index, $category := .Info.CategoryList }}
+                <a href="{{$domain}}/category/{{$category.Slug}}">
+                    {{$category.Name}}
+                </a>
+                {{end}}
+            </span>
+        </li>
+
+    </ul>
+{{end}}

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"io/ioutil"
 
+	"my_blog/biz/common/config"
 	"my_blog/biz/model/blog/page"
 
 	"github.com/russross/blackfriday/v2"
@@ -14,7 +15,8 @@ func PostListPageRespMocker(pageType string, name string, pre string, next strin
 		Meta: &page.PageMeta{
 			Title:       "kakkk's blog",
 			Description: "this is kakkk's blog",
-			SiteDomain:  "http://127.0.0.1:8888",
+			SiteDomain:  config.GetSiteConfig().SiteDomain,
+			CDNDomain:   config.GetSiteConfig().CDNDomain,
 			PageType:    pageType,
 		},
 		Name:     name,
@@ -26,7 +28,7 @@ func PostListPageRespMocker(pageType string, name string, pre string, next strin
 				ID:       "1",
 				Title:    "测试文章",
 				Abstract: "这是一篇测试文章测试一下测试测试测试测试测试测试测试测试测试测试测试测试测试测试测试",
-				Info:     "November 25, 2022 · 1 min · kakkk",
+				Info:     "November 25, 2022 · kakkk",
 			},
 			{
 				ID:       "2",
@@ -61,7 +63,8 @@ func ArchivesPageRespMocker() *page.ArchivesPageResp {
 		Meta: &page.PageMeta{
 			Title:       "kakkk's blog",
 			Description: "this is kakkk's blog",
-			SiteDomain:  "http://127.0.0.1:8888",
+			SiteDomain:  config.GetSiteConfig().SiteDomain,
+			CDNDomain:   config.GetSiteConfig().CDNDomain,
 			PageType:    page.PageTypeArchives,
 		},
 		PostArchives: []*page.ArchiveByYear{
@@ -121,8 +124,9 @@ func TagsMocker() *page.TermsPageResp {
 	return &page.TermsPageResp{
 		Meta: &page.PageMeta{
 			Title:       "kakkk's blog",
-			Description: "this is kakkk's blog",
-			SiteDomain:  "http://127.0.0.1:8888",
+			Description: "test",
+			SiteDomain:  config.GetSiteConfig().SiteDomain,
+			CDNDomain:   config.GetSiteConfig().CDNDomain,
 			PageType:    page.PageTypeTagList,
 		},
 		List: []*page.TermListItem{
@@ -170,7 +174,8 @@ func CategoriesMocker() *page.TermsPageResp {
 		Meta: &page.PageMeta{
 			Title:       "kakkk's blog",
 			Description: "this is kakkk's blog",
-			SiteDomain:  "http://127.0.0.1:8888",
+			SiteDomain:  config.GetSiteConfig().SiteDomain,
+			CDNDomain:   config.GetSiteConfig().CDNDomain,
 			PageType:    page.PageTypeCategoryList,
 		},
 		List: []*page.TermListItem{
@@ -203,7 +208,8 @@ func SearchMocker() *page.BasicPageResp {
 		Meta: &page.PageMeta{
 			Title:       "Search",
 			Description: "search",
-			SiteDomain:  "http://127.0.0.1:8888",
+			SiteDomain:  config.GetSiteConfig().SiteDomain,
+			CDNDomain:   config.GetSiteConfig().CDNDomain,
 			PageType:    page.PageTypeSearch,
 		},
 	}
@@ -232,8 +238,23 @@ func PostPageMocker(id string) *page.PostPageResponse {
 		blackfriday.WithExtensions(blackfriday.CommonExtensions|blackfriday.HardLineBreak),
 	))
 	return &page.PostPageResponse{
-		Title:   "测试文章" + id,
-		Info:    "November 25, 2022 · 1 min · kakkk",
+		Title: "测试文章" + id,
+		Info: &page.PostInfo{
+			Author:    "kakkk",
+			PublishAt: "November 25, 2022",
+			UV:        "20",
+			WordCount: "1024",
+			CategoryList: []*page.TermListItem{
+				{
+					Name: "测试分类",
+					Slug: "test",
+				},
+				{
+					Name: "Golang",
+					Slug: "golang",
+				},
+			},
+		},
 		Content: content,
 		Tags:    []string{"标签", "测试", "Golang"},
 		PrevPage: &page.PostNav{
@@ -247,7 +268,8 @@ func PostPageMocker(id string) *page.PostPageResponse {
 		Meta: &page.PageMeta{
 			Title:       "post page",
 			Description: "post page",
-			SiteDomain:  "http://127.0.0.1:8888",
+			SiteDomain:  config.GetSiteConfig().SiteDomain,
+			CDNDomain:   config.GetSiteConfig().CDNDomain,
 			PageType:    page.PageTypePost,
 		},
 	}

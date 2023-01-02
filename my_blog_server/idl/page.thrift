@@ -94,9 +94,17 @@ struct PostPageRequest {
 
 }
 
+struct PostInfo {
+    1: required string Author
+    2: required string PublishAt
+    3: required string UV
+    4: required string WordCount
+    5: required list<TermListItem> CategoryList
+}
+
 struct PostPageResponse {
     1: required string Title
-    2: required string Info
+    2: required PostInfo Info
     3: required string Content
     4: optional list<string> Tags
     5: optional PostNav PrevPage

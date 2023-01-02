@@ -433,3 +433,36 @@ h6:hover .anchor {
 [dir="rtl"] .paginav .next {
     text-align: left;
 }
+
+.meta-info{
+    display: block;
+    list-style-type: disc;
+    margin-block-start: 1em;
+    margin-block-end: 1em;
+    margin-inline-start: 0;
+    margin-inline-end: 0;
+}
+.meta-info li{
+    display: inline-block;
+
+}
+.meta-author{
+    padding-left: 0;
+    padding-right: 6px;
+}
+.meta-time,.meta-category,.meta-word,.meta-view{
+    padding-right: 6px;
+    padding-left: 6px;
+}
+.post-icons{
+    margin-right: 3px;
+}
+.post-icons svg{
+    width: 14px;
+    height: 14px;
+    vertical-align: -2px;
+}
+.meta-category a{
+    color: var(--secondary);
+    padding-right: 3px;
+}

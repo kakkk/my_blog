@@ -6,7 +6,7 @@ import (
 
 	"my_blog/biz/common/config"
 
-	"github.com/go-redis/redis/v8"
+	"github.com/go-redis/redis/v7"
 )
 
 var (
@@ -20,13 +20,13 @@ func InitRedis() (err error) {
 		Password: conf.Password, // no password set
 		DB:       conf.DB,       // use default DB
 	})
-	_, err = client.Ping(context.Background()).Result()
+	_, err = client.Ping().Result()
 	if err != nil {
 		return
 	}
 	return err
 }
 
-func GetRedisClient() *redis.Client {
-	return client
+func GetRedisClient(ctx context.Context) *redis.Client {
+	return client.WithContext(ctx)
 }

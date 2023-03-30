@@ -12,28 +12,31 @@ type cacheChain struct {
 }
 
 func newCacheChain() *cacheChain {
-	head := &chainNode{}
-	trail := &chainNode{}
+	head := &chainNode{
+		cache: &defaultCache{},
+	}
+	tail := &chainNode{
+		cache: &defaultCache{},
+	}
+	head.next = tail
+	tail.prev = head
 	chain := &cacheChain{
-		head: &chainNode{cache: &defaultCache{}, next: trail},
-		tail: &chainNode{cache: &defaultCache{}, prev: head},
+		head: head,
+		tail: tail,
 	}
 	return chain
 }
 
-func (chain *cacheChain) AddCache(ctx context.Context, name string, isSetDefault bool, args ...Cache) {
-	curr := chain.tail.prev
-	for _, cache := range args {
-		node := &chainNode{
-			cache:        cache,
-			next:         curr.next,
-			prev:         curr,
-			isSetDefault: isSetDefault,
-		}
-		curr.next = node
-		curr = curr.next
-		logger.Infof(ctx, "%v add cache: %v, set_default: %v", name, cache.Name(), isSetDefault)
+func (chain *cacheChain) AddCache(ctx context.Context, name string, isSetDefault bool, cache Cache) {
+	// 用尾插
+	node := &chainNode{
+		cache:        cache,
+		next:         chain.tail,
+		prev:         chain.tail.prev,
+		isSetDefault: isSetDefault,
 	}
+	chain.tail.prev.next = node
+	chain.tail.prev = node
 }
 
 func (chain *cacheChain) CheckCache(ctx context.Context, name string) error {
@@ -47,6 +50,7 @@ func (chain *cacheChain) CheckCache(ctx context.Context, name string) error {
 			return fmt.Errorf("cache ping error: %w", err)
 		}
 		logger.Infof(ctx, "%v ping %v: %v", name, curr.cache.Name(), pong)
+		curr = curr.next
 	}
 	return nil
 }

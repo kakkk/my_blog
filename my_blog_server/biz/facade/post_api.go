@@ -19,7 +19,7 @@ func CreatePostAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIRe
 	}
 
 	rsp := service.CreatePostAPI(ctx, req)
-	return http.StatusOK, resp.NewAPIResponse(rsp.GetBaseResp(), rsp)
+	return http.StatusOK, resp.NewAPIResponse(rsp)
 }
 
 func GetPostAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIResponse) {
@@ -30,7 +30,7 @@ func GetPostAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIRespo
 	}
 
 	rsp := service.GetPostAPI(ctx, req)
-	return http.StatusOK, resp.NewAPIResponse(rsp.GetBaseResp(), rsp)
+	return http.StatusOK, resp.NewAPIResponse(rsp)
 }
 
 func UpdatePostAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIResponse) {
@@ -41,7 +41,7 @@ func UpdatePostAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIRe
 	}
 
 	rsp := service.UpdatePostAPI(ctx, req)
-	return http.StatusOK, resp.NewAPIResponse(rsp.GetBaseResp(), rsp)
+	return http.StatusOK, resp.NewAPIResponse(rsp)
 }
 
 func UpdatePostStatusAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIResponse) {
@@ -52,7 +52,7 @@ func UpdatePostStatusAPI(ctx context.Context, c *app.RequestContext) (int, *resp
 	}
 
 	rsp := service.UpdatePostStatusAPI(ctx, req)
-	return http.StatusOK, resp.NewAPIResponse(rsp.GetBaseResp(), rsp)
+	return http.StatusOK, resp.NewAPIResponse(rsp)
 }
 
 func GetPostListAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIResponse) {
@@ -63,7 +63,7 @@ func GetPostListAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIR
 	}
 
 	rsp := service.GetPostListAPI(ctx, req)
-	return http.StatusOK, resp.NewAPIResponse(rsp.GetBaseResp(), rsp)
+	return http.StatusOK, resp.NewAPIResponse(rsp)
 }
 
 func DeletePostAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIResponse) {
@@ -74,5 +74,5 @@ func DeletePostAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIRe
 	}
 
 	rsp := service.DeletePostAPI(ctx, req)
-	return http.StatusOK, resp.NewAPIResponse(rsp.GetBaseResp(), rsp)
+	return http.StatusOK, resp.NewAPIResponse(rsp)
 }

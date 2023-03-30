@@ -30,10 +30,10 @@ func LoginAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIRespons
 	err = session.Save()
 	if err != nil {
 		log.GetLoggerWithCtx(ctx).Errorf("set session error:[%v]", err)
-		return http.StatusOK, resp.NewAPIResponse(resp.NewFailBaseResp(), nil)
+		return http.StatusOK, resp.NewFailResp()
 	}
 
-	return http.StatusOK, resp.NewAPIResponse(rsp.GetBaseResp(), rsp)
+	return http.StatusOK, resp.NewAPIResponse(rsp)
 }
 
 func GetUserInfoAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIResponse) {
@@ -41,5 +41,5 @@ func GetUserInfoAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIR
 	if err != nil {
 		return http.StatusOK, resp.NewInternalErrorResp()
 	}
-	return http.StatusOK, resp.NewAPIResponse(rsp.GetBaseResp(), rsp)
+	return http.StatusOK, resp.NewAPIResponse(rsp)
 }

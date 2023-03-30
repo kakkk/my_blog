@@ -22,7 +22,7 @@ func CreateTagAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIRes
 	if err != nil {
 		return http.StatusOK, resp.NewInternalErrorResp()
 	}
-	return http.StatusOK, resp.NewAPIResponse(rsp.GetBaseResp(), rsp)
+	return http.StatusOK, resp.NewAPIResponse(rsp)
 
 }
 
@@ -37,7 +37,7 @@ func UpdateTagAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIRes
 	if err != nil {
 		return http.StatusOK, resp.NewInternalErrorResp()
 	}
-	return http.StatusOK, resp.NewAPIResponse(rsp.GetBaseResp(), rsp)
+	return http.StatusOK, resp.NewAPIResponse(rsp)
 }
 
 func DeleteTagAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIResponse) {
@@ -51,7 +51,7 @@ func DeleteTagAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIRes
 	if err != nil {
 		return http.StatusOK, resp.NewInternalErrorResp()
 	}
-	return http.StatusOK, resp.NewAPIResponse(rsp.GetBaseResp(), rsp)
+	return http.StatusOK, resp.NewAPIResponse(rsp)
 }
 
 func GetTagListAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIResponse) {
@@ -65,5 +65,5 @@ func GetTagListAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIRe
 	if err != nil {
 		return http.StatusOK, resp.NewInternalErrorResp()
 	}
-	return http.StatusOK, resp.NewAPIResponse(rsp.GetBaseResp(), rsp)
+	return http.StatusOK, resp.NewAPIResponse(rsp)
 }

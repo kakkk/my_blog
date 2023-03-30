@@ -19,7 +19,7 @@ func CreateCategoryAPI(ctx context.Context, c *app.RequestContext) (int, *resp.A
 	}
 
 	rsp := service.CreateCategoryAPI(ctx, req)
-	return http.StatusOK, resp.NewAPIResponse(rsp.GetBaseResp(), rsp)
+	return http.StatusOK, resp.NewAPIResponse(rsp)
 }
 
 func UpdateCategoryAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIResponse) {
@@ -30,7 +30,7 @@ func UpdateCategoryAPI(ctx context.Context, c *app.RequestContext) (int, *resp.A
 	}
 
 	rsp := service.UpdateCategoryAPI(ctx, req)
-	return http.StatusOK, resp.NewAPIResponse(rsp.GetBaseResp(), rsp)
+	return http.StatusOK, resp.NewAPIResponse(rsp)
 }
 
 func DeleteCategoryAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIResponse) {
@@ -41,7 +41,7 @@ func DeleteCategoryAPI(ctx context.Context, c *app.RequestContext) (int, *resp.A
 	}
 
 	rsp := service.DeleteCategoryAPI(ctx, req)
-	return http.StatusOK, resp.NewAPIResponse(rsp.GetBaseResp(), rsp)
+	return http.StatusOK, resp.NewAPIResponse(rsp)
 }
 
 func UpdateCategoryOrderAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIResponse) {
@@ -52,10 +52,10 @@ func UpdateCategoryOrderAPI(ctx context.Context, c *app.RequestContext) (int, *r
 	}
 
 	rsp := service.UpdateCategoryOrderAPI(ctx, req)
-	return http.StatusOK, resp.NewAPIResponse(rsp.GetBaseResp(), rsp)
+	return http.StatusOK, resp.NewAPIResponse(rsp)
 }
 
 func GetCategoryListAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIResponse) {
 	rsp := service.GetCategoryListAPI(ctx)
-	return http.StatusOK, resp.NewAPIResponse(rsp.GetBaseResp(), rsp)
+	return http.StatusOK, resp.NewAPIResponse(rsp)
 }

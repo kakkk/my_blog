@@ -11,6 +11,10 @@ type APIResponse struct {
 	Data any             `json:"data"`
 }
 
+type IAPIResponse interface {
+	GetBaseResp() (v *api.BaseResp)
+}
+
 func NewBaseResponse(code common.RespCode, msg string) *api.BaseResp {
 	return &api.BaseResp{
 		Code: code,
@@ -18,17 +22,17 @@ func NewBaseResponse(code common.RespCode, msg string) *api.BaseResp {
 	}
 }
 
-func NewAPIResponse(base *api.BaseResp, resp any) *APIResponse {
-	if base.GetCode() != common.RespCode_Success {
+func NewAPIResponse(resp IAPIResponse) *APIResponse {
+	if resp.GetBaseResp().GetCode() != common.RespCode_Success {
 		return &APIResponse{
-			Code: base.Code,
-			Msg:  base.Msg,
+			Code: resp.GetBaseResp().GetCode(),
+			Msg:  resp.GetBaseResp().GetMsg(),
 			Data: nil,
 		}
 	}
 	return &APIResponse{
-		Code: base.Code,
-		Msg:  base.Msg,
+		Code: resp.GetBaseResp().GetCode(),
+		Msg:  resp.GetBaseResp().GetMsg(),
 		Data: resp,
 	}
 }
@@ -45,6 +49,14 @@ func NewParameterErrorResp() *APIResponse {
 	return &APIResponse{
 		Code: common.RespCode_ParameterError,
 		Msg:  "Parameter Error",
+		Data: nil,
+	}
+}
+
+func NewFailResp() *APIResponse {
+	return &APIResponse{
+		Code: common.RespCode_Fail,
+		Msg:  "fail",
 		Data: nil,
 	}
 }

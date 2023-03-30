@@ -55,20 +55,18 @@ func InitLogger(path string, level string) (err error) {
 }
 
 func GetLoggerWithCtx(ctx context.Context) *logrus.Entry {
+	fields := logrus.Fields{}
 	// 从context中获取request_id
 	requestID, ok := ctx.Value("request_id").(string)
-	if !ok {
-		requestID = ""
+	if ok {
+		fields["request_id"] = requestID
 	}
 
 	userID, ok := ctx.Value("user_id").(int64)
-	if !ok {
-		userID = 0
+	if ok {
+		fields["user_id"] = userID
 	}
-	return logger.WithFields(logrus.Fields{
-		"request_id": requestID,
-		"user_id":    userID,
-	})
+	return logger.WithFields(fields)
 }
 
 func GetLogger() *logrus.Logger {

@@ -30,19 +30,19 @@ func (r *RedisCache) Get(ctx context.Context, key string) (*CacheData, error) {
 	val, err := r.redisClient.Get(key).Result()
 	if err != nil {
 		if err == redis.Nil {
-			logger.Info(ctx, fmt.Sprintf("redis cache not found, key:[%v]", key))
+			logger.Debugf(ctx, "redis cache not found, key:[%v]", key)
 			return nil, ErrNotFound
 		}
-		logger.Error(ctx, fmt.Sprintf("redis cache get fail, key[%v], error:[%v]", key, err))
+		logger.Errorf(ctx, "redis cache get fail, key[%v], error:[%v]", key, err)
 		return nil, ErrCacheError
 	}
 	data, err := r.unmarshal(val)
 	if err != nil {
-		logger.Error(ctx, fmt.Sprintf("redis cache unmarshal fail, key[%v], error:[%v]", key, err))
+		logger.Errorf(ctx, "redis cache unmarshal fail, key[%v], error:[%v]", key, err)
 		return nil, ErrCacheError
 	}
 	if r.isExpired(data.CreateAt, now) {
-		logger.Info(ctx, fmt.Sprintf("redis chache expired, key:[%v]", key))
+		logger.Debugf(ctx, "redis cache expired, key:[%v]", key)
 		_ = r.Delete(ctx, key)
 		return nil, ErrNotFound
 	}
@@ -54,23 +54,23 @@ func (r *RedisCache) MGet(ctx context.Context, keys []string) (map[string]*Cache
 	now := time.Now().UnixMilli()
 	values, err := r.redisClient.MGet(keys...).Result()
 	if err != nil {
-		logger.Error(ctx, fmt.Sprintf("redis cache mget fail, error:[%v]", err))
+		logger.Errorf(ctx, "redis cache mget fail, error:[%v]", err)
 		return nil, ErrCacheError
 	}
 	result := make(map[string]*CacheData, len(keys))
 	for i, key := range keys {
 		val, ok := values[i].(string)
 		if !ok {
-			logger.Info(ctx, fmt.Sprintf("redis cache not found, key:[%v]", key))
+			logger.Debugf(ctx, "redis cache not found, key:[%v]", key)
 			continue
 		}
 		res, err := r.unmarshal(val)
 		if err != nil {
-			logger.Error(ctx, fmt.Sprintf("redis cache unmarshal fail, key[%v], error:[%v]", key, err))
+			logger.Errorf(ctx, "redis cache unmarshal fail, key[%v], error:[%v]", key, err)
 			continue
 		}
 		if r.isExpired(res.CreateAt, now) {
-			logger.Info(ctx, fmt.Sprintf("redis chache expired, key:[%v]", key))
+			logger.Debugf(ctx, "redis cache expired, key:[%v]", key)
 			_ = r.Delete(ctx, key)
 			continue
 		}
@@ -82,7 +82,7 @@ func (r *RedisCache) MGet(ctx context.Context, keys []string) (map[string]*Cache
 func (r *RedisCache) Set(ctx context.Context, key string, data *CacheData) error {
 	err := r.redisClient.Set(key, r.marshal(data), r.ttl).Err()
 	if err != nil {
-		logger.Error(ctx, fmt.Sprintf("redis cache set fail, key:[%v], error:[%v]", key, err))
+		logger.Errorf(ctx, "redis cache set fail, key:[%v], error:[%v]", key, err)
 		return ErrCacheError
 	}
 	return nil
@@ -93,7 +93,7 @@ func (r *RedisCache) MSet(ctx context.Context, kvs map[string]*CacheData) error 
 	defer func(pipe redis.Pipeliner) {
 		err := pipe.Close()
 		if err != nil {
-			logger.Error(ctx, fmt.Sprintf("redis pipeline close fail, error:[%v]", err))
+			logger.Errorf(ctx, "redis pipeline close fail, error:[%v]", err)
 		}
 	}(pipe)
 	for k, v := range kvs {
@@ -101,7 +101,7 @@ func (r *RedisCache) MSet(ctx context.Context, kvs map[string]*CacheData) error 
 	}
 	_, err := pipe.Exec()
 	if err != nil {
-		logger.Error(ctx, fmt.Sprintf("redis pipeline exec fail, error:[%v]", err))
+		logger.Errorf(ctx, "redis pipeline exec fail, error:[%v]", err)
 		return ErrCacheError
 	}
 	return nil
@@ -110,7 +110,7 @@ func (r *RedisCache) MSet(ctx context.Context, kvs map[string]*CacheData) error 
 func (r *RedisCache) Delete(ctx context.Context, key string) error {
 	err := r.redisClient.Del(key).Err()
 	if err != nil {
-		logger.Error(ctx, fmt.Sprintf("redis delete fail, error:[%v]", err))
+		logger.Errorf(ctx, "redis delete fail, error:[%v]", err)
 		return ErrCacheError
 	}
 	return nil
@@ -119,7 +119,7 @@ func (r *RedisCache) Delete(ctx context.Context, key string) error {
 func (r *RedisCache) MDelete(ctx context.Context, keys []string) error {
 	err := r.redisClient.Del(keys...).Err()
 	if err != nil {
-		logger.Error(ctx, fmt.Sprintf("redis delete fail, error:[%v]", err))
+		logger.Errorf(ctx, "redis delete fail, error:[%v]", err)
 		return ErrCacheError
 	}
 	return nil

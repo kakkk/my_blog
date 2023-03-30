@@ -49,32 +49,32 @@ func (chain *cacheChain) CheckCache(ctx context.Context, name string) error {
 		if err != nil {
 			return fmt.Errorf("cache ping error: %w", err)
 		}
-		logger.Infof(ctx, "%v ping %v: %v", name, curr.cache.Name(), pong)
+		logger.Infof(ctx, "cachex [%v] ping [%v]: [%v]", name, curr.cache.Name(), pong)
 		curr = curr.next
 	}
 	return nil
 }
 
 func (chain *cacheChain) Get(ctx context.Context, key string) (*CacheData, error) {
-	return chain.head.Get(ctx, key)
+	return chain.head.next.Get(ctx, key)
 }
 
 func (chain *cacheChain) MGet(ctx context.Context, keys []string) (map[string]*CacheData, error) {
-	return chain.head.MGet(ctx, keys)
+	return chain.head.next.MGet(ctx, keys)
 }
 
 func (chain *cacheChain) Set(ctx context.Context, key string, data *CacheData) error {
-	return chain.tail.Set(ctx, key, data)
+	return chain.tail.prev.Set(ctx, key, data)
 }
 
 func (chain *cacheChain) MSet(ctx context.Context, kvs map[string]*CacheData) error {
-	return chain.tail.MSet(ctx, kvs)
+	return chain.tail.prev.MSet(ctx, kvs)
 }
 
 func (chain *cacheChain) Delete(ctx context.Context, key string) error {
-	return chain.tail.Delete(ctx, key)
+	return chain.tail.prev.Delete(ctx, key)
 }
 
 func (chain *cacheChain) MDelete(ctx context.Context, keys []string) error {
-	return chain.tail.MDelete(ctx, keys)
+	return chain.tail.prev.MDelete(ctx, keys)
 }

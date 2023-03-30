@@ -3,7 +3,6 @@ package cachex
 import (
 	"context"
 	"errors"
-	"fmt"
 	"sync"
 	"time"
 
@@ -29,12 +28,12 @@ func (l *LRUCache) Get(ctx context.Context, key string) (*CacheData, error) {
 	now := time.Now().UnixMilli()
 	val, ok := l.cache.Get(key)
 	if !ok {
-		logger.Info(ctx, fmt.Sprintf("lru cache not found, key:[%v]", key))
+		logger.Debugf(ctx, "lru cache not found, key:[%v]", key)
 		return nil, ErrNotFound
 	}
 	result := val.(*CacheData)
 	if l.isExpired(result.CreateAt, now) {
-		logger.Info(ctx, fmt.Sprintf("lru chache expired, key:[%v]", key))
+		logger.Debugf(ctx, "lru cache expired, key:[%v]", key)
 		l.cache.Remove(key)
 		return nil, ErrNotFound
 	}
@@ -49,12 +48,12 @@ func (l *LRUCache) MGet(ctx context.Context, keys []string) (map[string]*CacheDa
 	for _, key := range keys {
 		val, ok := l.cache.Get(key)
 		if !ok {
-			logger.Info(ctx, fmt.Sprintf("lru cache not found, key:[%v]", key))
+			logger.Debugf(ctx, "lru cache not found, key:[%v]", key)
 			continue
 		}
 		res := val.(*CacheData)
 		if l.isExpired(res.CreateAt, now) {
-			logger.Info(ctx, fmt.Sprintf("lru chache expired, key:[%v]", key))
+			logger.Debugf(ctx, "lru cache expired, key:[%v]", key)
 			l.cache.Remove(key)
 			continue
 		}

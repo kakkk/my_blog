@@ -53,6 +53,6 @@ func (*defaultCache) MDelete(ctx context.Context, keys []string) error {
 func (*defaultCache) Ping(ctx context.Context) (string, error) {
 	return "Pong", nil
 }
-func (*defaultCache) Name() string {
+func (c *defaultCache) Name() string {
 	return "default"
 }

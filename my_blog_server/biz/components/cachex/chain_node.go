@@ -22,6 +22,7 @@ func (c *chainNode) Get(ctx context.Context, key string) (*CacheData, error) {
 
 	// 有数据，直接返回
 	if data != nil {
+		logger.Debugf(ctx, "%v: [hit]", c.cache.Name())
 		return data, nil
 	}
 
@@ -29,6 +30,8 @@ func (c *chainNode) Get(ctx context.Context, key string) (*CacheData, error) {
 	if c.next == nil {
 		return nil, ErrNotFound
 	}
+
+	logger.Debugf(ctx, "%v: [not hit]", c.cache.Name())
 
 	// 当前缓存查不到, 查询下一级缓存
 	nextData, _ := c.next.Get(ctx, key)

@@ -207,7 +207,7 @@ func SelectPostOrderList(db *gorm.DB) ([]int64, error) {
 		Where("article_type = ?", common.ArticleType_Post).
 		Where("article_status = ?", common.ArticleStatus_PUBLISH).
 		Where("delete_flag = ?", common.DeleteFlag_Exist).
-		Order("publish_at asc").
+		Order("publish_at desc").
 		Find(&order).Error
 	if err != nil {
 		return nil, parseError(err)

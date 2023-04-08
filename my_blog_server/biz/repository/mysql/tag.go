@@ -1,6 +1,7 @@
 package mysql
 
 import (
+	"fmt"
 	"time"
 
 	"my_blog/biz/common/utils"
@@ -261,4 +262,21 @@ func SelectArticleIDsByTagIDs(db *gorm.DB, ids []int64) ([]int64, error) {
 		return nil, parseError(err)
 	}
 	return utils.DeduplicateInt64Slice(results), nil
+}
+
+func SelectTagListByArticleID(db *gorm.DB, articleID int64) ([]string, error) {
+	// 获取标签
+	tagIDs, err := SelectTagIDsByArticleID(db, articleID)
+	if err != nil {
+		return nil, fmt.Errorf("select tag_id error:[%v]", err)
+	}
+	tagMap, err := MSelectTagByID(db, tagIDs)
+	if err != nil {
+		return nil, fmt.Errorf("select tag error:[%v]", err)
+	}
+	var tagList []string
+	for _, tag := range tagMap {
+		tagList = append(tagList, tag.TagName)
+	}
+	return tagList, nil
 }

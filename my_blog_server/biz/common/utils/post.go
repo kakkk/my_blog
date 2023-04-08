@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"strings"
 	"time"
+	"unicode/utf8"
 
+	"github.com/spf13/cast"
 	"github.com/writeas/go-strip-markdown"
 )
 
@@ -22,15 +24,10 @@ func GetPostPageDescription(content string) string {
 	return fmt.Sprintf("%v...", cut)
 }
 
-func GetPostInfo(editor string, publishAt time.Time, content string, pv int64) string {
-	// 降级
-	if editor == "" {
-		editor = "kakkk"
-	}
-	publishAtStr := publishAt.Format("January 02, 2006")
-	readTime := len(content) / 275
-	if readTime < 1 {
-		readTime = 1
-	}
-	return fmt.Sprintf("%v · %v min · %v · %v visited", publishAtStr, readTime, editor, pv)
+func GetWordCount(content string) string {
+	return cast.ToString(utf8.RuneCountInString(stripmd.Strip(content)))
+}
+
+func GetPublishAtStr(publishAt *time.Time) string {
+	return publishAt.Format("January 02, 2006")
 }

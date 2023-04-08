@@ -10,6 +10,7 @@ import (
 	"my_blog/biz/middleware"
 	"my_blog/biz/repository/mysql"
 	"my_blog/biz/repository/redis"
+	"my_blog/biz/repository/storage"
 
 	"github.com/cloudwego/hertz/pkg/app/server"
 	"github.com/cloudwego/hertz/pkg/common/hlog"
@@ -35,6 +36,11 @@ func main() {
 
 	// redis
 	if err := redis.InitRedis(); err != nil {
+		panic(err)
+	}
+
+	// storage
+	if err := storage.InitStorage(); err != nil {
 		panic(err)
 	}
 

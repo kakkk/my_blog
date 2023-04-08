@@ -49,7 +49,7 @@ func InitLogger(path string, level string) (err error) {
 	}
 	logger.Hooks.Add(lfshook.NewHook(pathMap, &logrus.JSONFormatter{}))
 
-	logrus.SetLevel(logLevel)
+	logger.SetLevel(logLevel)
 	logger.Infof("Init logger success ^_^ ")
 	return
 }

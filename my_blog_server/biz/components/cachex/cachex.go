@@ -73,11 +73,11 @@ func (c *CacheX[T, KEY]) Initialize(ctx context.Context) error {
 	if c.getCacheKey == nil {
 		return fmt.Errorf("get cache key function not set")
 	}
-	if c.getRealData == nil && c.isOnlyCache {
+	if c.getRealData == nil && !c.isOnlyCache {
 		return fmt.Errorf("get real data function not set")
 	}
-	if c.mGetRealData == nil && c.isOnlyCache {
-		return fmt.Errorf("mget real data function not set")
+	if c.mGetRealData == nil && !c.isOnlyCache {
+		logger.Debugf(ctx, "%v mget not set", c.name)
 	}
 
 	// 设置mGetCacheKey
@@ -186,6 +186,10 @@ func (c *CacheX[T, KEY]) Get(ctx context.Context, key KEY) (T, error) {
 func (c *CacheX[T, KEY]) MGet(ctx context.Context, keys []KEY) map[KEY]T {
 	if !c.isInit {
 		panic("CacheX not init!!!")
+	}
+	if c.mGetRealData == nil {
+		logger.Debugf(ctx, "%v mget not set", c.name)
+		return nil
 	}
 	if len(keys) == 0 {
 		return map[KEY]T{}

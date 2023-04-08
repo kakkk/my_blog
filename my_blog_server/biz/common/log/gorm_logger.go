@@ -12,16 +12,16 @@ import (
 )
 
 type GORMLogger struct {
-	SlowThreshold         time.Duration
-	SourceField           string
-	SkipErrRecordNotFound bool
-	Debug                 bool
+	SlowThreshold             time.Duration
+	SourceField               string
+	IgnoreRecordNotFoundError bool
+	Debug                     bool
 }
 
 func NewGORMLogger() *GORMLogger {
 	return &GORMLogger{
-		SkipErrRecordNotFound: true,
-		Debug:                 true,
+		IgnoreRecordNotFoundError: true,
+		Debug:                     true,
 	}
 }
 
@@ -48,7 +48,7 @@ func (l *GORMLogger) Trace(ctx context.Context, begin time.Time, fc func() (stri
 	if l.SourceField != "" {
 		fields[l.SourceField] = utils.FileWithLineNum()
 	}
-	if err != nil && !(errors.Is(err, gorm.ErrRecordNotFound) && l.SkipErrRecordNotFound) {
+	if err != nil && !(errors.Is(err, gorm.ErrRecordNotFound) && l.IgnoreRecordNotFoundError) {
 		fields[logrus.ErrorKey] = err
 		GetLoggerWithCtx(ctx).WithFields(fields).Errorf("%s [%s]", sql, elapsed)
 		return

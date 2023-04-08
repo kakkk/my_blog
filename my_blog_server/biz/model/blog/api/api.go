@@ -1606,7 +1606,7 @@ func (p *GetUserInfoAPIResponse) String() string {
 // ==========标签相关===========
 // 创建标签
 type CreateTagAPIRequest struct {
-	Name string `thrift:"Name,1,required" form:"name,required" json:"name,required" query:"name,required"`
+	Name string `thrift:"name,1,required" form:"name,required" json:"name,required" query:"name,required"`
 }
 
 func NewCreateTagAPIRequest() *CreateTagAPIRequest {
@@ -1618,7 +1618,7 @@ func (p *CreateTagAPIRequest) GetName() (v string) {
 }
 
 var fieldIDToName_CreateTagAPIRequest = map[int16]string{
-	1: "Name",
+	1: "name",
 }
 
 func (p *CreateTagAPIRequest) Read(iprot thrift.TProtocol) (err error) {
@@ -1727,7 +1727,7 @@ WriteStructEndError:
 }
 
 func (p *CreateTagAPIRequest) writeField1(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("Name", thrift.STRING, 1); err != nil {
+	if err = oprot.WriteFieldBegin("name", thrift.STRING, 1); err != nil {
 		goto WriteFieldBeginError
 	}
 	if err := oprot.WriteString(p.Name); err != nil {
@@ -1753,7 +1753,7 @@ func (p *CreateTagAPIRequest) String() string {
 // 创建标签
 type CreateTagAPIResponse struct {
 	ID       int64     `thrift:"ID,1,required" form:"id,required" json:"id,required" query:"id,required"`
-	Name     string    `thrift:"Name,2,required" form:"name,required" json:"name,required" query:"name,required"`
+	Name     string    `thrift:"name,2,required" form:"name,required" json:"name,required" query:"name,required"`
 	BaseResp *BaseResp `thrift:"BaseResp,255,required" json:"-" form:"base_resp,required" query:"base_resp,required"`
 }
 
@@ -1780,7 +1780,7 @@ func (p *CreateTagAPIResponse) GetBaseResp() (v *BaseResp) {
 
 var fieldIDToName_CreateTagAPIResponse = map[int16]string{
 	1:   "ID",
-	2:   "Name",
+	2:   "name",
 	255: "BaseResp",
 }
 
@@ -1970,7 +1970,7 @@ WriteFieldEndError:
 }
 
 func (p *CreateTagAPIResponse) writeField2(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("Name", thrift.STRING, 2); err != nil {
+	if err = oprot.WriteFieldBegin("name", thrift.STRING, 2); err != nil {
 		goto WriteFieldBeginError
 	}
 	if err := oprot.WriteString(p.Name); err != nil {
@@ -2013,7 +2013,7 @@ func (p *CreateTagAPIResponse) String() string {
 // 更新标签
 type UpdateTagAPIRequest struct {
 	ID   int64  `thrift:"ID,1,required" json:"id,required" path:"tag_id,required"`
-	Name string `thrift:"Name,2,required" form:"name,required" json:"name,required" query:"name,required"`
+	Name string `thrift:"name,2,required" form:"name,required" json:"name,required" query:"name,required"`
 }
 
 func NewUpdateTagAPIRequest() *UpdateTagAPIRequest {
@@ -2030,7 +2030,7 @@ func (p *UpdateTagAPIRequest) GetName() (v string) {
 
 var fieldIDToName_UpdateTagAPIRequest = map[int16]string{
 	1: "ID",
-	2: "Name",
+	2: "name",
 }
 
 func (p *UpdateTagAPIRequest) Read(iprot thrift.TProtocol) (err error) {
@@ -2186,7 +2186,7 @@ WriteFieldEndError:
 }
 
 func (p *UpdateTagAPIRequest) writeField2(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("Name", thrift.STRING, 2); err != nil {
+	if err = oprot.WriteFieldBegin("name", thrift.STRING, 2); err != nil {
 		goto WriteFieldBeginError
 	}
 	if err := oprot.WriteString(p.Name); err != nil {
@@ -2621,7 +2621,7 @@ func (p *GetTagListAPIRequest) String() string {
 // 获取标签列表
 type TagListItem struct {
 	ID    int64  `thrift:"ID,1,required" form:"id,required" json:"id,required" query:"id,required"`
-	Name  string `thrift:"Name,2,required" form:"name,required" json:"name,required" query:"name,required"`
+	Name  string `thrift:"name,2,required" form:"name,required" json:"name,required" query:"name,required"`
 	Count int64  `thrift:"Count,3,required" form:"count,required" json:"count,required" query:"count,required"`
 }
 
@@ -2643,7 +2643,7 @@ func (p *TagListItem) GetCount() (v int64) {
 
 var fieldIDToName_TagListItem = map[int16]string{
 	1: "ID",
-	2: "Name",
+	2: "name",
 	3: "Count",
 }
 
@@ -2830,7 +2830,7 @@ WriteFieldEndError:
 }
 
 func (p *TagListItem) writeField2(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("Name", thrift.STRING, 2); err != nil {
+	if err = oprot.WriteFieldBegin("name", thrift.STRING, 2); err != nil {
 		goto WriteFieldBeginError
 	}
 	if err := oprot.WriteString(p.Name); err != nil {
@@ -3160,7 +3160,7 @@ func (p *GetTagListAPIResponse) String() string {
 // ==========分类相关=============
 // 创建分类
 type CreateCategoryAPIRequest struct {
-	Name string `thrift:"Name,1,required" form:"name,required" json:"name,required" query:"name,required"`
+	Name string `thrift:"name,1,required" form:"name,required" json:"name,required" query:"name,required"`
 	Slug string `thrift:"Slug,2,required" form:"slug,required" json:"slug,required" query:"slug,required"`
 }
 
@@ -3177,7 +3177,7 @@ func (p *CreateCategoryAPIRequest) GetSlug() (v string) {
 }
 
 var fieldIDToName_CreateCategoryAPIRequest = map[int16]string{
-	1: "Name",
+	1: "name",
 	2: "Slug",
 }
 
@@ -3317,7 +3317,7 @@ WriteStructEndError:
 }
 
 func (p *CreateCategoryAPIRequest) writeField1(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("Name", thrift.STRING, 1); err != nil {
+	if err = oprot.WriteFieldBegin("name", thrift.STRING, 1); err != nil {
 		goto WriteFieldBeginError
 	}
 	if err := oprot.WriteString(p.Name); err != nil {
@@ -3360,7 +3360,7 @@ func (p *CreateCategoryAPIRequest) String() string {
 // 创建分类
 type UpdateCategoryAPIRequest struct {
 	ID   int64  `thrift:"ID,1,required" json:"id,required" path:"category_id,required"`
-	Name string `thrift:"Name,2,required" form:"name,required" json:"name,required" query:"name,required"`
+	Name string `thrift:"name,2,required" form:"name,required" json:"name,required" query:"name,required"`
 	Slug string `thrift:"Slug,3,required" form:"slug,required" json:"slug,required" query:"slug,required"`
 }
 
@@ -3382,7 +3382,7 @@ func (p *UpdateCategoryAPIRequest) GetSlug() (v string) {
 
 var fieldIDToName_UpdateCategoryAPIRequest = map[int16]string{
 	1: "ID",
-	2: "Name",
+	2: "name",
 	3: "Slug",
 }
 
@@ -3569,7 +3569,7 @@ WriteFieldEndError:
 }
 
 func (p *UpdateCategoryAPIRequest) writeField2(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("Name", thrift.STRING, 2); err != nil {
+	if err = oprot.WriteFieldBegin("name", thrift.STRING, 2); err != nil {
 		goto WriteFieldBeginError
 	}
 	if err := oprot.WriteString(p.Name); err != nil {
@@ -3925,7 +3925,7 @@ func (p *DeleteCategoryAPIRequest) String() string {
 // 分类
 type CategoryListItem struct {
 	ID    int64  `thrift:"ID,1,required" form:"id,required" json:"id,required" query:"id,required"`
-	Name  string `thrift:"Name,2,required" form:"name,required" json:"name,required" query:"name,required"`
+	Name  string `thrift:"name,2,required" form:"name,required" json:"name,required" query:"name,required"`
 	Slug  string `thrift:"Slug,3,required" form:"slug,required" json:"slug,required" query:"slug,required"`
 	Count int64  `thrift:"Count,4,required" form:"count,required" json:"count,required" query:"count,required"`
 }
@@ -3952,7 +3952,7 @@ func (p *CategoryListItem) GetCount() (v int64) {
 
 var fieldIDToName_CategoryListItem = map[int16]string{
 	1: "ID",
-	2: "Name",
+	2: "name",
 	3: "Slug",
 	4: "Count",
 }
@@ -4170,7 +4170,7 @@ WriteFieldEndError:
 }
 
 func (p *CategoryListItem) writeField2(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("Name", thrift.STRING, 2); err != nil {
+	if err = oprot.WriteFieldBegin("name", thrift.STRING, 2); err != nil {
 		goto WriteFieldBeginError
 	}
 	if err := oprot.WriteString(p.Name); err != nil {
@@ -5210,7 +5210,7 @@ func (p *GetPostAPIRequest) String() string {
 // 获取文章 - 分类
 type CategoriesItem struct {
 	ID   int64  `thrift:"ID,1,required" form:"id,required" json:"id,required" query:"id,required"`
-	Name string `thrift:"Name,2,required" form:"name,required" json:"name,required" query:"name,required"`
+	Name string `thrift:"name,2,required" form:"name,required" json:"name,required" query:"name,required"`
 }
 
 func NewCategoriesItem() *CategoriesItem {
@@ -5227,7 +5227,7 @@ func (p *CategoriesItem) GetName() (v string) {
 
 var fieldIDToName_CategoriesItem = map[int16]string{
 	1: "ID",
-	2: "Name",
+	2: "name",
 }
 
 func (p *CategoriesItem) Read(iprot thrift.TProtocol) (err error) {
@@ -5383,7 +5383,7 @@ WriteFieldEndError:
 }
 
 func (p *CategoriesItem) writeField2(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("Name", thrift.STRING, 2); err != nil {
+	if err = oprot.WriteFieldBegin("name", thrift.STRING, 2); err != nil {
 		goto WriteFieldBeginError
 	}
 	if err := oprot.WriteString(p.Name); err != nil {

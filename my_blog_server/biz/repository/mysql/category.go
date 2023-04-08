@@ -22,6 +22,18 @@ func CreateCategory(db *gorm.DB, category *entity.Category) (*entity.Category, e
 	return category, nil
 }
 
+func SelectCategoryByID(db *gorm.DB, id int64) (*entity.Category, error) {
+	got := &entity.Category{}
+	err := db.Model(&entity.Category{}).
+		Where("id = ?", id).
+		Where("delete_flag = ?", common.DeleteFlag_Exist).
+		Find(&got).Error
+	if err != nil {
+		return nil, parseError(err)
+	}
+	return got, nil
+}
+
 func MSelectCategoryByIDs(db *gorm.DB, ids []int64) (map[int64]*entity.Category, error) {
 	got := make([]*entity.Category, 0, len(ids))
 	err := db.Model(&entity.Category{}).

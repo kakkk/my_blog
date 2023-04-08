@@ -177,3 +177,43 @@ func SelectPrevNextPostByPublishAt(db *gorm.DB, publishAt time.Time) (*entity.Ar
 	}
 	return prev, next, nil
 }
+
+func MSelectPostWithPublishByIDs(db *gorm.DB, ids []int64) (map[int64]*entity.Article, error) {
+	var posts []*entity.Article
+	err := db.Model(&entity.Article{}).
+		Where("id in ?", ids).
+		Where("article_type = ?", common.ArticleType_Post).
+		Where("article_status = ?", common.ArticleStatus_PUBLISH).
+		Where("delete_flag = ?", common.DeleteFlag_Exist).
+		Find(&posts).Error
+	if err != nil {
+		return nil, parseError(err)
+	}
+	if len(posts) == 0 {
+		return nil, consts.ErrRecordNotFound
+	}
+	result := make(map[int64]*entity.Article, len(posts))
+	for _, post := range posts {
+		result[post.ID] = post
+	}
+	return result, nil
+}
+
+func SelectPostOrderList(db *gorm.DB) ([]int64, error) {
+	// 当前数据量直接拉取全量数据，后续可以加上limit分批次查询
+	var order []int64
+	err := db.Model(&entity.Article{}).
+		Select("id").
+		Where("article_type = ?", common.ArticleType_Post).
+		Where("article_status = ?", common.ArticleStatus_PUBLISH).
+		Where("delete_flag = ?", common.DeleteFlag_Exist).
+		Order("publish_at asc").
+		Find(&order).Error
+	if err != nil {
+		return nil, parseError(err)
+	}
+	if len(order) == 0 {
+		return nil, consts.ErrRecordNotFound
+	}
+	return order, nil
+}

@@ -131,7 +131,7 @@ func GetPostAPI(ctx context.Context, req *api.GetPostAPIRequest) *api.GetPostAPI
 	}
 
 	// 标签
-	tagList, err := getTagListByArticleID(ctx, req.GetID())
+	tagList, err := mysql.SelectTagListByArticleID(db, req.GetID())
 	if err != nil {
 		logger.Errorf("select tag list error:[%v]", err)
 		return failResp

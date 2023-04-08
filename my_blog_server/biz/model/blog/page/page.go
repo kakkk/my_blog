@@ -747,7 +747,7 @@ func (p *PostItem) String() string {
 }
 
 type PostListPageResp struct {
-	Name     string      `thrift:"Name,1,required" form:"Name,required" json:"Name,required" query:"Name,required"`
+	Name     string      `thrift:"name,1,required" form:"name,required" json:"name,required" query:"name,required"`
 	Slug     string      `thrift:"Slug,2,required" form:"Slug,required" json:"Slug,required" query:"Slug,required"`
 	PostList []*PostItem `thrift:"PostList,3,required" form:"PostList,required" json:"PostList,required" query:"PostList,required"`
 	PrevPage string      `thrift:"PrevPage,4,required" form:"PrevPage,required" json:"PrevPage,required" query:"PrevPage,required"`
@@ -789,7 +789,7 @@ func (p *PostListPageResp) GetMeta() (v *PageMeta) {
 }
 
 var fieldIDToName_PostListPageResp = map[int16]string{
-	1:   "Name",
+	1:   "name",
 	2:   "Slug",
 	3:   "PostList",
 	4:   "PrevPage",
@@ -1067,7 +1067,7 @@ WriteStructEndError:
 }
 
 func (p *PostListPageResp) writeField1(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("Name", thrift.STRING, 1); err != nil {
+	if err = oprot.WriteFieldBegin("name", thrift.STRING, 1); err != nil {
 		goto WriteFieldBeginError
 	}
 	if err := oprot.WriteString(p.Name); err != nil {
@@ -1951,7 +1951,7 @@ func (p *ArchivesPageResp) String() string {
 
 // ==============标签云=============
 type TermListItem struct {
-	Name  string `thrift:"Name,1,required" form:"Name,required" json:"Name,required" query:"Name,required"`
+	Name  string `thrift:"name,1,required" form:"name,required" json:"name,required" query:"name,required"`
 	Count string `thrift:"Count,2,required" form:"Count,required" json:"Count,required" query:"Count,required"`
 	Slug  string `thrift:"Slug,3,required" form:"Slug,required" json:"Slug,required" query:"Slug,required"`
 }
@@ -1973,7 +1973,7 @@ func (p *TermListItem) GetSlug() (v string) {
 }
 
 var fieldIDToName_TermListItem = map[int16]string{
-	1: "Name",
+	1: "name",
 	2: "Count",
 	3: "Slug",
 }
@@ -2144,7 +2144,7 @@ WriteStructEndError:
 }
 
 func (p *TermListItem) writeField1(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("Name", thrift.STRING, 1); err != nil {
+	if err = oprot.WriteFieldBegin("name", thrift.STRING, 1); err != nil {
 		goto WriteFieldBeginError
 	}
 	if err := oprot.WriteString(p.Name); err != nil {

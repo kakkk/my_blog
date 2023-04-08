@@ -65,6 +65,8 @@ func (l *LRUCache) MGet(ctx context.Context, keys []string) (map[string]*CacheDa
 func (l *LRUCache) Set(ctx context.Context, key string, data *CacheData) error {
 	l.rw.Lock()
 	defer l.rw.Unlock()
+	now := time.Now().UnixMilli()
+	data.CreateAt = now
 	l.cache.Add(key, data)
 	return nil
 }
@@ -72,7 +74,9 @@ func (l *LRUCache) Set(ctx context.Context, key string, data *CacheData) error {
 func (l *LRUCache) MSet(ctx context.Context, kvs map[string]*CacheData) error {
 	l.rw.Lock()
 	defer l.rw.Unlock()
+	now := time.Now().UnixMilli()
 	for k, v := range kvs {
+		v.CreateAt = now
 		l.cache.Add(k, v)
 	}
 	return nil

@@ -21,7 +21,7 @@
                 </ul>
             {{- end }}
             <nav class="paginav">
-                {{- if (ne .PrevPage.ID "0") }}
+                {{- if (ne .PrevPage.Title "") }}
                     <a class="prev" href="{{- $domain}}/archives/{{- .PrevPage.ID}}/">
                         <span class="title">« PREV PAGE</span>
                         <br>
@@ -29,7 +29,7 @@
                         <div></div>
                     </a>
                 {{- end }}
-                {{- if (ne .NextPage.ID "0") }}
+                {{- if (ne .NextPage.Title "") }}
                     <a class="next" href="{{- $domain}}/archives/{{- .NextPage.ID}}/">
                         <span class="title">NEXT PAGE »</span>
                         <br>

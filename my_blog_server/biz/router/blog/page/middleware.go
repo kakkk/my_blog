@@ -82,3 +82,8 @@ func _postpageMw() []app.HandlerFunc {
 	// your code...
 	return nil
 }
+
+func _name0Mw() []app.HandlerFunc {
+	// your code...
+	return nil
+}

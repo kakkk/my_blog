@@ -14,15 +14,13 @@ import (
 // IndexPage .
 // @router / [GET]
 func IndexPage(ctx context.Context, c *app.RequestContext) {
-	resp, code := facade.IndexPage(ctx, c)
-	c.HTML(code, "index.tmpl", resp)
+	c.HTML(facade.IndexPage(ctx, c))
 }
 
 // IndexByPaginationPage .
 // @router /page/:page [GET]
 func IndexByPaginationPage(ctx context.Context, c *app.RequestContext) {
-	resp, code := facade.IndexByPaginationPage(ctx, c)
-	c.HTML(code, "index.tmpl", resp)
+	c.HTML(facade.IndexByPaginationPage(ctx, c))
 }
 
 // CategoryPostPage .

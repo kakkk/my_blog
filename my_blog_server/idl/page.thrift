@@ -31,6 +31,12 @@ struct PostItem {
     4:required string Info
 }
 
+struct PostListPageRequest {
+    1:optional i64 Page (api.path="page")
+    2:optional string Name (api.path="name")
+    3:optional string PageType
+}
+
 struct PostListPageResp {
     1:required string Name
     2:required string Slug
@@ -118,13 +124,13 @@ service PageService {
     // =============文章列表==============
     // 首页
     PostListPageResp IndexPage() (api.get="/");
-    PostListPageResp IndexByPaginationPage() (api.get="/page/:page");
+    PostListPageResp IndexByPaginationPage(1: PostListPageRequest request) (api.get="/page/:page");
     // 分类
-    PostListPageResp CategoryPostPage() (api.get="/category/:slug")
-    PostListPageResp CategoryPostByPaginationPage() (api.get="/category/:slug/:page")
+    PostListPageResp CategoryPostPage(1: PostListPageRequest request) (api.get="/category/:name")
+    PostListPageResp CategoryPostByPaginationPage(1: PostListPageRequest request) (api.get="/category/:name/:page")
     // 标签
-    PostListPageResp TagPostPage() (api.get="/tag/:name")
-    PostListPageResp TagPostByPaginationPage() (api.get="/tag/:name/:page")
+    PostListPageResp TagPostPage(1: PostListPageRequest request) (api.get="/tag/:name")
+    PostListPageResp TagPostByPaginationPage(1: PostListPageRequest request) (api.get="/tag/:name/:page")
 
     // =============文章归档==============
     ArchivesPageResp ArchivesPage() (api.get="/archives")

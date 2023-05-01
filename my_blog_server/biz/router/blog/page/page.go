@@ -26,9 +26,9 @@ func Register(r *server.Hertz) {
 	root.GET("/tags", append(_tagspageMw(), page.TagsPage)...)
 	{
 		_category := root.Group("/category", _categoryMw()...)
-		_category.GET("/:slug", append(_slugMw(), page.CategoryPostPage)...)
-		_slug := _category.Group("/:slug", _slugMw()...)
-		_slug.GET("/:page", append(_categorypostbypaginationpageMw(), page.CategoryPostByPaginationPage)...)
+		_category.GET("/:name", append(_nameMw(), page.CategoryPostPage)...)
+		_name := _category.Group("/:name", _nameMw()...)
+		_name.GET("/:page", append(_categorypostbypaginationpageMw(), page.CategoryPostByPaginationPage)...)
 	}
 	{
 		_page := root.Group("/page", _pageMw()...)
@@ -36,8 +36,8 @@ func Register(r *server.Hertz) {
 	}
 	{
 		_tag := root.Group("/tag", _tagMw()...)
-		_tag.GET("/:name", append(_nameMw(), page.TagPostPage)...)
-		_name := _tag.Group("/:name", _nameMw()...)
-		_name.GET("/:page", append(_tagpostbypaginationpageMw(), page.TagPostByPaginationPage)...)
+		_tag.GET("/:name", append(_name0Mw(), page.TagPostPage)...)
+		_name0 := _tag.Group("/:name", _name0Mw()...)
+		_name0.GET("/:page", append(_tagpostbypaginationpageMw(), page.TagPostByPaginationPage)...)
 	}
 }

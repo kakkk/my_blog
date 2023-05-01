@@ -261,7 +261,7 @@ func SelectArticleIDsByTagIDs(db *gorm.DB, ids []int64) ([]int64, error) {
 	if err != nil {
 		return nil, parseError(err)
 	}
-	return utils.DeduplicateInt64Slice(results), nil
+	return utils.SliceDeduplicate[int64](results), nil
 }
 
 func SelectTagListByArticleID(db *gorm.DB, articleID int64) ([]string, error) {

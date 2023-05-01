@@ -7,7 +7,11 @@ import (
 )
 
 const (
-	DefaultUserName = "kakkk"
+	DefaultBlogName        = "kakkk'blog"       // 默认博客名称
+	DefaultBlogSubTitle    = "小朱的博客"            // 默认子标题
+	DefaultBlogDescription = "这是kakkk（小朱）的技术博客" // 默认博客描述
+	DefaultUserName        = "kakkk"            // 默认显示坐着（兜底）
+	pageListSize           = 5                  // 列表页大小
 )
 
 var conf *Config
@@ -71,4 +75,28 @@ func GetRedisConfig() *Redis {
 
 func GetSiteConfig() *Site {
 	return conf.Site
+}
+
+func GetPageListSize() int {
+	return pageListSize
+}
+
+func GetPageListSizeI64() int64 {
+	return int64(GetPageListSize())
+}
+
+func GetBlogName() string {
+	return DefaultBlogName
+}
+
+func GetBlogSubTitle() string {
+	return DefaultBlogSubTitle
+}
+
+func GetDefaultUserName() string {
+	return DefaultUserName
+}
+
+func GetBlogDescription() string {
+	return DefaultBlogDescription
 }

@@ -202,7 +202,7 @@ func SelectArticleIDsByCategoryIDs(db *gorm.DB, categoryIDs []int64) ([]int64, e
 	if err != nil {
 		return nil, parseError(err)
 	}
-	return utils.DeduplicateInt64Slice(results), nil
+	return utils.SliceDeduplicate[int64](results), nil
 }
 
 func MSelectCategoryIDsByArticleIDs(db *gorm.DB, articleIDs []int64) (map[int64][]int64, error) {

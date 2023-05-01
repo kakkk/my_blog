@@ -28,6 +28,7 @@ require (
 )
 
 require (
+	github.com/agiledragon/gomonkey/v2 v2.9.0 // indirect
 	github.com/alicebob/gopher-json v0.0.0-20200520072559-a9ecdc9d1d3a // indirect
 	github.com/boj/redistore v0.0.0-20180917114910-cd5dcc76aeff // indirect
 	github.com/bytedance/go-tagexpr/v2 v2.9.2 // indirect

@@ -746,8 +746,270 @@ func (p *PostItem) String() string {
 	return fmt.Sprintf("PostItem(%+v)", *p)
 }
 
+type PostListPageRequest struct {
+	Page     *int64  `thrift:"Page,1,optional" json:"Page,omitempty" path:"page"`
+	Name     *string `thrift:"Name,2,optional" json:"Name,omitempty" path:"name"`
+	PageType *string `thrift:"PageType,3,optional" form:"PageType" json:"PageType,omitempty" query:"PageType"`
+}
+
+func NewPostListPageRequest() *PostListPageRequest {
+	return &PostListPageRequest{}
+}
+
+var PostListPageRequest_Page_DEFAULT int64
+
+func (p *PostListPageRequest) GetPage() (v int64) {
+	if !p.IsSetPage() {
+		return PostListPageRequest_Page_DEFAULT
+	}
+	return *p.Page
+}
+
+var PostListPageRequest_Name_DEFAULT string
+
+func (p *PostListPageRequest) GetName() (v string) {
+	if !p.IsSetName() {
+		return PostListPageRequest_Name_DEFAULT
+	}
+	return *p.Name
+}
+
+var PostListPageRequest_PageType_DEFAULT string
+
+func (p *PostListPageRequest) GetPageType() (v string) {
+	if !p.IsSetPageType() {
+		return PostListPageRequest_PageType_DEFAULT
+	}
+	return *p.PageType
+}
+
+var fieldIDToName_PostListPageRequest = map[int16]string{
+	1: "Page",
+	2: "Name",
+	3: "PageType",
+}
+
+func (p *PostListPageRequest) IsSetPage() bool {
+	return p.Page != nil
+}
+
+func (p *PostListPageRequest) IsSetName() bool {
+	return p.Name != nil
+}
+
+func (p *PostListPageRequest) IsSetPageType() bool {
+	return p.PageType != nil
+}
+
+func (p *PostListPageRequest) Read(iprot thrift.TProtocol) (err error) {
+
+	var fieldTypeId thrift.TType
+	var fieldId int16
+
+	if _, err = iprot.ReadStructBegin(); err != nil {
+		goto ReadStructBeginError
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err = iprot.ReadFieldBegin()
+		if err != nil {
+			goto ReadFieldBeginError
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+
+		switch fieldId {
+		case 1:
+			if fieldTypeId == thrift.I64 {
+				if err = p.ReadField1(iprot); err != nil {
+					goto ReadFieldError
+				}
+			} else {
+				if err = iprot.Skip(fieldTypeId); err != nil {
+					goto SkipFieldError
+				}
+			}
+		case 2:
+			if fieldTypeId == thrift.STRING {
+				if err = p.ReadField2(iprot); err != nil {
+					goto ReadFieldError
+				}
+			} else {
+				if err = iprot.Skip(fieldTypeId); err != nil {
+					goto SkipFieldError
+				}
+			}
+		case 3:
+			if fieldTypeId == thrift.STRING {
+				if err = p.ReadField3(iprot); err != nil {
+					goto ReadFieldError
+				}
+			} else {
+				if err = iprot.Skip(fieldTypeId); err != nil {
+					goto SkipFieldError
+				}
+			}
+		default:
+			if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
+		}
+
+		if err = iprot.ReadFieldEnd(); err != nil {
+			goto ReadFieldEndError
+		}
+	}
+	if err = iprot.ReadStructEnd(); err != nil {
+		goto ReadStructEndError
+	}
+
+	return nil
+ReadStructBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T read struct begin error: ", p), err)
+ReadFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T read field %d begin error: ", p, fieldId), err)
+ReadFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_PostListPageRequest[fieldId]), err)
+SkipFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T field %d skip type %d error: ", p, fieldId, fieldTypeId), err)
+
+ReadFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T read field end error", p), err)
+ReadStructEndError:
+	return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+}
+
+func (p *PostListPageRequest) ReadField1(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadI64(); err != nil {
+		return err
+	} else {
+		p.Page = &v
+	}
+	return nil
+}
+
+func (p *PostListPageRequest) ReadField2(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return err
+	} else {
+		p.Name = &v
+	}
+	return nil
+}
+
+func (p *PostListPageRequest) ReadField3(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return err
+	} else {
+		p.PageType = &v
+	}
+	return nil
+}
+
+func (p *PostListPageRequest) Write(oprot thrift.TProtocol) (err error) {
+	var fieldId int16
+	if err = oprot.WriteStructBegin("PostListPageRequest"); err != nil {
+		goto WriteStructBeginError
+	}
+	if p != nil {
+		if err = p.writeField1(oprot); err != nil {
+			fieldId = 1
+			goto WriteFieldError
+		}
+		if err = p.writeField2(oprot); err != nil {
+			fieldId = 2
+			goto WriteFieldError
+		}
+		if err = p.writeField3(oprot); err != nil {
+			fieldId = 3
+			goto WriteFieldError
+		}
+
+	}
+	if err = oprot.WriteFieldStop(); err != nil {
+		goto WriteFieldStopError
+	}
+	if err = oprot.WriteStructEnd(); err != nil {
+		goto WriteStructEndError
+	}
+	return nil
+WriteStructBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+WriteFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T write field %d error: ", p, fieldId), err)
+WriteFieldStopError:
+	return thrift.PrependError(fmt.Sprintf("%T write field stop error: ", p), err)
+WriteStructEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write struct end error: ", p), err)
+}
+
+func (p *PostListPageRequest) writeField1(oprot thrift.TProtocol) (err error) {
+	if p.IsSetPage() {
+		if err = oprot.WriteFieldBegin("Page", thrift.I64, 1); err != nil {
+			goto WriteFieldBeginError
+		}
+		if err := oprot.WriteI64(*p.Page); err != nil {
+			return err
+		}
+		if err = oprot.WriteFieldEnd(); err != nil {
+			goto WriteFieldEndError
+		}
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 1 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 1 end error: ", p), err)
+}
+
+func (p *PostListPageRequest) writeField2(oprot thrift.TProtocol) (err error) {
+	if p.IsSetName() {
+		if err = oprot.WriteFieldBegin("Name", thrift.STRING, 2); err != nil {
+			goto WriteFieldBeginError
+		}
+		if err := oprot.WriteString(*p.Name); err != nil {
+			return err
+		}
+		if err = oprot.WriteFieldEnd(); err != nil {
+			goto WriteFieldEndError
+		}
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 2 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 2 end error: ", p), err)
+}
+
+func (p *PostListPageRequest) writeField3(oprot thrift.TProtocol) (err error) {
+	if p.IsSetPageType() {
+		if err = oprot.WriteFieldBegin("PageType", thrift.STRING, 3); err != nil {
+			goto WriteFieldBeginError
+		}
+		if err := oprot.WriteString(*p.PageType); err != nil {
+			return err
+		}
+		if err = oprot.WriteFieldEnd(); err != nil {
+			goto WriteFieldEndError
+		}
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 3 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 3 end error: ", p), err)
+}
+
+func (p *PostListPageRequest) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("PostListPageRequest(%+v)", *p)
+}
+
 type PostListPageResp struct {
-	Name     string      `thrift:"name,1,required" form:"name,required" json:"name,required" query:"name,required"`
+	Name     string      `thrift:"Name,1,required" form:"Name,required" json:"Name,required" query:"Name,required"`
 	Slug     string      `thrift:"Slug,2,required" form:"Slug,required" json:"Slug,required" query:"Slug,required"`
 	PostList []*PostItem `thrift:"PostList,3,required" form:"PostList,required" json:"PostList,required" query:"PostList,required"`
 	PrevPage string      `thrift:"PrevPage,4,required" form:"PrevPage,required" json:"PrevPage,required" query:"PrevPage,required"`
@@ -789,7 +1051,7 @@ func (p *PostListPageResp) GetMeta() (v *PageMeta) {
 }
 
 var fieldIDToName_PostListPageResp = map[int16]string{
-	1:   "name",
+	1:   "Name",
 	2:   "Slug",
 	3:   "PostList",
 	4:   "PrevPage",
@@ -1067,7 +1329,7 @@ WriteStructEndError:
 }
 
 func (p *PostListPageResp) writeField1(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("name", thrift.STRING, 1); err != nil {
+	if err = oprot.WriteFieldBegin("Name", thrift.STRING, 1); err != nil {
 		goto WriteFieldBeginError
 	}
 	if err := oprot.WriteString(p.Name); err != nil {
@@ -1951,7 +2213,7 @@ func (p *ArchivesPageResp) String() string {
 
 // ==============标签云=============
 type TermListItem struct {
-	Name  string `thrift:"name,1,required" form:"name,required" json:"name,required" query:"name,required"`
+	Name  string `thrift:"Name,1,required" form:"Name,required" json:"Name,required" query:"Name,required"`
 	Count string `thrift:"Count,2,required" form:"Count,required" json:"Count,required" query:"Count,required"`
 	Slug  string `thrift:"Slug,3,required" form:"Slug,required" json:"Slug,required" query:"Slug,required"`
 }
@@ -1973,7 +2235,7 @@ func (p *TermListItem) GetSlug() (v string) {
 }
 
 var fieldIDToName_TermListItem = map[int16]string{
-	1: "name",
+	1: "Name",
 	2: "Count",
 	3: "Slug",
 }
@@ -2144,7 +2406,7 @@ WriteStructEndError:
 }
 
 func (p *TermListItem) writeField1(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("name", thrift.STRING, 1); err != nil {
+	if err = oprot.WriteFieldBegin("Name", thrift.STRING, 1); err != nil {
 		goto WriteFieldBeginError
 	}
 	if err := oprot.WriteString(p.Name); err != nil {
@@ -3815,15 +4077,15 @@ type PageService interface {
 	// 首页
 	IndexPage(ctx context.Context) (r *PostListPageResp, err error)
 
-	IndexByPaginationPage(ctx context.Context) (r *PostListPageResp, err error)
+	IndexByPaginationPage(ctx context.Context, request *PostListPageRequest) (r *PostListPageResp, err error)
 	// 分类
-	CategoryPostPage(ctx context.Context) (r *PostListPageResp, err error)
+	CategoryPostPage(ctx context.Context, request *PostListPageRequest) (r *PostListPageResp, err error)
 
-	CategoryPostByPaginationPage(ctx context.Context) (r *PostListPageResp, err error)
+	CategoryPostByPaginationPage(ctx context.Context, request *PostListPageRequest) (r *PostListPageResp, err error)
 	// 标签
-	TagPostPage(ctx context.Context) (r *PostListPageResp, err error)
+	TagPostPage(ctx context.Context, request *PostListPageRequest) (r *PostListPageResp, err error)
 
-	TagPostByPaginationPage(ctx context.Context) (r *PostListPageResp, err error)
+	TagPostByPaginationPage(ctx context.Context, request *PostListPageRequest) (r *PostListPageResp, err error)
 	// =============文章归档==============
 	ArchivesPage(ctx context.Context) (r *ArchivesPageResp, err error)
 	// =============标签云================
@@ -3870,40 +4132,45 @@ func (p *PageServiceClient) IndexPage(ctx context.Context) (r *PostListPageResp,
 	}
 	return _result.GetSuccess(), nil
 }
-func (p *PageServiceClient) IndexByPaginationPage(ctx context.Context) (r *PostListPageResp, err error) {
+func (p *PageServiceClient) IndexByPaginationPage(ctx context.Context, request *PostListPageRequest) (r *PostListPageResp, err error) {
 	var _args PageServiceIndexByPaginationPageArgs
+	_args.Request = request
 	var _result PageServiceIndexByPaginationPageResult
 	if err = p.Client_().Call(ctx, "IndexByPaginationPage", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil
 }
-func (p *PageServiceClient) CategoryPostPage(ctx context.Context) (r *PostListPageResp, err error) {
+func (p *PageServiceClient) CategoryPostPage(ctx context.Context, request *PostListPageRequest) (r *PostListPageResp, err error) {
 	var _args PageServiceCategoryPostPageArgs
+	_args.Request = request
 	var _result PageServiceCategoryPostPageResult
 	if err = p.Client_().Call(ctx, "CategoryPostPage", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil
 }
-func (p *PageServiceClient) CategoryPostByPaginationPage(ctx context.Context) (r *PostListPageResp, err error) {
+func (p *PageServiceClient) CategoryPostByPaginationPage(ctx context.Context, request *PostListPageRequest) (r *PostListPageResp, err error) {
 	var _args PageServiceCategoryPostByPaginationPageArgs
+	_args.Request = request
 	var _result PageServiceCategoryPostByPaginationPageResult
 	if err = p.Client_().Call(ctx, "CategoryPostByPaginationPage", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil
 }
-func (p *PageServiceClient) TagPostPage(ctx context.Context) (r *PostListPageResp, err error) {
+func (p *PageServiceClient) TagPostPage(ctx context.Context, request *PostListPageRequest) (r *PostListPageResp, err error) {
 	var _args PageServiceTagPostPageArgs
+	_args.Request = request
 	var _result PageServiceTagPostPageResult
 	if err = p.Client_().Call(ctx, "TagPostPage", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil
 }
-func (p *PageServiceClient) TagPostByPaginationPage(ctx context.Context) (r *PostListPageResp, err error) {
+func (p *PageServiceClient) TagPostByPaginationPage(ctx context.Context, request *PostListPageRequest) (r *PostListPageResp, err error) {
 	var _args PageServiceTagPostByPaginationPageArgs
+	_args.Request = request
 	var _result PageServiceTagPostByPaginationPageResult
 	if err = p.Client_().Call(ctx, "TagPostByPaginationPage", &_args, &_result); err != nil {
 		return
@@ -4071,7 +4338,7 @@ func (p *pageServiceProcessorIndexByPaginationPage) Process(ctx context.Context,
 	var err2 error
 	result := PageServiceIndexByPaginationPageResult{}
 	var retval *PostListPageResp
-	if retval, err2 = p.handler.IndexByPaginationPage(ctx); err2 != nil {
+	if retval, err2 = p.handler.IndexByPaginationPage(ctx, args.Request); err2 != nil {
 		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing IndexByPaginationPage: "+err2.Error())
 		oprot.WriteMessageBegin("IndexByPaginationPage", thrift.EXCEPTION, seqId)
 		x.Write(oprot)
@@ -4119,7 +4386,7 @@ func (p *pageServiceProcessorCategoryPostPage) Process(ctx context.Context, seqI
 	var err2 error
 	result := PageServiceCategoryPostPageResult{}
 	var retval *PostListPageResp
-	if retval, err2 = p.handler.CategoryPostPage(ctx); err2 != nil {
+	if retval, err2 = p.handler.CategoryPostPage(ctx, args.Request); err2 != nil {
 		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing CategoryPostPage: "+err2.Error())
 		oprot.WriteMessageBegin("CategoryPostPage", thrift.EXCEPTION, seqId)
 		x.Write(oprot)
@@ -4167,7 +4434,7 @@ func (p *pageServiceProcessorCategoryPostByPaginationPage) Process(ctx context.C
 	var err2 error
 	result := PageServiceCategoryPostByPaginationPageResult{}
 	var retval *PostListPageResp
-	if retval, err2 = p.handler.CategoryPostByPaginationPage(ctx); err2 != nil {
+	if retval, err2 = p.handler.CategoryPostByPaginationPage(ctx, args.Request); err2 != nil {
 		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing CategoryPostByPaginationPage: "+err2.Error())
 		oprot.WriteMessageBegin("CategoryPostByPaginationPage", thrift.EXCEPTION, seqId)
 		x.Write(oprot)
@@ -4215,7 +4482,7 @@ func (p *pageServiceProcessorTagPostPage) Process(ctx context.Context, seqId int
 	var err2 error
 	result := PageServiceTagPostPageResult{}
 	var retval *PostListPageResp
-	if retval, err2 = p.handler.TagPostPage(ctx); err2 != nil {
+	if retval, err2 = p.handler.TagPostPage(ctx, args.Request); err2 != nil {
 		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing TagPostPage: "+err2.Error())
 		oprot.WriteMessageBegin("TagPostPage", thrift.EXCEPTION, seqId)
 		x.Write(oprot)
@@ -4263,7 +4530,7 @@ func (p *pageServiceProcessorTagPostByPaginationPage) Process(ctx context.Contex
 	var err2 error
 	result := PageServiceTagPostByPaginationPageResult{}
 	var retval *PostListPageResp
-	if retval, err2 = p.handler.TagPostByPaginationPage(ctx); err2 != nil {
+	if retval, err2 = p.handler.TagPostByPaginationPage(ctx, args.Request); err2 != nil {
 		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing TagPostByPaginationPage: "+err2.Error())
 		oprot.WriteMessageBegin("TagPostByPaginationPage", thrift.EXCEPTION, seqId)
 		x.Write(oprot)
@@ -4760,13 +5027,29 @@ func (p *PageServiceIndexPageResult) String() string {
 }
 
 type PageServiceIndexByPaginationPageArgs struct {
+	Request *PostListPageRequest `thrift:"request,1"`
 }
 
 func NewPageServiceIndexByPaginationPageArgs() *PageServiceIndexByPaginationPageArgs {
 	return &PageServiceIndexByPaginationPageArgs{}
 }
 
-var fieldIDToName_PageServiceIndexByPaginationPageArgs = map[int16]string{}
+var PageServiceIndexByPaginationPageArgs_Request_DEFAULT *PostListPageRequest
+
+func (p *PageServiceIndexByPaginationPageArgs) GetRequest() (v *PostListPageRequest) {
+	if !p.IsSetRequest() {
+		return PageServiceIndexByPaginationPageArgs_Request_DEFAULT
+	}
+	return p.Request
+}
+
+var fieldIDToName_PageServiceIndexByPaginationPageArgs = map[int16]string{
+	1: "request",
+}
+
+func (p *PageServiceIndexByPaginationPageArgs) IsSetRequest() bool {
+	return p.Request != nil
+}
 
 func (p *PageServiceIndexByPaginationPageArgs) Read(iprot thrift.TProtocol) (err error) {
 
@@ -4785,8 +5068,22 @@ func (p *PageServiceIndexByPaginationPageArgs) Read(iprot thrift.TProtocol) (err
 		if fieldTypeId == thrift.STOP {
 			break
 		}
-		if err = iprot.Skip(fieldTypeId); err != nil {
-			goto SkipFieldTypeError
+
+		switch fieldId {
+		case 1:
+			if fieldTypeId == thrift.STRUCT {
+				if err = p.ReadField1(iprot); err != nil {
+					goto ReadFieldError
+				}
+			} else {
+				if err = iprot.Skip(fieldTypeId); err != nil {
+					goto SkipFieldError
+				}
+			}
+		default:
+			if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
 		}
 
 		if err = iprot.ReadFieldEnd(); err != nil {
@@ -4802,8 +5099,10 @@ ReadStructBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T read struct begin error: ", p), err)
 ReadFieldBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T read field %d begin error: ", p, fieldId), err)
-SkipFieldTypeError:
-	return thrift.PrependError(fmt.Sprintf("%T skip field type %d error", p, fieldTypeId), err)
+ReadFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_PageServiceIndexByPaginationPageArgs[fieldId]), err)
+SkipFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T field %d skip type %d error: ", p, fieldId, fieldTypeId), err)
 
 ReadFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T read field end error", p), err)
@@ -4811,11 +5110,24 @@ ReadStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
 }
 
+func (p *PageServiceIndexByPaginationPageArgs) ReadField1(iprot thrift.TProtocol) error {
+	p.Request = NewPostListPageRequest()
+	if err := p.Request.Read(iprot); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (p *PageServiceIndexByPaginationPageArgs) Write(oprot thrift.TProtocol) (err error) {
+	var fieldId int16
 	if err = oprot.WriteStructBegin("IndexByPaginationPage_args"); err != nil {
 		goto WriteStructBeginError
 	}
 	if p != nil {
+		if err = p.writeField1(oprot); err != nil {
+			fieldId = 1
+			goto WriteFieldError
+		}
 
 	}
 	if err = oprot.WriteFieldStop(); err != nil {
@@ -4827,10 +5139,29 @@ func (p *PageServiceIndexByPaginationPageArgs) Write(oprot thrift.TProtocol) (er
 	return nil
 WriteStructBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+WriteFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T write field %d error: ", p, fieldId), err)
 WriteFieldStopError:
 	return thrift.PrependError(fmt.Sprintf("%T write field stop error: ", p), err)
 WriteStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write struct end error: ", p), err)
+}
+
+func (p *PageServiceIndexByPaginationPageArgs) writeField1(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("request", thrift.STRUCT, 1); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := p.Request.Write(oprot); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 1 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 1 end error: ", p), err)
 }
 
 func (p *PageServiceIndexByPaginationPageArgs) String() string {
@@ -4988,13 +5319,29 @@ func (p *PageServiceIndexByPaginationPageResult) String() string {
 }
 
 type PageServiceCategoryPostPageArgs struct {
+	Request *PostListPageRequest `thrift:"request,1"`
 }
 
 func NewPageServiceCategoryPostPageArgs() *PageServiceCategoryPostPageArgs {
 	return &PageServiceCategoryPostPageArgs{}
 }
 
-var fieldIDToName_PageServiceCategoryPostPageArgs = map[int16]string{}
+var PageServiceCategoryPostPageArgs_Request_DEFAULT *PostListPageRequest
+
+func (p *PageServiceCategoryPostPageArgs) GetRequest() (v *PostListPageRequest) {
+	if !p.IsSetRequest() {
+		return PageServiceCategoryPostPageArgs_Request_DEFAULT
+	}
+	return p.Request
+}
+
+var fieldIDToName_PageServiceCategoryPostPageArgs = map[int16]string{
+	1: "request",
+}
+
+func (p *PageServiceCategoryPostPageArgs) IsSetRequest() bool {
+	return p.Request != nil
+}
 
 func (p *PageServiceCategoryPostPageArgs) Read(iprot thrift.TProtocol) (err error) {
 
@@ -5013,8 +5360,22 @@ func (p *PageServiceCategoryPostPageArgs) Read(iprot thrift.TProtocol) (err erro
 		if fieldTypeId == thrift.STOP {
 			break
 		}
-		if err = iprot.Skip(fieldTypeId); err != nil {
-			goto SkipFieldTypeError
+
+		switch fieldId {
+		case 1:
+			if fieldTypeId == thrift.STRUCT {
+				if err = p.ReadField1(iprot); err != nil {
+					goto ReadFieldError
+				}
+			} else {
+				if err = iprot.Skip(fieldTypeId); err != nil {
+					goto SkipFieldError
+				}
+			}
+		default:
+			if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
 		}
 
 		if err = iprot.ReadFieldEnd(); err != nil {
@@ -5030,8 +5391,10 @@ ReadStructBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T read struct begin error: ", p), err)
 ReadFieldBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T read field %d begin error: ", p, fieldId), err)
-SkipFieldTypeError:
-	return thrift.PrependError(fmt.Sprintf("%T skip field type %d error", p, fieldTypeId), err)
+ReadFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_PageServiceCategoryPostPageArgs[fieldId]), err)
+SkipFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T field %d skip type %d error: ", p, fieldId, fieldTypeId), err)
 
 ReadFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T read field end error", p), err)
@@ -5039,11 +5402,24 @@ ReadStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
 }
 
+func (p *PageServiceCategoryPostPageArgs) ReadField1(iprot thrift.TProtocol) error {
+	p.Request = NewPostListPageRequest()
+	if err := p.Request.Read(iprot); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (p *PageServiceCategoryPostPageArgs) Write(oprot thrift.TProtocol) (err error) {
+	var fieldId int16
 	if err = oprot.WriteStructBegin("CategoryPostPage_args"); err != nil {
 		goto WriteStructBeginError
 	}
 	if p != nil {
+		if err = p.writeField1(oprot); err != nil {
+			fieldId = 1
+			goto WriteFieldError
+		}
 
 	}
 	if err = oprot.WriteFieldStop(); err != nil {
@@ -5055,10 +5431,29 @@ func (p *PageServiceCategoryPostPageArgs) Write(oprot thrift.TProtocol) (err err
 	return nil
 WriteStructBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+WriteFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T write field %d error: ", p, fieldId), err)
 WriteFieldStopError:
 	return thrift.PrependError(fmt.Sprintf("%T write field stop error: ", p), err)
 WriteStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write struct end error: ", p), err)
+}
+
+func (p *PageServiceCategoryPostPageArgs) writeField1(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("request", thrift.STRUCT, 1); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := p.Request.Write(oprot); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 1 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 1 end error: ", p), err)
 }
 
 func (p *PageServiceCategoryPostPageArgs) String() string {
@@ -5216,13 +5611,29 @@ func (p *PageServiceCategoryPostPageResult) String() string {
 }
 
 type PageServiceCategoryPostByPaginationPageArgs struct {
+	Request *PostListPageRequest `thrift:"request,1"`
 }
 
 func NewPageServiceCategoryPostByPaginationPageArgs() *PageServiceCategoryPostByPaginationPageArgs {
 	return &PageServiceCategoryPostByPaginationPageArgs{}
 }
 
-var fieldIDToName_PageServiceCategoryPostByPaginationPageArgs = map[int16]string{}
+var PageServiceCategoryPostByPaginationPageArgs_Request_DEFAULT *PostListPageRequest
+
+func (p *PageServiceCategoryPostByPaginationPageArgs) GetRequest() (v *PostListPageRequest) {
+	if !p.IsSetRequest() {
+		return PageServiceCategoryPostByPaginationPageArgs_Request_DEFAULT
+	}
+	return p.Request
+}
+
+var fieldIDToName_PageServiceCategoryPostByPaginationPageArgs = map[int16]string{
+	1: "request",
+}
+
+func (p *PageServiceCategoryPostByPaginationPageArgs) IsSetRequest() bool {
+	return p.Request != nil
+}
 
 func (p *PageServiceCategoryPostByPaginationPageArgs) Read(iprot thrift.TProtocol) (err error) {
 
@@ -5241,8 +5652,22 @@ func (p *PageServiceCategoryPostByPaginationPageArgs) Read(iprot thrift.TProtoco
 		if fieldTypeId == thrift.STOP {
 			break
 		}
-		if err = iprot.Skip(fieldTypeId); err != nil {
-			goto SkipFieldTypeError
+
+		switch fieldId {
+		case 1:
+			if fieldTypeId == thrift.STRUCT {
+				if err = p.ReadField1(iprot); err != nil {
+					goto ReadFieldError
+				}
+			} else {
+				if err = iprot.Skip(fieldTypeId); err != nil {
+					goto SkipFieldError
+				}
+			}
+		default:
+			if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
 		}
 
 		if err = iprot.ReadFieldEnd(); err != nil {
@@ -5258,8 +5683,10 @@ ReadStructBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T read struct begin error: ", p), err)
 ReadFieldBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T read field %d begin error: ", p, fieldId), err)
-SkipFieldTypeError:
-	return thrift.PrependError(fmt.Sprintf("%T skip field type %d error", p, fieldTypeId), err)
+ReadFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_PageServiceCategoryPostByPaginationPageArgs[fieldId]), err)
+SkipFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T field %d skip type %d error: ", p, fieldId, fieldTypeId), err)
 
 ReadFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T read field end error", p), err)
@@ -5267,11 +5694,24 @@ ReadStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
 }
 
+func (p *PageServiceCategoryPostByPaginationPageArgs) ReadField1(iprot thrift.TProtocol) error {
+	p.Request = NewPostListPageRequest()
+	if err := p.Request.Read(iprot); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (p *PageServiceCategoryPostByPaginationPageArgs) Write(oprot thrift.TProtocol) (err error) {
+	var fieldId int16
 	if err = oprot.WriteStructBegin("CategoryPostByPaginationPage_args"); err != nil {
 		goto WriteStructBeginError
 	}
 	if p != nil {
+		if err = p.writeField1(oprot); err != nil {
+			fieldId = 1
+			goto WriteFieldError
+		}
 
 	}
 	if err = oprot.WriteFieldStop(); err != nil {
@@ -5283,10 +5723,29 @@ func (p *PageServiceCategoryPostByPaginationPageArgs) Write(oprot thrift.TProtoc
 	return nil
 WriteStructBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+WriteFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T write field %d error: ", p, fieldId), err)
 WriteFieldStopError:
 	return thrift.PrependError(fmt.Sprintf("%T write field stop error: ", p), err)
 WriteStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write struct end error: ", p), err)
+}
+
+func (p *PageServiceCategoryPostByPaginationPageArgs) writeField1(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("request", thrift.STRUCT, 1); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := p.Request.Write(oprot); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 1 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 1 end error: ", p), err)
 }
 
 func (p *PageServiceCategoryPostByPaginationPageArgs) String() string {
@@ -5444,13 +5903,29 @@ func (p *PageServiceCategoryPostByPaginationPageResult) String() string {
 }
 
 type PageServiceTagPostPageArgs struct {
+	Request *PostListPageRequest `thrift:"request,1"`
 }
 
 func NewPageServiceTagPostPageArgs() *PageServiceTagPostPageArgs {
 	return &PageServiceTagPostPageArgs{}
 }
 
-var fieldIDToName_PageServiceTagPostPageArgs = map[int16]string{}
+var PageServiceTagPostPageArgs_Request_DEFAULT *PostListPageRequest
+
+func (p *PageServiceTagPostPageArgs) GetRequest() (v *PostListPageRequest) {
+	if !p.IsSetRequest() {
+		return PageServiceTagPostPageArgs_Request_DEFAULT
+	}
+	return p.Request
+}
+
+var fieldIDToName_PageServiceTagPostPageArgs = map[int16]string{
+	1: "request",
+}
+
+func (p *PageServiceTagPostPageArgs) IsSetRequest() bool {
+	return p.Request != nil
+}
 
 func (p *PageServiceTagPostPageArgs) Read(iprot thrift.TProtocol) (err error) {
 
@@ -5469,8 +5944,22 @@ func (p *PageServiceTagPostPageArgs) Read(iprot thrift.TProtocol) (err error) {
 		if fieldTypeId == thrift.STOP {
 			break
 		}
-		if err = iprot.Skip(fieldTypeId); err != nil {
-			goto SkipFieldTypeError
+
+		switch fieldId {
+		case 1:
+			if fieldTypeId == thrift.STRUCT {
+				if err = p.ReadField1(iprot); err != nil {
+					goto ReadFieldError
+				}
+			} else {
+				if err = iprot.Skip(fieldTypeId); err != nil {
+					goto SkipFieldError
+				}
+			}
+		default:
+			if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
 		}
 
 		if err = iprot.ReadFieldEnd(); err != nil {
@@ -5486,8 +5975,10 @@ ReadStructBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T read struct begin error: ", p), err)
 ReadFieldBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T read field %d begin error: ", p, fieldId), err)
-SkipFieldTypeError:
-	return thrift.PrependError(fmt.Sprintf("%T skip field type %d error", p, fieldTypeId), err)
+ReadFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_PageServiceTagPostPageArgs[fieldId]), err)
+SkipFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T field %d skip type %d error: ", p, fieldId, fieldTypeId), err)
 
 ReadFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T read field end error", p), err)
@@ -5495,11 +5986,24 @@ ReadStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
 }
 
+func (p *PageServiceTagPostPageArgs) ReadField1(iprot thrift.TProtocol) error {
+	p.Request = NewPostListPageRequest()
+	if err := p.Request.Read(iprot); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (p *PageServiceTagPostPageArgs) Write(oprot thrift.TProtocol) (err error) {
+	var fieldId int16
 	if err = oprot.WriteStructBegin("TagPostPage_args"); err != nil {
 		goto WriteStructBeginError
 	}
 	if p != nil {
+		if err = p.writeField1(oprot); err != nil {
+			fieldId = 1
+			goto WriteFieldError
+		}
 
 	}
 	if err = oprot.WriteFieldStop(); err != nil {
@@ -5511,10 +6015,29 @@ func (p *PageServiceTagPostPageArgs) Write(oprot thrift.TProtocol) (err error) {
 	return nil
 WriteStructBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+WriteFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T write field %d error: ", p, fieldId), err)
 WriteFieldStopError:
 	return thrift.PrependError(fmt.Sprintf("%T write field stop error: ", p), err)
 WriteStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write struct end error: ", p), err)
+}
+
+func (p *PageServiceTagPostPageArgs) writeField1(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("request", thrift.STRUCT, 1); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := p.Request.Write(oprot); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 1 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 1 end error: ", p), err)
 }
 
 func (p *PageServiceTagPostPageArgs) String() string {
@@ -5672,13 +6195,29 @@ func (p *PageServiceTagPostPageResult) String() string {
 }
 
 type PageServiceTagPostByPaginationPageArgs struct {
+	Request *PostListPageRequest `thrift:"request,1"`
 }
 
 func NewPageServiceTagPostByPaginationPageArgs() *PageServiceTagPostByPaginationPageArgs {
 	return &PageServiceTagPostByPaginationPageArgs{}
 }
 
-var fieldIDToName_PageServiceTagPostByPaginationPageArgs = map[int16]string{}
+var PageServiceTagPostByPaginationPageArgs_Request_DEFAULT *PostListPageRequest
+
+func (p *PageServiceTagPostByPaginationPageArgs) GetRequest() (v *PostListPageRequest) {
+	if !p.IsSetRequest() {
+		return PageServiceTagPostByPaginationPageArgs_Request_DEFAULT
+	}
+	return p.Request
+}
+
+var fieldIDToName_PageServiceTagPostByPaginationPageArgs = map[int16]string{
+	1: "request",
+}
+
+func (p *PageServiceTagPostByPaginationPageArgs) IsSetRequest() bool {
+	return p.Request != nil
+}
 
 func (p *PageServiceTagPostByPaginationPageArgs) Read(iprot thrift.TProtocol) (err error) {
 
@@ -5697,8 +6236,22 @@ func (p *PageServiceTagPostByPaginationPageArgs) Read(iprot thrift.TProtocol) (e
 		if fieldTypeId == thrift.STOP {
 			break
 		}
-		if err = iprot.Skip(fieldTypeId); err != nil {
-			goto SkipFieldTypeError
+
+		switch fieldId {
+		case 1:
+			if fieldTypeId == thrift.STRUCT {
+				if err = p.ReadField1(iprot); err != nil {
+					goto ReadFieldError
+				}
+			} else {
+				if err = iprot.Skip(fieldTypeId); err != nil {
+					goto SkipFieldError
+				}
+			}
+		default:
+			if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
 		}
 
 		if err = iprot.ReadFieldEnd(); err != nil {
@@ -5714,8 +6267,10 @@ ReadStructBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T read struct begin error: ", p), err)
 ReadFieldBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T read field %d begin error: ", p, fieldId), err)
-SkipFieldTypeError:
-	return thrift.PrependError(fmt.Sprintf("%T skip field type %d error", p, fieldTypeId), err)
+ReadFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_PageServiceTagPostByPaginationPageArgs[fieldId]), err)
+SkipFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T field %d skip type %d error: ", p, fieldId, fieldTypeId), err)
 
 ReadFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T read field end error", p), err)
@@ -5723,11 +6278,24 @@ ReadStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
 }
 
+func (p *PageServiceTagPostByPaginationPageArgs) ReadField1(iprot thrift.TProtocol) error {
+	p.Request = NewPostListPageRequest()
+	if err := p.Request.Read(iprot); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (p *PageServiceTagPostByPaginationPageArgs) Write(oprot thrift.TProtocol) (err error) {
+	var fieldId int16
 	if err = oprot.WriteStructBegin("TagPostByPaginationPage_args"); err != nil {
 		goto WriteStructBeginError
 	}
 	if p != nil {
+		if err = p.writeField1(oprot); err != nil {
+			fieldId = 1
+			goto WriteFieldError
+		}
 
 	}
 	if err = oprot.WriteFieldStop(); err != nil {
@@ -5739,10 +6307,29 @@ func (p *PageServiceTagPostByPaginationPageArgs) Write(oprot thrift.TProtocol) (
 	return nil
 WriteStructBeginError:
 	return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+WriteFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T write field %d error: ", p, fieldId), err)
 WriteFieldStopError:
 	return thrift.PrependError(fmt.Sprintf("%T write field stop error: ", p), err)
 WriteStructEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write struct end error: ", p), err)
+}
+
+func (p *PageServiceTagPostByPaginationPageArgs) writeField1(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("request", thrift.STRUCT, 1); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := p.Request.Write(oprot); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 1 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 1 end error: ", p), err)
 }
 
 func (p *PageServiceTagPostByPaginationPageArgs) String() string {

@@ -1,6 +1,8 @@
 package resp
 
 import (
+	"fmt"
+
 	"my_blog/biz/common/config"
 	"my_blog/biz/model/blog/page"
 )
@@ -19,8 +21,8 @@ func NewInternalErrorPageResp() *page.BasicPageResp {
 
 func NewInternalErrorMeta() *page.PageMeta {
 	return &page.PageMeta{
-		Title:       "500 Internal Error",
-		Description: "500 Internal Error",
+		Title:       fmt.Sprintf("Internal Error - %v", config.GetBlogName()),
+		Description: "Internal Error",
 		CDNDomain:   config.GetSiteConfig().CDNDomain,
 		SiteDomain:  config.GetSiteConfig().SiteDomain,
 		PageType:    page.PageTypeError,
@@ -30,8 +32,8 @@ func NewInternalErrorMeta() *page.PageMeta {
 
 func NewNotFoundErrorMeta() *page.PageMeta {
 	return &page.PageMeta{
-		Title:       "404 Not Found",
-		Description: "404 Not Found",
+		Title:       fmt.Sprintf("Not Found - %v", config.GetBlogName()),
+		Description: "Not Found",
 		CDNDomain:   config.GetSiteConfig().CDNDomain,
 		SiteDomain:  config.GetSiteConfig().SiteDomain,
 		PageType:    page.PageTypeError,

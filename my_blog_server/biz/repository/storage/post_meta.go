@@ -47,20 +47,23 @@ func postMetaStorageGetRealData(ctx context.Context, id int64) (*dto.PostMeta, e
 	if err != nil {
 		return nil, err
 	}
-	return &dto.PostMeta{
-		ID:    post.ID,
-		Title: post.Title,
-	}, nil
+	editor, err := GetUserEntityStorage().Get(ctx, post.CreateUser)
+	if err != nil {
+		return nil, err
+	}
+	return dto.NewPostMetaByEntity(post, editor), nil
 }
 
 func postMetaStorageMGetRealData(ctx context.Context, ids []int64) (map[int64]*dto.PostMeta, error) {
 	posts := GetArticleEntityStorage().MGet(ctx, ids)
 	result := make(map[int64]*dto.PostMeta, len(posts))
+	userIDs := make([]int64, 0, len(posts))
+	for _, article := range posts {
+		userIDs = append(userIDs, article.CreateUser)
+	}
+	users := GetUserEntityStorage().MGet(ctx, userIDs)
 	for id, article := range posts {
-		result[id] = &dto.PostMeta{
-			ID:    article.ID,
-			Title: article.Title,
-		}
+		result[id] = dto.NewPostMetaByEntity(article, users[article.ID])
 	}
 	return result, nil
 }

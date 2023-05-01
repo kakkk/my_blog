@@ -14,6 +14,7 @@ import (
 	"my_blog/biz/model/blog/api"
 	"my_blog/biz/model/blog/common"
 	"my_blog/biz/repository/mysql"
+	"my_blog/biz/repository/storage"
 
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
@@ -85,6 +86,8 @@ func CreatePostAPI(ctx context.Context, req *api.CreatePostAPIRequest) (rsp *api
 	}
 
 	logger.Infof("create post success")
+	// 重建缓存
+	storage.GetPostOrderListStorage().Rebuild(ctx)
 	return &api.CreatePostAPIResponse{
 		ID:       post.ID,
 		BaseResp: resp.NewSuccessBaseResp(),

@@ -8,7 +8,7 @@ import (
 
 var (
 	PageErrNotFound      = errors.New("not found")
-	PageErrInternalError = errors.New("not found")
+	PageErrInternalError = errors.New("internal error")
 	PageErrFail          = errors.New("fail")
 )
 

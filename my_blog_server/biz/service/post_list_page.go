@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	"my_blog/biz/common/config"
+	"my_blog/biz/common/errorx"
 	"my_blog/biz/common/log"
-	"my_blog/biz/common/resp"
 	"my_blog/biz/common/utils"
 	"my_blog/biz/model/blog/page"
 	"my_blog/biz/repository/dto"
@@ -15,30 +15,26 @@ import (
 	"github.com/spf13/cast"
 )
 
-func PostListByPage(ctx context.Context, req *page.PostListPageRequest) (rsp *page.PostListPageResp) {
+func PostListByPage(ctx context.Context, req *page.PostListPageRequest) (rsp *page.PostListPageResp, pErr *errorx.PageError) {
 	logger := log.GetLoggerWithCtx(ctx)
-	rsp = page.NewPostListPageResp()
 	utils.Recover(ctx, func() {
-		rsp.Meta = resp.NewInternalErrorMeta()
+		pErr = errorx.NewInternalErrPageError()
 		return
 	})
 	postOrderList, err := storage.GetPostOrderListStorage().Get(ctx)
 	if err != nil {
 		logger.Errorf("get post order list error:[%v]", err)
-		rsp.Meta = resp.NewInternalErrorMeta()
-		return
+		return nil, errorx.NewFailErrPageError()
 	}
 	postIDs, hasMore := getIDsByPage(postOrderList, req.GetPage())
 	if len(postIDs) == 0 {
-		rsp.Meta = resp.NewNotFoundErrorMeta()
-		return
+		return nil, errorx.NewNotFoundErrPageError()
 	}
 	postMetas := storage.GetPostMetaStorage().MGet(ctx, postIDs)
 	if len(postMetas) == 0 {
-		rsp.Meta = resp.NewNotFoundErrorMeta()
-		return
+		return nil, errorx.NewNotFoundErrPageError()
 	}
-	return packPostListPageResp(req.GetPage(), hasMore, req.GetPageType(), "", "", utils.MapToList(postIDs, postMetas))
+	return packPostListPageResp(req.GetPage(), hasMore, req.GetPageType(), "", "", utils.MapToList(postIDs, postMetas)), nil
 }
 
 func packPostListPageResp(currentPage int64, hasMore bool, pageType, name, slug string, metas []*dto.PostMeta) *page.PostListPageResp {

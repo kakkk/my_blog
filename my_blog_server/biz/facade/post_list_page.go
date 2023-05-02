@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"my_blog/biz/common/consts"
+	"my_blog/biz/common/errorx"
 	"my_blog/biz/common/log"
 	"my_blog/biz/common/resp"
 	"my_blog/biz/mock"
@@ -15,25 +16,26 @@ import (
 	"github.com/cloudwego/hertz/pkg/app"
 )
 
-func IndexPage(ctx context.Context, c *app.RequestContext) (int, string, *page.PostListPageResp) {
+func IndexPage(ctx context.Context, c *app.RequestContext) (int, string, resp.IPageResponse) {
 	req := &page.PostListPageRequest{
 		Page:     thrift.Int64Ptr(1),
 		PageType: thrift.StringPtr(page.PageTypeIndex),
 	}
-	return http.StatusOK, consts.IndexTmpl, service.PostListByPage(ctx, req)
+	rsp, pErr := service.PostListByPage(ctx, req)
+	return resp.PackPageResponse(rsp, pErr, consts.IndexTmpl)
 }
 
-func IndexByPaginationPage(ctx context.Context, c *app.RequestContext) (int, string, *page.PostListPageResp) {
-	req := page.NewPostListPageRequest()
-	rsp := page.NewPostListPageResp()
+func IndexByPaginationPage(ctx context.Context, c *app.RequestContext) (int, string, resp.IPageResponse) {
+	req := &page.PostListPageRequest{
+		PageType: thrift.StringPtr(page.PageTypePostList),
+	}
 	err := c.BindAndValidate(req)
 	if err != nil {
 		log.GetLoggerWithCtx(ctx).Warnf("parameter error:[%v]", err)
-		rsp.Meta = resp.NewNotFoundErrorMeta()
-		return http.StatusOK, consts.IndexTmpl, rsp
+		return resp.PackPageResponse(nil, errorx.NewNotFoundErrPageError(), consts.IndexTmpl)
 	}
-	req.PageType = thrift.StringPtr(page.PageTypePostList)
-	return http.StatusOK, consts.IndexTmpl, service.PostListByPage(ctx, req)
+	rsp, pErr := service.PostListByPage(ctx, req)
+	return resp.PackPageResponse(rsp, pErr, consts.IndexTmpl)
 }
 
 func CategoryPostPage(ctx context.Context, c *app.RequestContext) (resp *page.PostListPageResp, code int) {

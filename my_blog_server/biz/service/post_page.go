@@ -2,9 +2,9 @@ package service
 
 import (
 	"context"
-	"net/http"
 
 	"my_blog/biz/common/consts"
+	"my_blog/biz/common/errorx"
 	"my_blog/biz/common/log"
 	"my_blog/biz/common/resp"
 	"my_blog/biz/common/utils"
@@ -16,20 +16,22 @@ import (
 	"github.com/spf13/cast"
 )
 
-func PostPage(ctx context.Context, req *page.PostPageRequest) (int, *page.PostPageResponse) {
+func PostPage(ctx context.Context, req *page.PostPageRequest) (rsp *page.PostPageResponse, pErr *errorx.PageError) {
 	logger := log.GetLoggerWithCtx(ctx).WithField("post_id", req.GetID())
-	rsp := page.NewPostPageResponse()
+	rsp = page.NewPostPageResponse()
+	utils.Recover(ctx, func() {
+		pErr = errorx.NewInternalErrPageError()
+		return
+	})
 	// 获取post
 	post, err := storage.GetArticleEntityStorage().Get(ctx, req.GetID())
 	if err != nil {
 		if err == consts.ErrRecordNotFound {
 			logger.Warnf("post not found")
-			rsp.Meta = resp.NewNotFoundErrorMeta()
-			return http.StatusNotFound, rsp
+			return nil, errorx.NewNotFoundErrPageError()
 		}
 		logger.Errorf("select post error:[%v]", err)
-		rsp.Meta = resp.NewInternalErrorMeta()
-		return http.StatusInternalServerError, rsp
+		return nil, errorx.NewFailErrPageError()
 	}
 
 	// 获取上下篇文章
@@ -53,8 +55,7 @@ func PostPage(ctx context.Context, req *page.PostPageRequest) (int, *page.PostPa
 		logger.Warnf("select tags error:[%v]", err)
 	}
 
-	//return http.StatusOK, mock.PostPageMocker("test")
-	return http.StatusOK, packGetPostPageResp(post, prev, next, user, tags, categories)
+	return packGetPostPageResp(post, prev, next, user, tags, categories), nil
 
 }
 

@@ -68,8 +68,7 @@ func TagsPage(ctx context.Context, c *app.RequestContext) {
 // CategoriesPage .
 // @router /categories [GET]
 func CategoriesPage(ctx context.Context, c *app.RequestContext) {
-	resp, code := facade.CategoriesPage(ctx, c)
-	c.HTML(code, "index.tmpl", resp)
+	c.HTML(facade.CategoriesPage(ctx, c))
 }
 
 // SearchPage .

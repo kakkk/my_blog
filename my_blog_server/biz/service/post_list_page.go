@@ -17,10 +17,10 @@ import (
 
 func PostListByPage(ctx context.Context, req *page.PostListPageRequest) (rsp *page.PostListPageResp, pErr *errorx.PageError) {
 	logger := log.GetLoggerWithCtx(ctx)
-	utils.Recover(ctx, func() {
+	defer utils.Recover(ctx, func() {
 		pErr = errorx.NewInternalErrPageError()
 		return
-	})
+	})()
 	postOrderList, err := storage.GetPostOrderListStorage().Get(ctx)
 	if err != nil {
 		logger.Errorf("get post order list error:[%v]", err)

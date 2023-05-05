@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-
 	"my_blog/biz/common/consts"
 	"my_blog/biz/common/log"
 	"my_blog/biz/common/resp"
@@ -10,6 +9,7 @@ import (
 	"my_blog/biz/model/blog/api"
 	"my_blog/biz/model/blog/common"
 	"my_blog/biz/repository/mysql"
+	"my_blog/biz/repository/storage"
 
 	"github.com/sirupsen/logrus"
 )
@@ -153,46 +153,17 @@ func DeleteCategoryAPI(ctx context.Context, req *api.DeleteCategoryAPIRequest) *
 
 func GetCategoryListAPI(ctx context.Context) *api.GetCategoryListAPIResponse {
 	logger := log.GetLoggerWithCtx(ctx)
-	db := mysql.GetDB(ctx)
-	order, err := mysql.SelectCategoryOrder(db)
+	list, err := storage.GetCategoryListStorage().GetFromDB(ctx)
 	if err != nil {
-		logger.Errorf("select category order error:[%v]", err)
+		logger.Errorf("get category list error:[%v]", err)
 		return &api.GetCategoryListAPIResponse{
 			BaseResp: resp.NewFailBaseResp(),
 		}
-	}
-	categories, err := mysql.MSelectCategoryByIDs(db, order)
-	if err != nil {
-		logger.Errorf("select category error:[%v]", err)
-		return &api.GetCategoryListAPIResponse{
-			BaseResp: resp.NewFailBaseResp(),
-		}
-	}
-
-	counts, err := mysql.MSelectCategoryArticleCountByCategoryIDs(db, order)
-	if err != nil {
-		logger.Warnf("select article count error:[%v]", err)
-	}
-
-	list := make([]*api.CategoryListItem, 0, len(order))
-	for _, id := range order {
-		category, ok := categories[id]
-		if !ok {
-			logger.Warnf("category not exist, category_id:[%v]", id)
-			continue
-		}
-		count := counts[id]
-		list = append(list, &api.CategoryListItem{
-			ID:    category.ID,
-			Name:  category.CategoryName,
-			Slug:  category.Slug,
-			Count: count,
-		})
 	}
 
 	logger.Infof("get category list success")
 	return &api.GetCategoryListAPIResponse{
-		CategoryList: list,
+		CategoryList: list.ToAPICategoryListModel(),
 		BaseResp:     resp.NewSuccessBaseResp(),
 	}
 }

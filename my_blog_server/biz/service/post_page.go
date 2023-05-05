@@ -19,10 +19,10 @@ import (
 func PostPage(ctx context.Context, req *page.PostPageRequest) (rsp *page.PostPageResponse, pErr *errorx.PageError) {
 	logger := log.GetLoggerWithCtx(ctx).WithField("post_id", req.GetID())
 	rsp = page.NewPostPageResponse()
-	utils.Recover(ctx, func() {
+	defer utils.Recover(ctx, func() {
 		pErr = errorx.NewInternalErrPageError()
 		return
-	})
+	})()
 	// 获取post
 	post, err := storage.GetArticleEntityStorage().Get(ctx, req.GetID())
 	if err != nil {

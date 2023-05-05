@@ -7,11 +7,11 @@ import (
 	"my_blog/biz/common/log"
 )
 
-func Recover(ctx context.Context, fn func()) {
-	defer func() {
+func Recover(ctx context.Context, fn func()) func() {
+	return func() {
 		if err := recover(); err != nil {
 			log.GetLoggerWithCtx(ctx).Errorf("[panic recover] %v\nstack:%v", err, string(debug.Stack()))
 			fn()
 		}
-	}()
+	}
 }

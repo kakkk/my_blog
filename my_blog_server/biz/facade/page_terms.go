@@ -2,6 +2,9 @@ package facade
 
 import (
 	"context"
+	"my_blog/biz/common/consts"
+	"my_blog/biz/common/resp"
+	"my_blog/biz/service"
 	"net/http"
 
 	"my_blog/biz/mock"
@@ -14,6 +17,7 @@ func TagsPage(ctx context.Context, c *app.RequestContext) (resp *page.TermsPageR
 	return mock.TagsMocker(), http.StatusOK
 }
 
-func CategoriesPage(ctx context.Context, c *app.RequestContext) (resp *page.TermsPageResp, code int) {
-	return mock.CategoriesMocker(), http.StatusOK
+func CategoriesPage(ctx context.Context, c *app.RequestContext) (int, string, resp.IPageResponse) {
+	rsp, pErr := service.CategoriesPage(ctx)
+	return resp.PackPageResponse(rsp, pErr, consts.IndexTmpl)
 }

@@ -2,9 +2,9 @@ package storage
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
+	"my_blog/biz/repository/dto"
 	"time"
 
 	"my_blog/biz/common/consts"
@@ -15,24 +15,8 @@ import (
 
 var postOrderListStorage *PostOrderListStorage
 
-type orderList []int64
-
-func (a *orderList) Serialize() string {
-	bytes, _ := json.Marshal(a)
-	return string(bytes)
-}
-
-func (a *orderList) Deserialize(str string) (*orderList, error) {
-	list := &orderList{}
-	err := json.Unmarshal([]byte(str), list)
-	if err != nil {
-		return nil, err
-	}
-	return list, nil
-}
-
 type PostOrderListStorage struct {
-	cacheX *cachex.CacheX[*orderList, int]
+	cacheX *cachex.CacheX[*dto.Int64List, int]
 }
 
 func GetPostOrderListStorage() *PostOrderListStorage {
@@ -42,7 +26,7 @@ func GetPostOrderListStorage() *PostOrderListStorage {
 func initPostOrderListStorage(ctx context.Context) error {
 	redisCache := cachex.NewRedisCache(ctx, redis.GetRedisClient(ctx), time.Minute*30)
 	lruCache := cachex.NewLRUCache(ctx, 1, time.Minute)
-	cache := cachex.NewCacheX[*orderList, int]("post_order_list", false, true).
+	cache := cachex.NewCacheX[*dto.Int64List, int]("post_order_list", false, true).
 		SetGetCacheKey(postOrderListGetKey).
 		SetGetRealData(postOrderListGetRealData).
 		AddCache(ctx, true, lruCache).
@@ -62,7 +46,7 @@ func postOrderListGetKey(_ int) string {
 	return "post_order_list"
 }
 
-func postOrderListGetRealData(ctx context.Context, _ int) (*orderList, error) {
+func postOrderListGetRealData(ctx context.Context, _ int) (*dto.Int64List, error) {
 	db := mysql.GetDB(ctx)
 	order, err := mysql.SelectPostOrderList(db)
 	if err != nil {
@@ -71,7 +55,7 @@ func postOrderListGetRealData(ctx context.Context, _ int) (*orderList, error) {
 		}
 		return nil, fmt.Errorf("sql error:[%w]", err)
 	}
-	return (*orderList)(&order), nil
+	return dto.NewInt64List(order), nil
 }
 
 func (p *PostOrderListStorage) Get(ctx context.Context) ([]int64, error) {
@@ -79,7 +63,7 @@ func (p *PostOrderListStorage) Get(ctx context.Context) ([]int64, error) {
 	if err != nil {
 		return nil, fmt.Errorf("get from cachex error:[%w]", err)
 	}
-	return *order, err
+	return order.ToInt64List(), err
 }
 
 // 重建缓存

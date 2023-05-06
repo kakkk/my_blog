@@ -4,13 +4,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/bytedance/gopkg/util/logger"
+	"time"
+
 	"my_blog/biz/common/consts"
+	"my_blog/biz/common/log"
 	"my_blog/biz/components/cachex"
-	"my_blog/biz/repository/dto"
+	"my_blog/biz/dto"
 	"my_blog/biz/repository/mysql"
 	"my_blog/biz/repository/redis"
-	"time"
 )
 
 type CategoryListStorage struct {
@@ -62,7 +63,7 @@ func categoryListGetRealData(ctx context.Context, _ int) (*dto.CategoryList, err
 	for _, id := range order {
 		category, ok := categories[id]
 		if !ok {
-			logger.Warnf("category not exist, category_id:[%v]", id)
+			log.GetLoggerWithCtx(ctx).Warnf("category not exist, category_id:[%v]", id)
 			continue
 		}
 		count := counts[id]

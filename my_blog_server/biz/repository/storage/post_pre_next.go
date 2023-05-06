@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"my_blog/biz/components/cachex"
-	"my_blog/biz/repository/dto"
+	"my_blog/biz/dto"
 )
 
 var postPrevNextStorage *PostPrevNextStorage

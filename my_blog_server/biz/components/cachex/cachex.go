@@ -99,7 +99,7 @@ func (c *CacheX[T, KEY]) Initialize(ctx context.Context) error {
 	return nil
 }
 
-func (c CacheX[T, KEY]) Set(ctx context.Context, key KEY, data T) {
+func (c *CacheX[T, KEY]) Set(ctx context.Context, key KEY, data T) {
 	if !c.isInit {
 		panic("CacheX not init!!!")
 	}

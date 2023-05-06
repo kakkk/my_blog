@@ -13,7 +13,7 @@ import (
 	"my_blog/biz/repository/redis"
 )
 
-var postOrderListStorage *postOrderList
+var postOrderListStorage *PostOrderListStorage
 
 type orderList []int64
 
@@ -31,11 +31,11 @@ func (a *orderList) Deserialize(str string) (*orderList, error) {
 	return list, nil
 }
 
-type postOrderList struct {
+type PostOrderListStorage struct {
 	cacheX *cachex.CacheX[*orderList, int]
 }
 
-func GetPostOrderListStorage() *postOrderList {
+func GetPostOrderListStorage() *PostOrderListStorage {
 	return postOrderListStorage
 }
 
@@ -52,7 +52,7 @@ func initPostOrderListStorage(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("init cachex error: %w", err)
 	}
-	postOrderListStorage = &postOrderList{
+	postOrderListStorage = &PostOrderListStorage{
 		cacheX: cache,
 	}
 	return nil
@@ -74,7 +74,7 @@ func postOrderListGetRealData(ctx context.Context, _ int) (*orderList, error) {
 	return (*orderList)(&order), nil
 }
 
-func (p *postOrderList) Get(ctx context.Context) ([]int64, error) {
+func (p *PostOrderListStorage) Get(ctx context.Context) ([]int64, error) {
 	order, err := p.cacheX.Get(ctx, 0)
 	if err != nil {
 		return nil, fmt.Errorf("get from cachex error:[%w]", err)
@@ -83,7 +83,7 @@ func (p *postOrderList) Get(ctx context.Context) ([]int64, error) {
 }
 
 // 重建缓存
-func (p *postOrderList) Rebuild(ctx context.Context) {
+func (p *PostOrderListStorage) Rebuild(ctx context.Context) {
 	p.cacheX.Delete(ctx, 0)
 	_, _ = p.cacheX.Get(ctx, 0)
 	return

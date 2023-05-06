@@ -9,13 +9,13 @@ import (
 	"my_blog/biz/repository/dto"
 )
 
-var postPrevNextStorage *postPrevNext
+var postPrevNextStorage *PostPrevNextStorage
 
-type postPrevNext struct {
+type PostPrevNextStorage struct {
 	cacheX *cachex.CacheX[*dto.PostPrevNext, int64]
 }
 
-func GetPostPrevNextStorage() *postPrevNext {
+func GetPostPrevNextStorage() *PostPrevNextStorage {
 	return postPrevNextStorage
 }
 
@@ -30,7 +30,7 @@ func initPostPrevNextStorage(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("init cachex error: %w", err)
 	}
-	postPrevNextStorage = &postPrevNext{
+	postPrevNextStorage = &PostPrevNextStorage{
 		cacheX: cache,
 	}
 	return nil
@@ -61,7 +61,7 @@ func postPrevNextGetRealData(ctx context.Context, id int64) (*dto.PostPrevNext, 
 	return &dto.PostPrevNext{Prev: prev, Next: next}, nil
 }
 
-func (p *postPrevNext) Get(ctx context.Context, id int64) (*dto.PostPrevNext, error) {
+func (p *PostPrevNextStorage) Get(ctx context.Context, id int64) (*dto.PostPrevNext, error) {
 	pn, err := p.cacheX.Get(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("get from cachex error:[%w]", err)
@@ -70,7 +70,7 @@ func (p *postPrevNext) Get(ctx context.Context, id int64) (*dto.PostPrevNext, er
 }
 
 // 重建缓存
-func (p *postPrevNext) Rebuild(ctx context.Context, id int64) {
+func (p *PostPrevNextStorage) Rebuild(ctx context.Context, id int64) {
 	p.cacheX.Delete(ctx, id)
 	_, _ = p.cacheX.Get(ctx, id)
 	return

@@ -12,9 +12,9 @@ import (
 	"my_blog/biz/repository/redis"
 )
 
-var postCategoryListStorage *postCategoryList
+var postCategoryListStorage *PostCategoryListStorage
 
-type postCategoryList struct {
+type PostCategoryListStorage struct {
 	cacheX *cachex.CacheX[*categoryList, int64]
 }
 
@@ -34,7 +34,7 @@ func (a *categoryList) Deserialize(str string) (*categoryList, error) {
 	return list, nil
 }
 
-func GetPostCategoryListStorage() *postCategoryList {
+func GetPostCategoryListStorage() *PostCategoryListStorage {
 	return postCategoryListStorage
 }
 
@@ -51,7 +51,7 @@ func initPostCategoryListStorage(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("init cachex error: %w", err)
 	}
-	postCategoryListStorage = &postCategoryList{
+	postCategoryListStorage = &PostCategoryListStorage{
 		cacheX: cache,
 	}
 	return nil
@@ -75,7 +75,7 @@ func postCategoryListGetRealData(ctx context.Context, id int64) (*categoryList, 
 	return (*categoryList)(&result), nil
 }
 
-func (p *postCategoryList) Get(ctx context.Context, id int64) ([]*entity.Category, error) {
+func (p *PostCategoryListStorage) Get(ctx context.Context, id int64) ([]*entity.Category, error) {
 	list, err := p.cacheX.Get(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("get from cachex error:[%w]", err)

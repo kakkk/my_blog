@@ -13,14 +13,14 @@ import (
 	"my_blog/biz/repository/redis"
 )
 
-var entityStorage *categoryEntity
+var categoryEntityStorage *CategoryEntityStorage
 
-type categoryEntity struct {
+type CategoryEntityStorage struct {
 	cacheX *cachex.CacheX[*entity.Category, int64]
 }
 
-func GetCategoryEntityStorage() *categoryEntity {
-	return entityStorage
+func GetCategoryEntityStorage() *CategoryEntityStorage {
+	return categoryEntityStorage
 }
 
 func initCategoryEntityStorage(ctx context.Context) error {
@@ -37,7 +37,7 @@ func initCategoryEntityStorage(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("init cachex error: %w", err)
 	}
-	entityStorage = &categoryEntity{
+	categoryEntityStorage = &CategoryEntityStorage{
 		cacheX: cache,
 	}
 	return nil
@@ -72,11 +72,11 @@ func categoryStorageGetKey(id int64) string {
 	return fmt.Sprintf("my_blog_category_entity_%v", id)
 }
 
-func (a *categoryEntity) MGet(ctx context.Context, ids []int64) map[int64]*entity.Category {
+func (a *CategoryEntityStorage) MGet(ctx context.Context, ids []int64) map[int64]*entity.Category {
 	return a.cacheX.MGet(ctx, ids)
 }
 
-func (a *categoryEntity) Get(ctx context.Context, id int64) (*entity.Category, error) {
+func (a *CategoryEntityStorage) Get(ctx context.Context, id int64) (*entity.Category, error) {
 	article, err := a.cacheX.Get(ctx, id)
 	if err != nil {
 		if errors.Is(err, cachex.ErrNotFound) {

@@ -13,11 +13,11 @@ import (
 	"time"
 )
 
-type CategoryList struct {
+type CategoryListStorage struct {
 	cacheX *cachex.CacheX[*dto.CategoryList, int]
 }
 
-var categoryListStorage *CategoryList
+var categoryListStorage *CategoryListStorage
 
 func initCategoryListStorage(ctx context.Context) error {
 	redisCache := cachex.NewRedisCache(ctx, redis.GetRedisClient(ctx), 0)
@@ -32,7 +32,7 @@ func initCategoryListStorage(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("init cachex error: %w", err)
 	}
-	categoryListStorage = &CategoryList{
+	categoryListStorage = &CategoryListStorage{
 		cacheX: cache,
 	}
 	return nil
@@ -76,11 +76,11 @@ func categoryListGetRealData(ctx context.Context, _ int) (*dto.CategoryList, err
 	return &list, nil
 }
 
-func GetCategoryListStorage() *CategoryList {
+func GetCategoryListStorage() *CategoryListStorage {
 	return categoryListStorage
 }
 
-func (c *CategoryList) Get(ctx context.Context) (*dto.CategoryList, error) {
+func (c *CategoryListStorage) Get(ctx context.Context) (*dto.CategoryList, error) {
 	got, err := c.cacheX.Get(ctx, 0)
 	if err != nil {
 		if errors.Is(err, cachex.ErrNotFound) {
@@ -91,11 +91,11 @@ func (c *CategoryList) Get(ctx context.Context) (*dto.CategoryList, error) {
 	return got, nil
 }
 
-func (c *CategoryList) GetFromDB(ctx context.Context) (*dto.CategoryList, error) {
+func (c *CategoryListStorage) GetFromDB(ctx context.Context) (*dto.CategoryList, error) {
 	return categoryListGetRealData(ctx, 0)
 }
 
-func (c *CategoryList) RebuildCache(ctx context.Context) {
+func (c *CategoryListStorage) RebuildCache(ctx context.Context) {
 	c.cacheX.Delete(ctx, 0)
 	_, _ = c.cacheX.Get(ctx, 0)
 }

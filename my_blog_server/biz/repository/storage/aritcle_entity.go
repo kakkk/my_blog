@@ -13,13 +13,13 @@ import (
 	"my_blog/biz/repository/redis"
 )
 
-var articleEntityStorage *articleEntity
+var articleEntityStorage *ArticleEntityStorage
 
-type articleEntity struct {
+type ArticleEntityStorage struct {
 	cacheX *cachex.CacheX[*entity.Article, int64]
 }
 
-func GetArticleEntityStorage() *articleEntity {
+func GetArticleEntityStorage() *ArticleEntityStorage {
 	return articleEntityStorage
 }
 
@@ -37,7 +37,7 @@ func initArticleEntityStorage(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("init cachex error: %w", err)
 	}
-	articleEntityStorage = &articleEntity{
+	articleEntityStorage = &ArticleEntityStorage{
 		cacheX: cache,
 	}
 	return nil
@@ -69,11 +69,11 @@ func articleStorageGetKey(id int64) string {
 	return fmt.Sprintf("my_blog_article_entity_%v", id)
 }
 
-func (a *articleEntity) MGet(ctx context.Context, ids []int64) map[int64]*entity.Article {
+func (a *ArticleEntityStorage) MGet(ctx context.Context, ids []int64) map[int64]*entity.Article {
 	return a.cacheX.MGet(ctx, ids)
 }
 
-func (a *articleEntity) Get(ctx context.Context, id int64) (*entity.Article, error) {
+func (a *ArticleEntityStorage) Get(ctx context.Context, id int64) (*entity.Article, error) {
 	article, err := a.cacheX.Get(ctx, id)
 	if err != nil {
 		if errors.Is(err, cachex.ErrNotFound) {

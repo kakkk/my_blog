@@ -13,7 +13,7 @@ import (
 	"my_blog/biz/repository/redis"
 )
 
-var postTagListStorage *postTagList
+var postTagListStorage *PostTagListStorage
 
 type tagList []string
 
@@ -31,11 +31,11 @@ func (a *tagList) Deserialize(str string) (*tagList, error) {
 	return list, nil
 }
 
-type postTagList struct {
+type PostTagListStorage struct {
 	cacheX *cachex.CacheX[*tagList, int64]
 }
 
-func GetPostTagListStorage() *postTagList {
+func GetPostTagListStorage() *PostTagListStorage {
 	return postTagListStorage
 }
 
@@ -52,7 +52,7 @@ func initPostTagListStorage(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("init cachex error: %w", err)
 	}
-	postTagListStorage = &postTagList{
+	postTagListStorage = &PostTagListStorage{
 		cacheX: cache,
 	}
 	return nil
@@ -74,7 +74,7 @@ func postTagListGetRealData(ctx context.Context, id int64) (*tagList, error) {
 	return (*tagList)(&tags), nil
 }
 
-func (p *postTagList) Get(ctx context.Context, id int64) ([]string, error) {
+func (p *PostTagListStorage) Get(ctx context.Context, id int64) ([]string, error) {
 	tags, err := p.cacheX.Get(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("get from cachex error:[%w]", err)
@@ -83,7 +83,7 @@ func (p *postTagList) Get(ctx context.Context, id int64) ([]string, error) {
 }
 
 // 重建缓存
-func (p *postTagList) Rebuild(ctx context.Context, id int64) {
+func (p *PostTagListStorage) Rebuild(ctx context.Context, id int64) {
 	p.cacheX.Delete(ctx, id)
 	_, _ = p.cacheX.Get(ctx, id)
 	return

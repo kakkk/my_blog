@@ -12,13 +12,13 @@ import (
 	"my_blog/biz/repository/redis"
 )
 
-var postMetaStorage *postMeta
+var postMetaStorage *PostMetaStorage
 
-type postMeta struct {
+type PostMetaStorage struct {
 	cacheX *cachex.CacheX[*dto.PostMeta, int64]
 }
 
-func GetPostMetaStorage() *postMeta {
+func GetPostMetaStorage() *PostMetaStorage {
 	return postMetaStorage
 }
 
@@ -36,7 +36,7 @@ func initPostMetaStorage(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("init cachex error: %w", err)
 	}
-	postMetaStorage = &postMeta{
+	postMetaStorage = &PostMetaStorage{
 		cacheX: cache,
 	}
 	return nil
@@ -72,11 +72,11 @@ func postMetaStorageGetKey(id int64) string {
 	return fmt.Sprintf("my_blog_post_meta_%v", id)
 }
 
-func (p *postMeta) MGet(ctx context.Context, ids []int64) map[int64]*dto.PostMeta {
+func (p *PostMetaStorage) MGet(ctx context.Context, ids []int64) map[int64]*dto.PostMeta {
 	return p.cacheX.MGet(ctx, ids)
 }
 
-func (p *postMeta) Get(ctx context.Context, id int64) (*dto.PostMeta, error) {
+func (p *PostMetaStorage) Get(ctx context.Context, id int64) (*dto.PostMeta, error) {
 	article, err := p.cacheX.Get(ctx, id)
 	if errors.Is(err, cachex.ErrNotFound) {
 		return nil, consts.ErrRecordNotFound

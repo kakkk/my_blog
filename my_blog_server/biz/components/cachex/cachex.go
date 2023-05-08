@@ -5,13 +5,26 @@ import (
 	"errors"
 	"fmt"
 	"time"
+
+	"github.com/dablelv/go-huge-util/conv"
 )
 
 type KeyType interface {
 	~int | ~int8 | ~int16 | ~int32 | ~int64 | ~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64 | ~string
 }
 
-type CacheX[T Serializable[T], KEY KeyType] struct {
+type BaseValueType interface {
+	~int | ~int8 | ~int16 | ~int32 | ~int64 | ~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64 | ~string
+}
+
+type cacheType int
+
+const (
+	serializableCache cacheType = 0
+	baseValueCache    cacheType = 1
+)
+
+type CacheX[T any, KEY KeyType] struct {
 	name         string
 	isSetDefault bool
 	isOnlyCache  bool
@@ -21,15 +34,28 @@ type CacheX[T Serializable[T], KEY KeyType] struct {
 	mGetCacheKey func([]KEY) []string
 	cacheChain   *cacheChain
 	isInit       bool
+	cacheType    cacheType
 }
 
-func NewCacheX[T Serializable[T], KEY KeyType](name string, isOnlyCache bool, isSetDefault bool) *CacheX[T, KEY] {
+func NewSerializableCacheX[T Serializable[T], KEY KeyType](name string, isOnlyCache bool, isSetDefault bool) *CacheX[T, KEY] {
 	chain := newCacheChain()
 	return &CacheX[T, KEY]{
 		cacheChain:   chain,
 		isSetDefault: isSetDefault,
 		isOnlyCache:  isOnlyCache,
 		name:         name,
+		cacheType:    serializableCache,
+	}
+}
+
+func NewBaseValueCacheX[T BaseValueType, KEY KeyType](name string, isOnlyCache bool, isSetDefault bool) *CacheX[T, KEY] {
+	chain := newCacheChain()
+	return &CacheX[T, KEY]{
+		cacheChain:   chain,
+		isSetDefault: isSetDefault,
+		isOnlyCache:  isOnlyCache,
+		name:         name,
+		cacheType:    baseValueCache,
 	}
 }
 
@@ -105,7 +131,7 @@ func (c *CacheX[T, KEY]) Set(ctx context.Context, key KEY, data T) {
 	}
 	cacheData := &CacheData{
 		CreateAt: time.Now().UnixMilli(),
-		Data:     data.Serialize(),
+		Data:     c.toData(data),
 	}
 	err := c.cacheChain.Set(ctx, c.getCacheKey(key), cacheData)
 	if err != nil {
@@ -124,7 +150,7 @@ func (c *CacheX[T, KEY]) MSet(ctx context.Context, data map[KEY]T) {
 	for key, val := range data {
 		cacheData[c.getCacheKey(key)] = &CacheData{
 			CreateAt: now,
-			Data:     val.Serialize(),
+			Data:     c.toData(val),
 		}
 	}
 	err := c.cacheChain.MSet(ctx, cacheData)
@@ -155,7 +181,7 @@ func (c *CacheX[T, KEY]) Get(ctx context.Context, key KEY) (T, error) {
 			return zero, ErrNotFound
 		}
 		// 反序列化
-		data, err = data.Deserialize(fromCache.Data)
+		data, err = c.ToValue(fromCache.Data)
 		if err != nil {
 			logger.Errorf(ctx, "%v deserialize error: %v", c.name, err)
 			return zero, ErrDeserializeError
@@ -216,7 +242,7 @@ func (c *CacheX[T, KEY]) MGet(ctx context.Context, keys []KEY) map[KEY]T {
 		}
 		// 反序列化
 		var data T
-		data, err := data.Deserialize(val.Data)
+		data, err := c.ToValue(val.Data)
 		if err != nil {
 			logger.Warnf(ctx, "%v deserialize error: %v", c.name, err)
 			needGetRealData = append(needGetRealData, key)
@@ -242,7 +268,7 @@ func (c *CacheX[T, KEY]) MGet(ctx context.Context, keys []KEY) map[KEY]T {
 		result[key] = val
 		cacheData[c.getCacheKey(key)] = &CacheData{
 			CreateAt: now,
-			Data:     val.Serialize(),
+			Data:     c.toData(val),
 		}
 	}
 	// 设置缓存
@@ -267,4 +293,28 @@ func (c *CacheX[T, KEY]) MDelete(ctx context.Context, keys []KEY) {
 		logger.Warnf(ctx, "%v mdelete error: %v", c.name, err)
 	}
 	return
+}
+
+func (c *CacheX[T, KEY]) toData(value any) string {
+	if c.cacheType == serializableCache {
+		val := value.(Serializable[T])
+		return val.Serialize()
+	}
+	if c.cacheType == baseValueCache {
+		s, _ := conv.ToStringE(value)
+		return s
+	}
+	return ""
+}
+
+func (c *CacheX[T, KEY]) ToValue(data string) (T, error) {
+	if c.cacheType == serializableCache {
+		var zero T
+		s := any(zero).(Serializable[T])
+		return s.Deserialize(data)
+	}
+	if c.cacheType == baseValueCache {
+		return conv.ToAnyE[T](data)
+	}
+	panic("unsupported cache type")
 }

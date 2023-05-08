@@ -26,7 +26,7 @@ func GetUserEntityStorage() *UserEntityStorage {
 func initUserEntityStorage(ctx context.Context) error {
 	redisCache := cachex.NewRedisCache(ctx, redis.GetRedisClient(ctx), time.Minute*30)
 	lruCache := cachex.NewLRUCache(ctx, 1000, time.Minute)
-	cache := cachex.NewCacheX[*entity.User, int64]("user_entity", false, true).
+	cache := cachex.NewSerializableCacheX[*entity.User, int64]("user_entity", false, true).
 		SetGetCacheKey(userEntityStorageGetKey).
 		SetGetRealData(userEntityStorageGetRealData).
 		SetMGetRealData(userEntityStorageMGetRealData).

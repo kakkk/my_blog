@@ -26,7 +26,7 @@ func GetArticleEntityStorage() *ArticleEntityStorage {
 func initArticleEntityStorage(ctx context.Context) error {
 	redisCache := cachex.NewRedisCache(ctx, redis.GetRedisClient(ctx), time.Minute*30)
 	lruCache := cachex.NewLRUCache(ctx, 1000, time.Minute)
-	cache := cachex.NewCacheX[*entity.Article, int64]("article_entity", false, true).
+	cache := cachex.NewSerializableCacheX[*entity.Article, int64]("article_entity", false, true).
 		SetGetCacheKey(articleStorageGetKey).
 		SetGetRealData(articleStorageGetRealData).
 		SetMGetRealData(articleStorageMGetRealData).

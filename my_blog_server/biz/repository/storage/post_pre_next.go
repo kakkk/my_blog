@@ -21,7 +21,7 @@ func GetPostPrevNextStorage() *PostPrevNextStorage {
 
 func initPostPrevNextStorage(ctx context.Context) error {
 	lruCache := cachex.NewLRUCache(ctx, 200, 5*time.Minute)
-	cache := cachex.NewCacheX[*dto.PostPrevNext, int64]("post_order_list", false, true).
+	cache := cachex.NewSerializableCacheX[*dto.PostPrevNext, int64]("post_order_list", false, true).
 		SetGetCacheKey(postPrevNextGetKey).
 		SetGetRealData(postPrevNextGetRealData).
 		AddCache(ctx, true, lruCache)

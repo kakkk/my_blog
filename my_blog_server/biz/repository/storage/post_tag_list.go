@@ -26,7 +26,7 @@ func GetPostTagListStorage() *PostTagListStorage {
 func initPostTagListStorage(ctx context.Context) error {
 	redisCache := cachex.NewRedisCache(ctx, redis.GetRedisClient(ctx), time.Minute*30)
 	lruCache := cachex.NewLRUCache(ctx, 200, time.Minute)
-	cache := cachex.NewCacheX[*dto.StringList, int64]("post_tag_list", false, true).
+	cache := cachex.NewSerializableCacheX[*dto.StringList, int64]("post_tag_list", false, true).
 		SetGetCacheKey(postTagListGetKey).
 		SetGetRealData(postTagListGetRealData).
 		AddCache(ctx, true, lruCache).

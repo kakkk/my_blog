@@ -23,7 +23,7 @@ var categoryListStorage *CategoryListStorage
 func initCategoryListStorage(ctx context.Context) error {
 	redisCache := cachex.NewRedisCache(ctx, redis.GetRedisClient(ctx), 0)
 	lruCache := cachex.NewLRUCache(ctx, 1, time.Hour)
-	cache := cachex.NewCacheX[*dto.CategoryList, int]("category_list", false, false).
+	cache := cachex.NewSerializableCacheX[*dto.CategoryList, int]("category_list", false, false).
 		SetGetCacheKey(categoryListGetKey).
 		SetGetRealData(categoryListGetRealData).
 		AddCache(ctx, true, lruCache).

@@ -41,7 +41,7 @@ func GetPostCategoryListStorage() *PostCategoryListStorage {
 func initPostCategoryListStorage(ctx context.Context) error {
 	redisCache := cachex.NewRedisCache(ctx, redis.GetRedisClient(ctx), time.Minute*30)
 	lruCache := cachex.NewLRUCache(ctx, 1, time.Minute)
-	cache := cachex.NewCacheX[*categoryList, int64]("post_category_list", false, true).
+	cache := cachex.NewSerializableCacheX[*categoryList, int64]("post_category_list", false, true).
 		SetGetCacheKey(postCategoryListGetKey).
 		SetGetRealData(postCategoryListGetRealData).
 		AddCache(ctx, true, lruCache).

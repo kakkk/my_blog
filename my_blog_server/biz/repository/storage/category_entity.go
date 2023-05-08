@@ -26,7 +26,7 @@ func GetCategoryEntityStorage() *CategoryEntityStorage {
 func initCategoryEntityStorage(ctx context.Context) error {
 	redisCache := cachex.NewRedisCache(ctx, redis.GetRedisClient(ctx), time.Minute*30)
 	lruCache := cachex.NewLRUCache(ctx, 1000, time.Minute)
-	cache := cachex.NewCacheX[*entity.Category, int64]("category_entity", false, true).
+	cache := cachex.NewSerializableCacheX[*entity.Category, int64]("category_entity", false, true).
 		SetGetCacheKey(categoryStorageGetKey).
 		SetGetRealData(categoryEntityStorageGetRealData).
 		SetMGetRealData(categoryEntityStorageMGetRealData).

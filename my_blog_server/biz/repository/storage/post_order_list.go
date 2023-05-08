@@ -26,7 +26,7 @@ func GetPostOrderListStorage() *PostOrderListStorage {
 func initPostOrderListStorage(ctx context.Context) error {
 	redisCache := cachex.NewRedisCache(ctx, redis.GetRedisClient(ctx), time.Minute*30)
 	lruCache := cachex.NewLRUCache(ctx, 1, time.Minute)
-	cache := cachex.NewCacheX[*dto.Int64List, int]("post_order_list", false, true).
+	cache := cachex.NewSerializableCacheX[*dto.Int64List, int]("post_order_list", false, true).
 		SetGetCacheKey(postOrderListGetKey).
 		SetGetRealData(postOrderListGetRealData).
 		AddCache(ctx, true, lruCache).

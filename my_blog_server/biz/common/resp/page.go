@@ -74,6 +74,16 @@ func NewSuccessPageMeta(title string, description string, pageType string) *page
 	}
 }
 
+func NewBasePageMeta(pageType string) *page.PageMeta {
+	return &page.PageMeta{
+		Title:       "",
+		Description: config.GetBlogDescription(),
+		CDNDomain:   config.GetSiteConfig().CDNDomain,
+		SiteDomain:  config.GetSiteConfig().SiteDomain,
+		PageType:    pageType,
+	}
+}
+
 func PackPageResponse(rsp IPageResponse, pErr *errorx.PageError, tmpl string) (int, string, IPageResponse) {
 	if pErr.IsError() {
 		if errors.Is(pErr, errorx.PageErrInternalError) {
@@ -83,7 +93,7 @@ func PackPageResponse(rsp IPageResponse, pErr *errorx.PageError, tmpl string) (i
 			return pErr.GetStatusCode(), tmpl, NewNotFoundErrorPageResp()
 		}
 		if errors.Is(pErr, errorx.PageErrFail) {
-			return pErr.GetStatusCode(), tmpl, NewInternalErrorPageResp()
+			return pErr.GetStatusCode(), tmpl, NewSomethingWrongErrorPageResp()
 		}
 		return pErr.GetStatusCode(), tmpl, NewInternalErrorPageResp()
 	}

@@ -21,7 +21,7 @@ type CategoryListStorage struct {
 var categoryListStorage *CategoryListStorage
 
 func initCategoryListStorage(ctx context.Context) error {
-	redisCache := cachex.NewRedisCache(ctx, redis.GetRedisClient(ctx), 0)
+	redisCache := cachex.NewRedisCache(ctx, redis.GetRedisClient(ctx), 6*time.Hour)
 	lruCache := cachex.NewLRUCache(ctx, 1, time.Hour)
 	cache := cachex.NewSerializableCacheX[*dto.CategoryList, int]("category_list", false, false).
 		SetGetCacheKey(categoryListGetKey).
@@ -43,7 +43,7 @@ func categoryListGetKey(_ int) string {
 	return "category_list"
 }
 
-func categoryListGetRealData(ctx context.Context, _ int) (*dto.CategoryList, error) {
+func categoryListGetFromDB(ctx context.Context, withPublish bool) (*dto.CategoryList, error) {
 	db := mysql.GetDB(ctx)
 	order, err := mysql.SelectCategoryOrder(db)
 	if err != nil {
@@ -54,7 +54,7 @@ func categoryListGetRealData(ctx context.Context, _ int) (*dto.CategoryList, err
 		return nil, fmt.Errorf("select category error:[%v]", err)
 	}
 
-	counts, err := mysql.MSelectCategoryArticleCountByCategoryIDs(db, order)
+	counts, err := mysql.MSelectCategoryArticleCountByCategoryIDs(db, order, withPublish)
 	if err != nil {
 		return nil, fmt.Errorf("select article count error:[%v]", err)
 	}
@@ -77,6 +77,10 @@ func categoryListGetRealData(ctx context.Context, _ int) (*dto.CategoryList, err
 	return &list, nil
 }
 
+func categoryListGetRealData(ctx context.Context, _ int) (*dto.CategoryList, error) {
+	return categoryListGetFromDB(ctx, true)
+}
+
 func GetCategoryListStorage() *CategoryListStorage {
 	return categoryListStorage
 }
@@ -93,7 +97,7 @@ func (c *CategoryListStorage) Get(ctx context.Context) (*dto.CategoryList, error
 }
 
 func (c *CategoryListStorage) GetFromDB(ctx context.Context) (*dto.CategoryList, error) {
-	return categoryListGetRealData(ctx, 0)
+	return categoryListGetFromDB(ctx, false)
 }
 
 func (c *CategoryListStorage) RebuildCache(ctx context.Context) {

@@ -21,6 +21,7 @@ type ArticleTag struct {
 	PostID     int64             `gorm:"column:article_id"`
 	TagID      int64             `gorm:"column:tag_id"`
 	DeleteFlag common.DeleteFlag `gorm:"column:delete_flag"`
+	PublishAt  *time.Time        `gorm:"publish_at"`
 }
 
 func (ArticleTag) TableName() string {

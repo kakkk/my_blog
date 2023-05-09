@@ -111,7 +111,7 @@ func UpdateCategoryOrder(db *gorm.DB, order []int64) error {
 	return nil
 }
 
-func MSelectCategoryArticleCountByCategoryIDs(db *gorm.DB, categoryIDs []int64) (map[int64]int64, error) {
+func MSelectCategoryArticleCountByCategoryIDs(db *gorm.DB, categoryIDs []int64, withPublish bool) (map[int64]int64, error) {
 	type result struct {
 		CategoryID int64 `gorm:"column:category_id"`
 		Count      int64 `gorm:"column:count"`
@@ -121,12 +121,14 @@ func MSelectCategoryArticleCountByCategoryIDs(db *gorm.DB, categoryIDs []int64) 
 		res[id] = 0
 	}
 	var resultFromDB []result
-	err := db.Model(&entity.ArticleCategory{}).
+	query := db.Model(&entity.ArticleCategory{}).
 		Select("category_id, count(1) as count").
 		Where("category_id in (?)", categoryIDs).
-		Where("delete_flag = ?", common.DeleteFlag_Exist).
-		Group("category_id").
-		Find(&resultFromDB).Error
+		Where("delete_flag = ?", common.DeleteFlag_Exist)
+	if withPublish {
+		query.Where("publish_at is not null")
+	}
+	err := query.Group("category_id").Find(&resultFromDB).Error
 	if err != nil {
 		return res, parseError(err)
 	}
@@ -231,4 +233,25 @@ func MSelectCategoryByNames(db *gorm.DB, names []string) (map[string]*entity.Cat
 		result[category.CategoryName] = category
 	}
 	return result, nil
+}
+
+func SelectCategoryIDBySlug(db *gorm.DB, slug string) (int64, error) {
+	var id int64
+	err := db.Model(&entity.Category{}).
+		Select("id").
+		Where("slug = ?", slug).
+		Where("delete_flag = ?", common.DeleteFlag_Exist).
+		First(&id).
+		Error
+	if err != nil {
+		return 0, parseError(err)
+	}
+	return id, nil
+}
+
+func UpdateArticleCategoryUpdateAtByArticleID(db *gorm.DB, id int64, publishAt *time.Time) error {
+	err := db.Model(&entity.ArticleCategory{}).
+		Where("article_id = ?", id).
+		Update("publish_at", publishAt).Error
+	return parseError(err)
 }

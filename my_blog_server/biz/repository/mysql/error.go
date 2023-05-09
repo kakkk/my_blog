@@ -11,6 +11,9 @@ import (
 )
 
 func parseError(err error) error {
+	if err == nil {
+		return nil
+	}
 	if err == gorm.ErrRecordNotFound {
 		return consts.ErrRecordNotFound
 	}

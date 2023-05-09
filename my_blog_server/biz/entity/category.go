@@ -15,7 +15,7 @@ type Category struct {
 	UpdateAt     time.Time         `gorm:"column:update_at"`
 }
 
-func (Category) TableName() string {
+func (*Category) TableName() string {
 	return "categories"
 }
 
@@ -37,6 +37,7 @@ type ArticleCategory struct {
 	PostID     int64             `gorm:"column:article_id"`
 	CategoryID int64             `gorm:"column:category_id"`
 	DeleteFlag common.DeleteFlag `gorm:"column:delete_flag"`
+	PublishAt  *time.Time        `gorm:"publish_at"`
 }
 
 func (ArticleCategory) TableName() string {

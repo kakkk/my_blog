@@ -280,3 +280,10 @@ func SelectTagListByArticleID(db *gorm.DB, articleID int64) ([]string, error) {
 	}
 	return tagList, nil
 }
+
+func UpdateArticleTagUpdateAtByArticleID(db *gorm.DB, id int64, publishAt *time.Time) error {
+	err := db.Model(&entity.ArticleTag{}).
+		Where("article_id = ?", id).
+		Update("publish_at", publishAt).Error
+	return parseError(err)
+}

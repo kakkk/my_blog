@@ -47,5 +47,13 @@ func InitStorage() error {
 	if err != nil {
 		return fmt.Errorf("init storage error: [%w]", err)
 	}
+	err = initCategoryPostListStorage(ctx)
+	if err != nil {
+		return fmt.Errorf("init storage error: [%w]", err)
+	}
+	err = initCategorySlugIDStorage(ctx)
+	if err != nil {
+		return fmt.Errorf("init storage error: [%w]", err)
+	}
 	return nil
 }

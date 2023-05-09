@@ -26,15 +26,13 @@ func IndexByPaginationPage(ctx context.Context, c *app.RequestContext) {
 // CategoryPostPage .
 // @router /category/:slug [GET]
 func CategoryPostPage(ctx context.Context, c *app.RequestContext) {
-	resp, code := facade.CategoryPostPage(ctx, c)
-	c.HTML(code, "index.tmpl", resp)
+	c.HTML(facade.CategoryPostPage(ctx, c))
 }
 
 // CategoryPostByPaginationPage .
 // @router /category/:slug/:page [GET]
 func CategoryPostByPaginationPage(ctx context.Context, c *app.RequestContext) {
-	resp, code := facade.CategoryPostByPaginationPage(ctx, c)
-	c.HTML(code, "index.tmpl", resp)
+	c.HTML(facade.CategoryPostByPaginationPage(ctx, c))
 }
 
 // TagPostPage .

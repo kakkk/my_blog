@@ -6,6 +6,9 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/sirupsen/logrus"
+	"gorm.io/gorm"
+
 	"my_blog/biz/common/consts"
 	"my_blog/biz/common/log"
 	"my_blog/biz/common/resp"
@@ -15,9 +18,6 @@ import (
 	"my_blog/biz/model/blog/common"
 	"my_blog/biz/repository/mysql"
 	"my_blog/biz/repository/storage"
-
-	"github.com/sirupsen/logrus"
-	"gorm.io/gorm"
 )
 
 func CreatePostAPI(ctx context.Context, req *api.CreatePostAPIRequest) (rsp *api.CreatePostAPIResponse) {
@@ -63,14 +63,14 @@ func CreatePostAPI(ctx context.Context, req *api.CreatePostAPIRequest) (rsp *api
 		}
 
 		// 处理标签
-		err = processTags(tx, req.GetTags(), post.ID)
+		err = processTags(tx, req.GetTags(), post.ID, publishAt)
 		if err != nil {
 			rsp.BaseResp = resp.NewFailBaseResp()
 			return fmt.Errorf("process tag error:[%v]", err)
 		}
 
 		// 处理分类
-		err = processCategories(tx, req.GetCategoryList(), post.ID)
+		err = processCategories(tx, req.GetCategoryList(), post.ID, publishAt)
 		if err != nil {
 			rsp.BaseResp = resp.NewFailBaseResp()
 			return fmt.Errorf("process categories error:[%v]", err)
@@ -86,8 +86,10 @@ func CreatePostAPI(ctx context.Context, req *api.CreatePostAPIRequest) (rsp *api
 	}
 
 	logger.Infof("create post success")
+
 	// 重建缓存
-	storage.GetPostOrderListStorage().Rebuild(ctx)
+	rebuildPostCache(ctx, req.GetCategoryList())
+
 	return &api.CreatePostAPIResponse{
 		ID:       post.ID,
 		BaseResp: resp.NewSuccessBaseResp(),
@@ -168,6 +170,17 @@ func UpdatePostAPI(ctx context.Context, req *api.UpdatePostAPIRequest) (rsp *api
 			return fmt.Errorf("check category exist error:[%v]", err)
 		}
 
+		// 获取更新前的文章，用于获取publish_at
+		article, err := mysql.SelectArticleByID(tx, req.GetID())
+		if err != nil {
+			if errors.Is(err, consts.ErrRecordNotFound) {
+				rsp.BaseResp = resp.NewBaseResponse(common.RespCode_NotFound, "category not found")
+				return fmt.Errorf("check post not exist: [%v]", err)
+			}
+			rsp.BaseResp = resp.NewFailBaseResp()
+			return fmt.Errorf("check post exist error:[%v]", err)
+		}
+
 		// 更新文章
 		err = mysql.UpdateArticleByID(tx, req.GetID(), &entity.Article{
 			ID:      0,
@@ -180,14 +193,14 @@ func UpdatePostAPI(ctx context.Context, req *api.UpdatePostAPIRequest) (rsp *api
 		}
 
 		// 处理标签
-		err = processTags(tx, req.GetTags(), req.GetID())
+		err = processTags(tx, req.GetTags(), req.GetID(), article.PublishAt)
 		if err != nil {
 			rsp.BaseResp = resp.NewFailBaseResp()
 			return fmt.Errorf("process tag error:[%v]", err)
 		}
 
 		// 处理分类
-		err = processCategories(tx, req.GetCategoryList(), req.GetID())
+		err = processCategories(tx, req.GetCategoryList(), req.GetID(), article.PublishAt)
 		if err != nil {
 			rsp.BaseResp = resp.NewFailBaseResp()
 			return fmt.Errorf("process categories error:[%v]", err)
@@ -200,6 +213,9 @@ func UpdatePostAPI(ctx context.Context, req *api.UpdatePostAPIRequest) (rsp *api
 		logger.Errorf("update post fail:[%v]", err)
 		return rsp
 	}
+
+	// 重建缓存
+	rebuildPostCache(ctx, req.GetCategoryList())
 
 	return &api.CommonResponse{
 		BaseResp: resp.NewSuccessBaseResp(),
@@ -222,7 +238,7 @@ func checkCategoryIsExist(tx *gorm.DB, categoryIDs []int64) error {
 }
 
 // 标签处理
-func processTags(tx *gorm.DB, tags []string, postID int64) error {
+func processTags(tx *gorm.DB, tags []string, postID int64, publishAt *time.Time) error {
 	// 先清除标签（更新操作会用到）
 	err := mysql.DeleteArticleTagRelationByArticleID(tx, postID)
 	if err != nil {
@@ -268,8 +284,9 @@ func processTags(tx *gorm.DB, tags []string, postID int64) error {
 	var tagRelation []*entity.ArticleTag
 	for _, id := range tagIDList {
 		tagRelation = append(tagRelation, &entity.ArticleTag{
-			PostID: postID,
-			TagID:  id,
+			PostID:    postID,
+			TagID:     id,
+			PublishAt: publishAt,
 		})
 	}
 	err = mysql.UpsertArticleTagRelation(tx, tagRelation)
@@ -286,7 +303,7 @@ func processTags(tx *gorm.DB, tags []string, postID int64) error {
 	return nil
 }
 
-func processCategories(tx *gorm.DB, categoryIDs []int64, postID int64) error {
+func processCategories(tx *gorm.DB, categoryIDs []int64, postID int64, publishAt *time.Time) error {
 	// 解除所有关联
 	err := mysql.DeleteArticleCategoryRelationByArticleID(tx, postID)
 	if err != nil {
@@ -299,6 +316,7 @@ func processCategories(tx *gorm.DB, categoryIDs []int64, postID int64) error {
 		categoryRelation = append(categoryRelation, &entity.ArticleCategory{
 			PostID:     postID,
 			CategoryID: id,
+			PublishAt:  publishAt,
 		})
 	}
 	// 默认分类
@@ -310,6 +328,7 @@ func processCategories(tx *gorm.DB, categoryIDs []int64, postID int64) error {
 		categoryRelation = append(categoryRelation, &entity.ArticleCategory{
 			PostID:     postID,
 			CategoryID: defaultID,
+			PublishAt:  publishAt,
 		})
 	}
 	err = mysql.UpsertArticleCategoryRelation(tx, categoryRelation)
@@ -341,10 +360,23 @@ func UpdatePostStatusAPI(ctx context.Context, req *api.UpdatePostStatusAPIReques
 		// 新发布文章
 		if req.GetStatus() == common.ArticleStatus_PUBLISH && post.PublishAt == nil {
 			publishAt := time.Now()
+			// 更新文章发布时间
 			err = mysql.UpdateArticlePublishAtByID(tx, req.GetID(), &publishAt)
 			if err != nil {
 				rsp.BaseResp = resp.NewFailBaseResp()
 				return fmt.Errorf("update article publish_at by id error:[%v]", err)
+			}
+			// 更新分类发布时间
+			err = mysql.UpdateArticleCategoryUpdateAtByArticleID(tx, req.GetID(), &publishAt)
+			if err != nil {
+				rsp.BaseResp = resp.NewFailBaseResp()
+				return fmt.Errorf("update article_category publish_at by id error:[%v]", err)
+			}
+			// 更新标签发布时间
+			err = mysql.UpdateArticleTagUpdateAtByArticleID(tx, req.GetID(), &publishAt)
+			if err != nil {
+				rsp.BaseResp = resp.NewFailBaseResp()
+				return fmt.Errorf("update article_tag publish_at by id error:[%v]", err)
 			}
 		}
 
@@ -400,4 +432,11 @@ func DeletePostAPI(ctx context.Context, req *api.DeletePostAPIRequest) (rsp *api
 		BaseResp: resp.NewSuccessBaseResp(),
 	}
 
+}
+
+// 重建文章相关缓存
+func rebuildPostCache(ctx context.Context, categoryList []int64) {
+	storage.GetPostOrderListStorage().Rebuild(ctx)
+	storage.GetCategoryPostListStorage().Rebuild(ctx, categoryList)
+	storage.GetCategoryListStorage().RebuildCache(ctx)
 }

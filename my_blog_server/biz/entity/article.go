@@ -22,7 +22,7 @@ type Article struct {
 	DeleteFlag  common.DeleteFlag    `gorm:"column:delete_flag"`
 }
 
-func (Article) TableName() string {
+func (*Article) TableName() string {
 	return "article"
 }
 

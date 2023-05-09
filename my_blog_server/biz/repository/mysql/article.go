@@ -217,3 +217,21 @@ func SelectPostOrderList(db *gorm.DB) ([]int64, error) {
 	}
 	return order, nil
 }
+
+func SelectPostIDsByCategoryID(db *gorm.DB, cID int64) ([]int64, error) {
+	var list []int64
+	err := db.Model(&entity.ArticleCategory{}).
+		Select("article_id").
+		Where("category_id = ?", cID).
+		Where("delete_flag = ?", common.DeleteFlag_Exist).
+		Where("publish_at is not null").
+		Order("publish_at desc").
+		Find(&list).Error
+	if err != nil {
+		return nil, parseError(err)
+	}
+	if len(list) == 0 {
+		return nil, consts.ErrRecordNotFound
+	}
+	return list, nil
+}

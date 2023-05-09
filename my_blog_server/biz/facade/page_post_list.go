@@ -38,16 +38,31 @@ func IndexByPaginationPage(ctx context.Context, c *app.RequestContext) (int, str
 	return resp.PackPageResponse(rsp, pErr, consts.IndexTmpl)
 }
 
-func CategoryPostPage(ctx context.Context, c *app.RequestContext) (resp *page.PostListPageResp, code int) {
-	return mock.PostListPageRespMocker(page.PageTypeCategoryPostList, "测试分类", "", "2", "test_category"), http.StatusOK
+func CategoryPostPage(ctx context.Context, c *app.RequestContext) (int, string, resp.IPageResponse) {
+	req := &page.PostListPageRequest{
+		Page:     thrift.Int64Ptr(1),
+		PageType: thrift.StringPtr(page.PageTypeCategoryPostList),
+	}
+	err := c.BindAndValidate(req)
+	if err != nil {
+		log.GetLoggerWithCtx(ctx).Warnf("parameter error:[%v]", err)
+		return resp.PackPageResponse(nil, errorx.NewNotFoundErrPageError(), consts.IndexTmpl)
+	}
+	rsp, pErr := service.CategoryPostListByPage(ctx, req)
+	return resp.PackPageResponse(rsp, pErr, consts.IndexTmpl)
 }
 
-func CategoryPostByPaginationPage(ctx context.Context, c *app.RequestContext) (resp *page.PostListPageResp, code int) {
-	p := c.Param("page")
-	if p == "1" {
-		return CategoryPostPage(ctx, c)
+func CategoryPostByPaginationPage(ctx context.Context, c *app.RequestContext) (int, string, resp.IPageResponse) {
+	req := &page.PostListPageRequest{
+		PageType: thrift.StringPtr(page.PageTypeCategoryPostList),
 	}
-	return mock.PostListPageRespMocker(page.PageTypeCategoryPostList, "测试分类", "1", "3", "test_category"), http.StatusOK
+	err := c.BindAndValidate(req)
+	if err != nil {
+		log.GetLoggerWithCtx(ctx).Warnf("parameter error:[%v]", err)
+		return resp.PackPageResponse(nil, errorx.NewNotFoundErrPageError(), consts.IndexTmpl)
+	}
+	rsp, pErr := service.CategoryPostListByPage(ctx, req)
+	return resp.PackPageResponse(rsp, pErr, consts.IndexTmpl)
 }
 
 func TagPostPage(ctx context.Context, c *app.RequestContext) (resp *page.PostListPageResp, code int) {

@@ -11,6 +11,7 @@ import (
 	"my_blog/biz/model/blog/api"
 	"my_blog/biz/model/blog/common"
 	"my_blog/biz/repository/mysql"
+	"my_blog/biz/repository/storage"
 )
 
 func CreateTagAPI(ctx context.Context, req *api.CreateTagAPIRequest) (*api.CreateTagAPIResponse, error) {
@@ -33,6 +34,7 @@ func CreateTagAPI(ctx context.Context, req *api.CreateTagAPIRequest) (*api.Creat
 	}
 
 	logger.Infof("create tag success, tag_name:[%v]", req.GetName())
+	storage.GetTagListStorage().RebuildCache(ctx)
 	return &api.CreateTagAPIResponse{
 		ID:       tag.ID,
 		Name:     tag.TagName,
@@ -59,6 +61,7 @@ func UpdateTagAPI(ctx context.Context, req *api.UpdateTagAPIRequest) (*api.Commo
 	}
 
 	logger.Infof("update tag success, tag_name:[%v]", req.GetName())
+	storage.GetTagListStorage().RebuildCache(ctx)
 	return &api.CommonResponse{
 		BaseResp: resp.NewSuccessBaseResp(),
 	}, nil
@@ -96,6 +99,7 @@ func DeleteTagAPI(ctx context.Context, req *api.DeleteTagAPIRequest) (*api.Commo
 	}
 
 	logger.Infof("delete tag success")
+	storage.GetTagListStorage().RebuildCache(ctx)
 	return &api.CommonResponse{
 		BaseResp: resp.NewSuccessBaseResp(),
 	}, nil
@@ -116,7 +120,7 @@ func GetTagListAPI(ctx context.Context, req *api.GetTagListAPIRequest) (*api.Get
 	for _, tag := range result {
 		tagIDs = append(tagIDs, tag.ID)
 	}
-	counts, err := mysql.MGetTagArticleCountByTagIDs(mysql.GetDB(ctx), tagIDs)
+	counts, err := mysql.MGetTagArticleCountByTagIDs(mysql.GetDB(ctx), tagIDs, false)
 	if err != nil {
 		logger.Warnf("mget tag article count error:[%v]", err)
 		return &api.GetTagListAPIResponse{

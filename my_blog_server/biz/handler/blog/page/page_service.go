@@ -59,8 +59,7 @@ func ArchivesPage(ctx context.Context, c *app.RequestContext) {
 // TagsPage .
 // @router /tags [GET]
 func TagsPage(ctx context.Context, c *app.RequestContext) {
-	resp, code := facade.TagsPage(ctx, c)
-	c.HTML(code, "index.tmpl", resp)
+	c.HTML(facade.TagsPage(ctx, c))
 }
 
 // CategoriesPage .

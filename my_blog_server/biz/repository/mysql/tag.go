@@ -64,6 +64,18 @@ func DeleteTagByID(db *gorm.DB, id int64) error {
 	return nil
 }
 
+func GetAllTag(db *gorm.DB) ([]*entity.Tag, error) {
+	// TODO: 数据规模变大的时候使用分批查询
+	var result []*entity.Tag
+	err := db.Model(&entity.Tag{}).
+		Where("delete_flag = ?", common.DeleteFlag_Exist).
+		Find(&result).Error
+	if err != nil {
+		return nil, parseError(err)
+	}
+	return result, nil
+}
+
 func GetTagListByPage(db *gorm.DB, keyword *string, page *int32, size *int32) ([]*entity.Tag, error) {
 	var result []*entity.Tag
 	tx := db.Model(&entity.Tag{})
@@ -91,18 +103,20 @@ func GetTagListByPage(db *gorm.DB, keyword *string, page *int32, size *int32) ([
 	return result, nil
 }
 
-func MGetTagArticleCountByTagIDs(db *gorm.DB, tagIDs []int64) (map[int64]int64, error) {
+func MGetTagArticleCountByTagIDs(db *gorm.DB, tagIDs []int64, withPublish bool) (map[int64]int64, error) {
 	type result struct {
 		TagID int64 `gorm:"column:tag_id"`
 		Count int64 `gorm:"column:count"`
 	}
 	var resultFromDB []result
-	err := db.Model(&entity.ArticleTag{}).
+	query := db.Model(&entity.ArticleTag{}).
 		Select("tag_id, count(1) as count").
 		Where("tag_id in (?)", tagIDs).
-		Where("delete_flag = ?", common.DeleteFlag_Exist).
-		Group("tag_id").
-		Find(&resultFromDB).Error
+		Where("delete_flag = ?", common.DeleteFlag_Exist)
+	if withPublish {
+		query.Where("publish_at is not null")
+	}
+	err := query.Group("tag_id").Find(&resultFromDB).Error
 	if err != nil {
 		return nil, parseError(err)
 	}

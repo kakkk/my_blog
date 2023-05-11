@@ -439,4 +439,5 @@ func rebuildPostCache(ctx context.Context, categoryList []int64) {
 	storage.GetPostOrderListStorage().Rebuild(ctx)
 	storage.GetCategoryPostListStorage().Rebuild(ctx, categoryList)
 	storage.GetCategoryListStorage().RebuildCache(ctx)
+	storage.GetTagListStorage().RebuildCache(ctx)
 }

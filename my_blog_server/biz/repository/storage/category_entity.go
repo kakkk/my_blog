@@ -48,10 +48,7 @@ func categoryEntityStorageGetRealData(ctx context.Context, id int64) (*entity.Ca
 	// 获取category
 	category, err := mysql.SelectCategoryByID(db, id)
 	if err != nil {
-		if err == consts.ErrRecordNotFound {
-			return nil, cachex.ErrNotFound
-		}
-		return nil, fmt.Errorf("sql error: %w", err)
+		return parseSqlError(category, err)
 	}
 	return category, nil
 }

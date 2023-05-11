@@ -2,11 +2,9 @@ package storage
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"time"
 
-	"my_blog/biz/common/consts"
 	"my_blog/biz/components/cachex"
 	"my_blog/biz/dto"
 	"my_blog/biz/repository/mysql"
@@ -50,10 +48,7 @@ func postTagListGetRealData(ctx context.Context, id int64) (*dto.StringList, err
 	db := mysql.GetDB(ctx)
 	tags, err := mysql.SelectTagListByArticleID(db, id)
 	if err != nil {
-		if errors.Is(err, consts.ErrRecordNotFound) {
-			return nil, consts.ErrRecordNotFound
-		}
-		return nil, fmt.Errorf("sql error:[%w]", err)
+		return parseSqlError(&dto.StringList{}, err)
 	}
 	return dto.NewStringList(tags), nil
 }

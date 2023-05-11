@@ -47,7 +47,7 @@ func categoryPostListGetKey(id int64) string {
 func categoryPostListGetRealData(ctx context.Context, id int64) (*dto.Int64List, error) {
 	list, err := mysql.SelectPostIDsByCategoryID(mysql.GetDB(ctx), id)
 	if err != nil {
-		return parseSqlError[*dto.Int64List](err)
+		return parseSqlError(&dto.Int64List{}, err)
 	}
 	return dto.NewInt64List(list), nil
 }

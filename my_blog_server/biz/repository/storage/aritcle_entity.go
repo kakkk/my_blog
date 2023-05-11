@@ -48,7 +48,7 @@ func articleStorageGetRealData(ctx context.Context, id int64) (*entity.Article, 
 	// 获取post
 	post, err := mysql.SelectArticleByID(db, id)
 	if err != nil {
-		return parseSqlError[*entity.Article](err)
+		return parseSqlError(post, err)
 	}
 	return post, nil
 }

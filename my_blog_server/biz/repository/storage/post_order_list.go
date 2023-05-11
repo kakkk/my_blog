@@ -2,11 +2,9 @@ package storage
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"time"
 
-	"my_blog/biz/common/consts"
 	"my_blog/biz/components/cachex"
 	"my_blog/biz/dto"
 	"my_blog/biz/repository/mysql"
@@ -50,10 +48,7 @@ func postOrderListGetRealData(ctx context.Context, _ int) (*dto.Int64List, error
 	db := mysql.GetDB(ctx)
 	order, err := mysql.SelectPostOrderList(db)
 	if err != nil {
-		if errors.Is(err, consts.ErrRecordNotFound) {
-			return nil, consts.ErrRecordNotFound
-		}
-		return nil, fmt.Errorf("sql error:[%w]", err)
+		return parseSqlError(&dto.Int64List{}, err)
 	}
 	return dto.NewInt64List(order), nil
 }

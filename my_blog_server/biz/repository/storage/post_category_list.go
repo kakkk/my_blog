@@ -65,7 +65,7 @@ func postCategoryListGetRealData(ctx context.Context, id int64) (*categoryList, 
 	db := mysql.GetDB(ctx)
 	categoryIDs, err := mysql.SelectCategoryIDsByArticleID(db, id)
 	if err != nil {
-		return parseSqlError[*categoryList](err)
+		return parseSqlError(&categoryList{}, err)
 	}
 	cMap := GetCategoryEntityStorage().MGet(ctx, categoryIDs)
 	result := make([]*entity.Category, 0, len(cMap))

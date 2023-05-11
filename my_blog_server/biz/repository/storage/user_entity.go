@@ -60,10 +60,7 @@ func userEntityStorageMGetRealData(ctx context.Context, ids []int64) (map[int64]
 	db := mysql.GetDB(ctx)
 	users, err := mysql.MSelectUserByIDs(db, ids)
 	if err != nil {
-		if err == consts.ErrRecordNotFound {
-			return nil, cachex.ErrNotFound
-		}
-		return nil, fmt.Errorf("sql error: %w", err)
+		return parseSqlError(users, err)
 	}
 	return users, nil
 }

@@ -8,7 +8,7 @@ import (
 	"my_blog/biz/components/cachex"
 )
 
-func parseSqlError[T any](err error) (T, error) {
+func parseSqlError[T any](val T, err error) (T, error) {
 	var zero T
 	if err == consts.ErrRecordNotFound {
 		return zero, cachex.ErrNotFound

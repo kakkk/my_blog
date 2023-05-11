@@ -46,7 +46,7 @@ func categorySlugIDGetKey(slug string) string {
 func categorySlugIDGetRealData(ctx context.Context, slug string) (int64, error) {
 	id, err := mysql.SelectCategoryIDBySlug(mysql.GetDB(ctx), slug)
 	if err != nil {
-		return parseSqlError[int64](err)
+		return parseSqlError(id, err)
 	}
 	return id, nil
 }

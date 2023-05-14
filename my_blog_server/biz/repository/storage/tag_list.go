@@ -12,15 +12,15 @@ import (
 )
 
 type TagListStorage struct {
-	cacheX *cachex.CacheX[*dto.TagList, int]
+	cacheX *cachex.CacheX[int, *dto.TagList]
 }
 
 var tagListStorage *TagListStorage
 
 func initTagListStorage(ctx context.Context) error {
-	redisCache := cachex.NewRedisCache(ctx, redis.GetRedisClient(ctx), 6*time.Hour)
-	lruCache := cachex.NewLRUCache(ctx, 1, time.Hour)
-	cache := cachex.NewSerializableCacheX[*dto.TagList, int]("tag_list", false, false).
+	redisCache := cachex.NewRedisCache[*dto.TagList](ctx, redis.GetRedisClient(ctx), 6*time.Hour)
+	lruCache := cachex.NewLRUCache[*dto.TagList](ctx, 1, time.Hour)
+	cache := cachex.NewCacheX[int, *dto.TagList]("tag_list", false, false).
 		SetGetCacheKey(tagListGetKey).
 		SetGetRealData(tagListGetRealData).
 		AddCache(ctx, true, lruCache).

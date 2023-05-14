@@ -8,19 +8,19 @@ import (
 	"github.com/golang/groupcache/lru"
 )
 
-type testCache struct {
+type TestCache[T any] struct {
 	rw    sync.RWMutex
 	cache *lru.Cache
 	err   error
 }
 
-func NewTestCache(ctx context.Context, size int) *testCache {
-	return &testCache{
+func NewTestCache[T any](ctx context.Context, size int) *TestCache[T] {
+	return &TestCache[T]{
 		cache: lru.New(size),
 	}
 }
 
-func (l *testCache) Get(ctx context.Context, key string) (*CacheData, error) {
+func (l *TestCache[T]) Get(ctx context.Context, key string) (*CacheData[T], error) {
 	l.rw.RLock()
 	defer l.rw.RUnlock()
 	if l.err != nil {
@@ -31,13 +31,13 @@ func (l *testCache) Get(ctx context.Context, key string) (*CacheData, error) {
 		logger.Info(ctx, fmt.Sprintf("lru cache not found, key:[%v]", key))
 		return nil, ErrNotFound
 	}
-	return val.(*CacheData), l.err
+	return val.(*CacheData[T]), l.err
 }
 
-func (l *testCache) MGet(ctx context.Context, keys []string) (map[string]*CacheData, error) {
+func (l *TestCache[T]) MGet(ctx context.Context, keys []string) (map[string]*CacheData[T], error) {
 	l.rw.RLock()
 	defer l.rw.RUnlock()
-	result := make(map[string]*CacheData, len(keys))
+	result := make(map[string]*CacheData[T], len(keys))
 	if l.err != nil {
 		return result, l.err
 	}
@@ -47,13 +47,13 @@ func (l *testCache) MGet(ctx context.Context, keys []string) (map[string]*CacheD
 			logger.Info(ctx, fmt.Sprintf("lru cache not found, key:[%v]", key))
 			continue
 		}
-		res := val.(*CacheData)
+		res := val.(*CacheData[T])
 		result[key] = res
 	}
 	return result, l.err
 }
 
-func (l *testCache) Set(ctx context.Context, key string, data *CacheData) error {
+func (l *TestCache[T]) Set(ctx context.Context, key string, data *CacheData[T]) error {
 	l.rw.Lock()
 	defer l.rw.Unlock()
 	if l.err != nil {
@@ -63,7 +63,7 @@ func (l *testCache) Set(ctx context.Context, key string, data *CacheData) error 
 	return l.err
 }
 
-func (l *testCache) MSet(ctx context.Context, kvs map[string]*CacheData) error {
+func (l *TestCache[T]) MSet(ctx context.Context, kvs map[string]*CacheData[T]) error {
 	l.rw.Lock()
 	defer l.rw.Unlock()
 	if l.err != nil {
@@ -75,7 +75,7 @@ func (l *testCache) MSet(ctx context.Context, kvs map[string]*CacheData) error {
 	return l.err
 }
 
-func (l *testCache) Delete(ctx context.Context, key string) error {
+func (l *TestCache[T]) Delete(ctx context.Context, key string) error {
 	l.rw.Lock()
 	defer l.rw.Unlock()
 	if l.err != nil {
@@ -85,7 +85,7 @@ func (l *testCache) Delete(ctx context.Context, key string) error {
 	return l.err
 }
 
-func (l *testCache) MDelete(ctx context.Context, keys []string) error {
+func (l *TestCache[T]) MDelete(ctx context.Context, keys []string) error {
 	l.rw.Lock()
 	defer l.rw.Unlock()
 	if l.err != nil {
@@ -97,26 +97,26 @@ func (l *testCache) MDelete(ctx context.Context, keys []string) error {
 	return l.err
 }
 
-func (l *testCache) Ping(ctx context.Context) (string, error) {
+func (l *TestCache[T]) Ping(ctx context.Context) (string, error) {
 	return "Pong", nil
 }
 
-func (l *testCache) Name() string {
+func (l *TestCache[T]) Name() string {
 	return "testCache"
 }
 
-func (l *testCache) SetError(err error) {
+func (l *TestCache[T]) SetError(err error) {
 	l.err = err
 }
 
-func (l *testCache) ResetCache() {
+func (l *TestCache[T]) ResetCache() {
 	l.rw.Lock()
 	defer l.rw.Unlock()
 	l.cache.Clear()
 	l.err = nil
 }
 
-func (l *testCache) ResetError() {
+func (l *TestCache[T]) ResetError() {
 	l.rw.Lock()
 	defer l.rw.Unlock()
 	l.err = nil

@@ -1,7 +1,6 @@
 package dto
 
 import (
-	"encoding/json"
 	"sort"
 
 	"github.com/spf13/cast"
@@ -17,20 +16,6 @@ type TagListItem struct {
 }
 
 type TagList []*TagListItem
-
-func (c *TagList) Serialize() string {
-	bytes, _ := json.Marshal(c)
-	return string(bytes)
-}
-
-func (c *TagList) Deserialize(str string) (*TagList, error) {
-	l := &TagList{}
-	err := json.Unmarshal([]byte(str), l)
-	if err != nil {
-		return nil, err
-	}
-	return l, nil
-}
 
 func (c *TagList) ToPageCategoryListModel() []*page.TermListItem {
 	result := make([]*page.TermListItem, 0, len(*c))

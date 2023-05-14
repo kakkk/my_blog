@@ -9,23 +9,23 @@ import (
 	"github.com/go-redis/redis/v7"
 )
 
-type RedisCache struct {
+type RedisCache[V any] struct {
 	redisClient *redis.Client
 	ttl         time.Duration
 }
 
-func NewRedisCache(ctx context.Context, client *redis.Client, ttl time.Duration) *RedisCache {
+func NewRedisCache[V any](_ context.Context, client *redis.Client, ttl time.Duration) *RedisCache[V] {
 	_, err := client.Ping().Result()
 	if err != nil {
 		panic("redis client not ready")
 	}
-	return &RedisCache{
+	return &RedisCache[V]{
 		redisClient: client,
 		ttl:         ttl,
 	}
 }
 
-func (r *RedisCache) Get(ctx context.Context, key string) (*CacheData, error) {
+func (r *RedisCache[V]) Get(ctx context.Context, key string) (*CacheData[V], error) {
 	now := time.Now().UnixMilli()
 	val, err := r.redisClient.Get(key).Result()
 	if err != nil {
@@ -50,14 +50,14 @@ func (r *RedisCache) Get(ctx context.Context, key string) (*CacheData, error) {
 	return data, nil
 }
 
-func (r *RedisCache) MGet(ctx context.Context, keys []string) (map[string]*CacheData, error) {
+func (r *RedisCache[V]) MGet(ctx context.Context, keys []string) (map[string]*CacheData[V], error) {
 	now := time.Now().UnixMilli()
 	values, err := r.redisClient.MGet(keys...).Result()
 	if err != nil {
 		logger.Errorf(ctx, "redis cache mget fail, error:[%v]", err)
 		return nil, ErrCacheError
 	}
-	result := make(map[string]*CacheData, len(keys))
+	result := make(map[string]*CacheData[V], len(keys))
 	for i, key := range keys {
 		val, ok := values[i].(string)
 		if !ok {
@@ -79,7 +79,7 @@ func (r *RedisCache) MGet(ctx context.Context, keys []string) (map[string]*Cache
 	return result, nil
 }
 
-func (r *RedisCache) Set(ctx context.Context, key string, data *CacheData) error {
+func (r *RedisCache[V]) Set(ctx context.Context, key string, data *CacheData[V]) error {
 	err := r.redisClient.Set(key, r.marshal(data), r.ttl).Err()
 	if err != nil {
 		logger.Errorf(ctx, "redis cache set fail, key:[%v], error:[%v]", key, err)
@@ -88,7 +88,7 @@ func (r *RedisCache) Set(ctx context.Context, key string, data *CacheData) error
 	return nil
 }
 
-func (r *RedisCache) MSet(ctx context.Context, kvs map[string]*CacheData) error {
+func (r *RedisCache[V]) MSet(ctx context.Context, kvs map[string]*CacheData[V]) error {
 	pipe := r.redisClient.Pipeline()
 	defer func(pipe redis.Pipeliner) {
 		err := pipe.Close()
@@ -107,7 +107,7 @@ func (r *RedisCache) MSet(ctx context.Context, kvs map[string]*CacheData) error 
 	return nil
 }
 
-func (r *RedisCache) Delete(ctx context.Context, key string) error {
+func (r *RedisCache[V]) Delete(ctx context.Context, key string) error {
 	err := r.redisClient.Del(key).Err()
 	if err != nil {
 		logger.Errorf(ctx, "redis delete fail, error:[%v]", err)
@@ -116,7 +116,7 @@ func (r *RedisCache) Delete(ctx context.Context, key string) error {
 	return nil
 }
 
-func (r *RedisCache) MDelete(ctx context.Context, keys []string) error {
+func (r *RedisCache[V]) MDelete(ctx context.Context, keys []string) error {
 	err := r.redisClient.Del(keys...).Err()
 	if err != nil {
 		logger.Errorf(ctx, "redis delete fail, error:[%v]", err)
@@ -125,8 +125,8 @@ func (r *RedisCache) MDelete(ctx context.Context, keys []string) error {
 	return nil
 }
 
-func (r *RedisCache) unmarshal(data string) (*CacheData, error) {
-	result := &CacheData{}
+func (r *RedisCache[V]) unmarshal(data string) (*CacheData[V], error) {
+	result := &CacheData[V]{}
 	err := json.Unmarshal([]byte(data), result)
 	if err != nil {
 		return nil, fmt.Errorf("json unmarshal error:[%v]", err)
@@ -134,7 +134,7 @@ func (r *RedisCache) unmarshal(data string) (*CacheData, error) {
 	return result, nil
 }
 
-func (r *RedisCache) marshal(data *CacheData) string {
+func (r *RedisCache[V]) marshal(data *CacheData[V]) string {
 	if data == nil {
 		return ""
 	}
@@ -142,7 +142,7 @@ func (r *RedisCache) marshal(data *CacheData) string {
 	return string(bytes)
 }
 
-func (r *RedisCache) isExpired(createAt, now int64) bool {
+func (r *RedisCache[V]) isExpired(createAt, now int64) bool {
 	expire := int64(r.ttl / time.Millisecond)
 	if expire <= 0 || createAt <= 0 {
 		return false
@@ -153,10 +153,10 @@ func (r *RedisCache) isExpired(createAt, now int64) bool {
 	return false
 }
 
-func (r *RedisCache) Ping(ctx context.Context) (string, error) {
+func (r *RedisCache[V]) Ping(_ context.Context) (string, error) {
 	return r.redisClient.Ping().Result()
 }
 
-func (r *RedisCache) Name() string {
+func (r *RedisCache[V]) Name() string {
 	return "RedisCache"
 }

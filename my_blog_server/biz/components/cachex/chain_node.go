@@ -6,14 +6,14 @@ import (
 	"time"
 )
 
-type chainNode struct {
-	cache        Cache
-	prev         *chainNode
-	next         *chainNode
+type chainNode[T any] struct {
+	cache        Cache[T]
+	prev         *chainNode[T]
+	next         *chainNode[T]
 	isSetDefault bool
 }
 
-func (c *chainNode) Get(ctx context.Context, key string) (*CacheData, error) {
+func (c *chainNode[T]) Get(ctx context.Context, key string) (*CacheData[T], error) {
 	data, err := c.cache.Get(ctx, key)
 	// 其他错误打日志
 	if err != nil && !errors.Is(err, ErrNotFound) {
@@ -43,13 +43,13 @@ func (c *chainNode) Get(ctx context.Context, key string) (*CacheData, error) {
 	}
 	// 查不到，本级缓存插入默认值
 	if c.isSetDefault {
-		_ = c.cache.Set(ctx, key, newDefaultCacheData())
+		_ = c.cache.Set(ctx, key, newDefaultCacheData[T]())
 	}
 	// 返回不存在
 	return nil, ErrNotFound
 }
 
-func (c *chainNode) MGet(ctx context.Context, keys []string) (map[string]*CacheData, error) {
+func (c *chainNode[T]) MGet(ctx context.Context, keys []string) (map[string]*CacheData[T], error) {
 	data, err := c.cache.MGet(ctx, keys)
 	// 其他错误打日志
 	if err != nil && !errors.Is(err, ErrNotFound) {
@@ -63,7 +63,7 @@ func (c *chainNode) MGet(ctx context.Context, keys []string) (map[string]*CacheD
 
 	// 最后一级
 	if c.next == nil {
-		return map[string]*CacheData{}, ErrNotFound
+		return map[string]*CacheData[T]{}, ErrNotFound
 	}
 
 	// 需要从下一级缓存查询的数据
@@ -90,9 +90,9 @@ func (c *chainNode) MGet(ctx context.Context, keys []string) (map[string]*CacheD
 				needSetDefault = append(needSetDefault, key)
 			}
 		}
-		defaults := make(map[string]*CacheData, len(needSetDefault))
+		defaults := make(map[string]*CacheData[T], len(needSetDefault))
 		for _, key := range needSetDefault {
-			defaults[key] = newDefaultCacheData()
+			defaults[key] = newDefaultCacheData[T]()
 		}
 		_ = c.cache.MSet(ctx, defaults)
 	}
@@ -105,7 +105,7 @@ func (c *chainNode) MGet(ctx context.Context, keys []string) (map[string]*CacheD
 	return data, nil
 }
 
-func (c *chainNode) Set(ctx context.Context, key string, data *CacheData) error {
+func (c *chainNode[T]) Set(ctx context.Context, key string, data *CacheData[T]) error {
 	// 设置本级缓存
 	err := c.cache.Set(ctx, key, data)
 	// 有错误打日志
@@ -120,7 +120,7 @@ func (c *chainNode) Set(ctx context.Context, key string, data *CacheData) error 
 	return c.prev.Set(ctx, key, data)
 }
 
-func (c *chainNode) MSet(ctx context.Context, kvs map[string]*CacheData) error {
+func (c *chainNode[T]) MSet(ctx context.Context, kvs map[string]*CacheData[T]) error {
 	// 设置本级缓存
 	err := c.cache.MSet(ctx, kvs)
 	// 有错误打日志
@@ -135,7 +135,7 @@ func (c *chainNode) MSet(ctx context.Context, kvs map[string]*CacheData) error {
 	return c.prev.MSet(ctx, kvs)
 }
 
-func (c *chainNode) Delete(ctx context.Context, key string) error {
+func (c *chainNode[T]) Delete(ctx context.Context, key string) error {
 	// 删除本级缓存
 	err := c.cache.Delete(ctx, key)
 	// 有错误打日志
@@ -150,7 +150,7 @@ func (c *chainNode) Delete(ctx context.Context, key string) error {
 	return c.prev.Delete(ctx, key)
 }
 
-func (c *chainNode) MDelete(ctx context.Context, keys []string) error {
+func (c *chainNode[T]) MDelete(ctx context.Context, keys []string) error {
 	// 删除本级缓存
 	err := c.cache.MDelete(ctx, keys)
 	// 有错误打日志
@@ -165,8 +165,10 @@ func (c *chainNode) MDelete(ctx context.Context, keys []string) error {
 	return c.prev.MDelete(ctx, keys)
 }
 
-func newDefaultCacheData() *CacheData {
-	return &CacheData{
+func newDefaultCacheData[T any]() *CacheData[T] {
+	var zero T
+	return &CacheData[T]{
 		CreateAt: time.Now().UnixMilli(),
+		Data:     zero,
 	}
 }

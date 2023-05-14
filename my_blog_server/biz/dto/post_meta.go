@@ -1,8 +1,6 @@
 package dto
 
 import (
-	"encoding/json"
-
 	"my_blog/biz/common/config"
 	"my_blog/biz/common/utils"
 	"my_blog/biz/entity"
@@ -17,20 +15,6 @@ type PostMeta struct {
 	Info        string `json:"info"`
 	Description string `json:"description"`
 	Abstract    string `json:"abstract"`
-}
-
-func (p *PostMeta) Serialize() string {
-	bytes, _ := json.Marshal(p)
-	return string(bytes)
-}
-
-func (p *PostMeta) Deserialize(str string) (*PostMeta, error) {
-	meta := &PostMeta{}
-	err := json.Unmarshal([]byte(str), meta)
-	if err != nil {
-		return nil, err
-	}
-	return meta, nil
 }
 
 func (p *PostMeta) ToPostItem() *page.PostItem {

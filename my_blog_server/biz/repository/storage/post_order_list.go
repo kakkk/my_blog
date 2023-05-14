@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"my_blog/biz/components/cachex"
-	"my_blog/biz/dto"
 	"my_blog/biz/repository/mysql"
 	"my_blog/biz/repository/redis"
 )
@@ -14,7 +13,7 @@ import (
 var postOrderListStorage *PostOrderListStorage
 
 type PostOrderListStorage struct {
-	cacheX *cachex.CacheX[*dto.Int64List, int]
+	cacheX *cachex.CacheX[int, []int64]
 }
 
 func GetPostOrderListStorage() *PostOrderListStorage {
@@ -22,9 +21,9 @@ func GetPostOrderListStorage() *PostOrderListStorage {
 }
 
 func initPostOrderListStorage(ctx context.Context) error {
-	redisCache := cachex.NewRedisCache(ctx, redis.GetRedisClient(ctx), time.Minute*30)
-	lruCache := cachex.NewLRUCache(ctx, 1, time.Minute)
-	cache := cachex.NewSerializableCacheX[*dto.Int64List, int]("post_order_list", false, true).
+	redisCache := cachex.NewRedisCache[[]int64](ctx, redis.GetRedisClient(ctx), time.Minute*30)
+	lruCache := cachex.NewLRUCache[[]int64](ctx, 1, time.Minute)
+	cache := cachex.NewCacheX[int, []int64]("post_order_list", false, true).
 		SetGetCacheKey(postOrderListGetKey).
 		SetGetRealData(postOrderListGetRealData).
 		AddCache(ctx, true, lruCache).
@@ -44,13 +43,13 @@ func postOrderListGetKey(_ int) string {
 	return "post_order_list"
 }
 
-func postOrderListGetRealData(ctx context.Context, _ int) (*dto.Int64List, error) {
+func postOrderListGetRealData(ctx context.Context, _ int) ([]int64, error) {
 	db := mysql.GetDB(ctx)
 	order, err := mysql.SelectPostOrderList(db)
 	if err != nil {
-		return parseSqlError(&dto.Int64List{}, err)
+		return parseSqlError(order, err)
 	}
-	return dto.NewInt64List(order), nil
+	return order, nil
 }
 
 func (p *PostOrderListStorage) Get(ctx context.Context) ([]int64, error) {
@@ -58,7 +57,7 @@ func (p *PostOrderListStorage) Get(ctx context.Context) ([]int64, error) {
 	if err != nil {
 		return nil, fmt.Errorf("get from cachex error:[%w]", err)
 	}
-	return order.ToInt64List(), err
+	return order, err
 }
 
 // 重建缓存

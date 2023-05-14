@@ -12,7 +12,7 @@ import (
 var postPrevNextStorage *PostPrevNextStorage
 
 type PostPrevNextStorage struct {
-	cacheX *cachex.CacheX[*dto.PostPrevNext, int64]
+	cacheX *cachex.CacheX[int64, *dto.PostPrevNext]
 }
 
 func GetPostPrevNextStorage() *PostPrevNextStorage {
@@ -20,8 +20,8 @@ func GetPostPrevNextStorage() *PostPrevNextStorage {
 }
 
 func initPostPrevNextStorage(ctx context.Context) error {
-	lruCache := cachex.NewLRUCache(ctx, 200, 5*time.Minute)
-	cache := cachex.NewSerializableCacheX[*dto.PostPrevNext, int64]("post_order_list", false, true).
+	lruCache := cachex.NewLRUCache[*dto.PostPrevNext](ctx, 200, 5*time.Minute)
+	cache := cachex.NewCacheX[int64, *dto.PostPrevNext]("post_order_list", false, true).
 		SetGetCacheKey(postPrevNextGetKey).
 		SetGetRealData(postPrevNextGetRealData).
 		AddCache(ctx, true, lruCache)

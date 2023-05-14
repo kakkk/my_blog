@@ -15,7 +15,7 @@ import (
 var postMetaStorage *PostMetaStorage
 
 type PostMetaStorage struct {
-	cacheX *cachex.CacheX[*dto.PostMeta, int64]
+	cacheX *cachex.CacheX[int64, *dto.PostMeta]
 }
 
 func GetPostMetaStorage() *PostMetaStorage {
@@ -23,9 +23,9 @@ func GetPostMetaStorage() *PostMetaStorage {
 }
 
 func initPostMetaStorage(ctx context.Context) error {
-	redisCache := cachex.NewRedisCache(ctx, redis.GetRedisClient(ctx), time.Minute*30)
-	lruCache := cachex.NewLRUCache(ctx, 1000, time.Minute)
-	cache := cachex.NewSerializableCacheX[*dto.PostMeta, int64]("article_entity", false, true).
+	redisCache := cachex.NewRedisCache[*dto.PostMeta](ctx, redis.GetRedisClient(ctx), time.Minute*30)
+	lruCache := cachex.NewLRUCache[*dto.PostMeta](ctx, 1000, time.Minute)
+	cache := cachex.NewCacheX[int64, *dto.PostMeta]("article_entity", false, true).
 		SetGetCacheKey(postMetaStorageGetKey).
 		SetGetRealData(postMetaStorageGetRealData).
 		SetMGetRealData(postMetaStorageMGetRealData).

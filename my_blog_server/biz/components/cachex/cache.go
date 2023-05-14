@@ -4,55 +4,51 @@ import (
 	"context"
 )
 
-type CacheData struct {
-	CreateAt int64  `json:"c"`
-	Data     string `json:"d"`
+type CacheData[T any] struct {
+	CreateAt      int64 `json:"c"`
+	Data          T     `json:"d"`
+	IsDefaultData uint  `json:"z"`
 }
 
-func (d *CacheData) IsDefault() bool {
-	return d.Data == ""
+func (d *CacheData[T]) IsDefault() bool {
+	return d.IsDefaultData == 1
 }
 
-type Serializable[T any] interface {
-	Serialize() string
-	Deserialize(string) (T, error)
-}
-
-type Cache interface {
-	Get(ctx context.Context, key string) (*CacheData, error)
-	MGet(ctx context.Context, keys []string) (map[string]*CacheData, error)
-	Set(ctx context.Context, key string, data *CacheData) error
-	MSet(ctx context.Context, kvs map[string]*CacheData) error
+type Cache[T any] interface {
+	Get(ctx context.Context, key string) (*CacheData[T], error)
+	MGet(ctx context.Context, keys []string) (map[string]*CacheData[T], error)
+	Set(ctx context.Context, key string, data *CacheData[T]) error
+	MSet(ctx context.Context, kvs map[string]*CacheData[T]) error
 	Delete(ctx context.Context, key string) error
 	MDelete(ctx context.Context, keys []string) error
 	Ping(ctx context.Context) (string, error)
 	Name() string
 }
 
-type defaultCache struct{}
+type defaultCache[T any] struct{}
 
-func (*defaultCache) Get(ctx context.Context, key string) (*CacheData, error) {
+func (*defaultCache[T]) Get(_ context.Context, _ string) (*CacheData[T], error) {
 	return nil, ErrNotFound
 }
-func (*defaultCache) MGet(ctx context.Context, keys []string) (map[string]*CacheData, error) {
-	return map[string]*CacheData{}, ErrNotFound
+func (*defaultCache[T]) MGet(_ context.Context, _ []string) (map[string]*CacheData[T], error) {
+	return map[string]*CacheData[T]{}, ErrNotFound
 }
-func (*defaultCache) Set(ctx context.Context, key string, data *CacheData) error {
+func (*defaultCache[T]) Set(_ context.Context, _ string, _ *CacheData[T]) error {
 	return nil
 }
-func (*defaultCache) MSet(ctx context.Context, kvs map[string]*CacheData) error {
+func (*defaultCache[T]) MSet(_ context.Context, _ map[string]*CacheData[T]) error {
 	return nil
 }
-func (*defaultCache) Delete(ctx context.Context, key string) error {
+func (*defaultCache[T]) Delete(_ context.Context, _ string) error {
 	return nil
 }
-func (*defaultCache) MDelete(ctx context.Context, keys []string) error {
+func (*defaultCache[T]) MDelete(_ context.Context, _ []string) error {
 	return nil
 }
 
-func (*defaultCache) Ping(ctx context.Context) (string, error) {
+func (*defaultCache[T]) Ping(_ context.Context) (string, error) {
 	return "Pong", nil
 }
-func (c *defaultCache) Name() string {
+func (c *defaultCache[T]) Name() string {
 	return "default"
 }

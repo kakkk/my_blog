@@ -9,20 +9,20 @@ import (
 	"github.com/golang/groupcache/lru"
 )
 
-type LRUCache struct {
+type LRUCache[V any] struct {
 	rw    sync.RWMutex
 	cache *lru.Cache
 	ttl   time.Duration
 }
 
-func NewLRUCache(ctx context.Context, size int, ttl time.Duration) *LRUCache {
-	return &LRUCache{
+func NewLRUCache[V any](_ context.Context, size int, ttl time.Duration) *LRUCache[V] {
+	return &LRUCache[V]{
 		cache: lru.New(size),
 		ttl:   ttl,
 	}
 }
 
-func (l *LRUCache) Get(ctx context.Context, key string) (*CacheData, error) {
+func (l *LRUCache[V]) Get(ctx context.Context, key string) (*CacheData[V], error) {
 	l.rw.RLock()
 	defer l.rw.RUnlock()
 	now := time.Now().UnixMilli()
@@ -31,27 +31,27 @@ func (l *LRUCache) Get(ctx context.Context, key string) (*CacheData, error) {
 		logger.Debugf(ctx, "lru cache not found, key:[%v]", key)
 		return nil, ErrNotFound
 	}
-	result := val.(*CacheData)
+	result := val.(*CacheData[V])
 	if l.isExpired(result.CreateAt, now) {
 		logger.Debugf(ctx, "lru cache expired, key:[%v]", key)
 		l.cache.Remove(key)
 		return nil, ErrNotFound
 	}
-	return val.(*CacheData), nil
+	return val.(*CacheData[V]), nil
 }
 
-func (l *LRUCache) MGet(ctx context.Context, keys []string) (map[string]*CacheData, error) {
+func (l *LRUCache[V]) MGet(ctx context.Context, keys []string) (map[string]*CacheData[V], error) {
 	l.rw.RLock()
 	defer l.rw.RUnlock()
 	now := time.Now().UnixMilli()
-	result := make(map[string]*CacheData, len(keys))
+	result := make(map[string]*CacheData[V], len(keys))
 	for _, key := range keys {
 		val, ok := l.cache.Get(key)
 		if !ok {
 			logger.Debugf(ctx, "lru cache not found, key:[%v]", key)
 			continue
 		}
-		res := val.(*CacheData)
+		res := val.(*CacheData[V])
 		if l.isExpired(res.CreateAt, now) {
 			logger.Debugf(ctx, "lru cache expired, key:[%v]", key)
 			l.cache.Remove(key)
@@ -62,7 +62,7 @@ func (l *LRUCache) MGet(ctx context.Context, keys []string) (map[string]*CacheDa
 	return result, nil
 }
 
-func (l *LRUCache) Set(ctx context.Context, key string, data *CacheData) error {
+func (l *LRUCache[V]) Set(_ context.Context, key string, data *CacheData[V]) error {
 	l.rw.Lock()
 	defer l.rw.Unlock()
 	now := time.Now().UnixMilli()
@@ -71,7 +71,7 @@ func (l *LRUCache) Set(ctx context.Context, key string, data *CacheData) error {
 	return nil
 }
 
-func (l *LRUCache) MSet(ctx context.Context, kvs map[string]*CacheData) error {
+func (l *LRUCache[V]) MSet(_ context.Context, kvs map[string]*CacheData[V]) error {
 	l.rw.Lock()
 	defer l.rw.Unlock()
 	now := time.Now().UnixMilli()
@@ -82,14 +82,14 @@ func (l *LRUCache) MSet(ctx context.Context, kvs map[string]*CacheData) error {
 	return nil
 }
 
-func (l *LRUCache) Delete(ctx context.Context, key string) error {
+func (l *LRUCache[V]) Delete(_ context.Context, key string) error {
 	l.rw.Lock()
 	defer l.rw.Unlock()
 	l.cache.Remove(key)
 	return nil
 }
 
-func (l *LRUCache) MDelete(ctx context.Context, keys []string) error {
+func (l *LRUCache[V]) MDelete(_ context.Context, keys []string) error {
 	l.rw.Lock()
 	defer l.rw.Unlock()
 	for _, key := range keys {
@@ -98,7 +98,7 @@ func (l *LRUCache) MDelete(ctx context.Context, keys []string) error {
 	return nil
 }
 
-func (l *LRUCache) isExpired(createAt, now int64) bool {
+func (l *LRUCache[V]) isExpired(createAt, now int64) bool {
 	expire := int64(l.ttl / time.Millisecond)
 	if expire <= 0 || createAt <= 0 {
 		return false
@@ -109,13 +109,13 @@ func (l *LRUCache) isExpired(createAt, now int64) bool {
 	return false
 }
 
-func (l *LRUCache) Ping(ctx context.Context) (string, error) {
+func (l *LRUCache[V]) Ping(_ context.Context) (string, error) {
 	if l.cache == nil {
 		return "", errors.New("lru not ready")
 	}
 	return "Pong", nil
 }
 
-func (l *LRUCache) Name() string {
+func (l *LRUCache[V]) Name() string {
 	return "LRUCache"
 }

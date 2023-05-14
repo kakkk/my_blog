@@ -13,7 +13,7 @@ import (
 var categorySlugIDStorage *CategorySlugIDStorage
 
 type CategorySlugIDStorage struct {
-	cacheX *cachex.CacheX[int64, string]
+	cacheX *cachex.CacheX[string, int64]
 }
 
 func GetCategorySlugIDStorage() *CategorySlugIDStorage {
@@ -21,9 +21,9 @@ func GetCategorySlugIDStorage() *CategorySlugIDStorage {
 }
 
 func initCategorySlugIDStorage(ctx context.Context) error {
-	redisCache := cachex.NewRedisCache(ctx, redis.GetRedisClient(ctx), time.Minute*30)
-	lruCache := cachex.NewLRUCache(ctx, 1, time.Minute)
-	cache := cachex.NewBaseValueCacheX[int64, string]("category_slug_id", false, false).
+	redisCache := cachex.NewRedisCache[int64](ctx, redis.GetRedisClient(ctx), time.Minute*30)
+	lruCache := cachex.NewLRUCache[int64](ctx, 1, time.Minute)
+	cache := cachex.NewCacheX[string, int64]("category_slug_id", false, false).
 		SetGetCacheKey(categorySlugIDGetKey).
 		SetGetRealData(categorySlugIDGetRealData).
 		AddCache(ctx, true, lruCache).

@@ -1,8 +1,6 @@
 package dto
 
 import (
-	"encoding/json"
-
 	"github.com/spf13/cast"
 
 	"my_blog/biz/model/blog/api"
@@ -17,20 +15,6 @@ type CategoryListItem struct {
 }
 
 type CategoryList []*CategoryListItem
-
-func (c *CategoryList) Serialize() string {
-	bytes, _ := json.Marshal(c)
-	return string(bytes)
-}
-
-func (c *CategoryList) Deserialize(str string) (*CategoryList, error) {
-	l := &CategoryList{}
-	err := json.Unmarshal([]byte(str), l)
-	if err != nil {
-		return nil, err
-	}
-	return l, nil
-}
 
 func (c *CategoryList) ToAPICategoryListModel() []*api.CategoryListItem {
 	result := make([]*api.CategoryListItem, 0, len(*c))

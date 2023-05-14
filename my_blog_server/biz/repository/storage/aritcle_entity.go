@@ -16,7 +16,7 @@ import (
 var articleEntityStorage *ArticleEntityStorage
 
 type ArticleEntityStorage struct {
-	cacheX *cachex.CacheX[*entity.Article, int64]
+	cacheX *cachex.CacheX[int64, *entity.Article]
 }
 
 func GetArticleEntityStorage() *ArticleEntityStorage {
@@ -24,9 +24,9 @@ func GetArticleEntityStorage() *ArticleEntityStorage {
 }
 
 func initArticleEntityStorage(ctx context.Context) error {
-	redisCache := cachex.NewRedisCache(ctx, redis.GetRedisClient(ctx), time.Minute*30)
-	lruCache := cachex.NewLRUCache(ctx, 1000, time.Minute)
-	cache := cachex.NewSerializableCacheX[*entity.Article, int64]("article_entity", false, true).
+	redisCache := cachex.NewRedisCache[*entity.Article](ctx, redis.GetRedisClient(ctx), time.Minute*30)
+	lruCache := cachex.NewLRUCache[*entity.Article](ctx, 1000, time.Minute)
+	cache := cachex.NewCacheX[int64, *entity.Article]("article_entity", false, true).
 		SetGetCacheKey(articleStorageGetKey).
 		SetGetRealData(articleStorageGetRealData).
 		SetMGetRealData(articleStorageMGetRealData).

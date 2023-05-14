@@ -6,30 +6,30 @@ import (
 	"fmt"
 )
 
-type cacheChain struct {
-	head *chainNode
-	tail *chainNode
+type cacheChain[T any] struct {
+	head *chainNode[T]
+	tail *chainNode[T]
 }
 
-func newCacheChain() *cacheChain {
-	head := &chainNode{
-		cache: &defaultCache{},
+func newCacheChain[T any]() *cacheChain[T] {
+	head := &chainNode[T]{
+		cache: &defaultCache[T]{},
 	}
-	tail := &chainNode{
-		cache: &defaultCache{},
+	tail := &chainNode[T]{
+		cache: &defaultCache[T]{},
 	}
 	head.next = tail
 	tail.prev = head
-	chain := &cacheChain{
+	chain := &cacheChain[T]{
 		head: head,
 		tail: tail,
 	}
 	return chain
 }
 
-func (chain *cacheChain) AddCache(ctx context.Context, name string, isSetDefault bool, cache Cache) {
+func (chain *cacheChain[T]) AddCache(_ context.Context, _ string, isSetDefault bool, cache Cache[T]) {
 	// 用尾插
-	node := &chainNode{
+	node := &chainNode[T]{
 		cache:        cache,
 		next:         chain.tail,
 		prev:         chain.tail.prev,
@@ -39,7 +39,7 @@ func (chain *cacheChain) AddCache(ctx context.Context, name string, isSetDefault
 	chain.tail.prev = node
 }
 
-func (chain *cacheChain) CheckCache(ctx context.Context, name string) error {
+func (chain *cacheChain[T]) CheckCache(ctx context.Context, name string) error {
 	if chain.head.next == chain.tail {
 		return errors.New("no cache set")
 	}
@@ -55,26 +55,26 @@ func (chain *cacheChain) CheckCache(ctx context.Context, name string) error {
 	return nil
 }
 
-func (chain *cacheChain) Get(ctx context.Context, key string) (*CacheData, error) {
+func (chain *cacheChain[T]) Get(ctx context.Context, key string) (*CacheData[T], error) {
 	return chain.head.next.Get(ctx, key)
 }
 
-func (chain *cacheChain) MGet(ctx context.Context, keys []string) (map[string]*CacheData, error) {
+func (chain *cacheChain[T]) MGet(ctx context.Context, keys []string) (map[string]*CacheData[T], error) {
 	return chain.head.next.MGet(ctx, keys)
 }
 
-func (chain *cacheChain) Set(ctx context.Context, key string, data *CacheData) error {
+func (chain *cacheChain[T]) Set(ctx context.Context, key string, data *CacheData[T]) error {
 	return chain.tail.prev.Set(ctx, key, data)
 }
 
-func (chain *cacheChain) MSet(ctx context.Context, kvs map[string]*CacheData) error {
+func (chain *cacheChain[T]) MSet(ctx context.Context, kvs map[string]*CacheData[T]) error {
 	return chain.tail.prev.MSet(ctx, kvs)
 }
 
-func (chain *cacheChain) Delete(ctx context.Context, key string) error {
+func (chain *cacheChain[T]) Delete(ctx context.Context, key string) error {
 	return chain.tail.prev.Delete(ctx, key)
 }
 
-func (chain *cacheChain) MDelete(ctx context.Context, keys []string) error {
+func (chain *cacheChain[T]) MDelete(ctx context.Context, keys []string) error {
 	return chain.tail.prev.MDelete(ctx, keys)
 }

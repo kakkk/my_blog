@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"my_blog/biz/components/cachex"
-	"my_blog/biz/dto"
 	"my_blog/biz/repository/mysql"
 	"my_blog/biz/repository/redis"
 )
@@ -14,7 +13,7 @@ import (
 var postTagListStorage *PostTagListStorage
 
 type PostTagListStorage struct {
-	cacheX *cachex.CacheX[*dto.StringList, int64]
+	cacheX *cachex.CacheX[int64, []string]
 }
 
 func GetPostTagListStorage() *PostTagListStorage {
@@ -22,9 +21,9 @@ func GetPostTagListStorage() *PostTagListStorage {
 }
 
 func initPostTagListStorage(ctx context.Context) error {
-	redisCache := cachex.NewRedisCache(ctx, redis.GetRedisClient(ctx), time.Minute*30)
-	lruCache := cachex.NewLRUCache(ctx, 200, time.Minute)
-	cache := cachex.NewSerializableCacheX[*dto.StringList, int64]("post_tag_list", false, true).
+	redisCache := cachex.NewRedisCache[[]string](ctx, redis.GetRedisClient(ctx), time.Minute*30)
+	lruCache := cachex.NewLRUCache[[]string](ctx, 200, time.Minute)
+	cache := cachex.NewCacheX[int64, []string]("post_tag_list", false, true).
 		SetGetCacheKey(postTagListGetKey).
 		SetGetRealData(postTagListGetRealData).
 		AddCache(ctx, true, lruCache).
@@ -44,13 +43,13 @@ func postTagListGetKey(id int64) string {
 	return fmt.Sprintf("post_tag_list_%v", id)
 }
 
-func postTagListGetRealData(ctx context.Context, id int64) (*dto.StringList, error) {
+func postTagListGetRealData(ctx context.Context, id int64) ([]string, error) {
 	db := mysql.GetDB(ctx)
 	tags, err := mysql.SelectTagListByArticleID(db, id)
 	if err != nil {
-		return parseSqlError(&dto.StringList{}, err)
+		return parseSqlError(tags, err)
 	}
-	return dto.NewStringList(tags), nil
+	return tags, nil
 }
 
 func (p *PostTagListStorage) Get(ctx context.Context, id int64) ([]string, error) {
@@ -58,7 +57,7 @@ func (p *PostTagListStorage) Get(ctx context.Context, id int64) ([]string, error
 	if err != nil {
 		return nil, fmt.Errorf("get from cachex error:[%w]", err)
 	}
-	return tags.ToStringList(), err
+	return tags, err
 }
 
 // 重建缓存

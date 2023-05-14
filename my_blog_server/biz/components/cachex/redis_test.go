@@ -22,7 +22,7 @@ func TestNewRedisCache(t *testing.T) {
 	// 成功
 	t.Run("success", func(t *testing.T) {
 		defer resetMiniRedis(mr)
-		got := NewRedisCache(ctx, client, time.Second*30)
+		got := NewRedisCache[string](ctx, client, time.Second*30)
 		assert.NotNil(t, got)
 	})
 
@@ -31,7 +31,7 @@ func TestNewRedisCache(t *testing.T) {
 		defer resetMiniRedis(mr)
 		assert.Panics(t, func() {
 			mr.SetError("test")
-			_ = NewRedisCache(ctx, client, time.Second*30)
+			_ = NewRedisCache[string](ctx, client, time.Second*30)
 		})
 	})
 }
@@ -42,7 +42,7 @@ func TestRedisCache_Delete(t *testing.T) {
 	client := redis.NewClient(&redis.Options{
 		Addr: mr.Addr(),
 	})
-	cache := &RedisCache{
+	cache := &RedisCache[string]{
 		redisClient: client,
 		ttl:         time.Second * 30,
 	}
@@ -75,7 +75,7 @@ func TestRedisCache_Get(t *testing.T) {
 	client := redis.NewClient(&redis.Options{
 		Addr: mr.Addr(),
 	})
-	cache := &RedisCache{
+	cache := &RedisCache[string]{
 		redisClient: client,
 		ttl:         time.Second * 30,
 	}
@@ -167,7 +167,7 @@ func TestRedisCache_MDelete(t *testing.T) {
 	client := redis.NewClient(&redis.Options{
 		Addr: mr.Addr(),
 	})
-	cache := &RedisCache{
+	cache := &RedisCache[string]{
 		redisClient: client,
 		ttl:         time.Second * 30,
 	}
@@ -220,7 +220,7 @@ func TestRedisCache_MGet(t *testing.T) {
 	client := redis.NewClient(&redis.Options{
 		Addr: mr.Addr(),
 	})
-	cache := &RedisCache{
+	cache := &RedisCache[string]{
 		redisClient: client,
 		ttl:         time.Second * 30,
 	}
@@ -331,7 +331,7 @@ func TestRedisCache_MSet(t *testing.T) {
 	client := redis.NewClient(&redis.Options{
 		Addr: mr.Addr(),
 	})
-	cache := &RedisCache{
+	cache := &RedisCache[string]{
 		redisClient: client,
 		ttl:         time.Second * 30,
 	}
@@ -340,12 +340,12 @@ func TestRedisCache_MSet(t *testing.T) {
 	t.Run("success/single", func(t *testing.T) {
 		defer resetMiniRedis(mr)
 		now := time.Now()
-		data := &CacheData{
+		data := &CacheData[string]{
 			CreateAt: now.UnixMilli(),
 			Data:     "test",
 		}
 		key := "key"
-		err := cache.MSet(ctx, map[string]*CacheData{key: data})
+		err := cache.MSet(ctx, map[string]*CacheData[string]{key: data})
 		assert.Nil(t, err)
 		val, _ := mr.Get(key)
 		assert.JSONEq(t, getValue("test", now), val)
@@ -360,9 +360,9 @@ func TestRedisCache_MSet(t *testing.T) {
 			"key2": "value2",
 			"key3": "value3",
 		}
-		data := make(map[string]*CacheData, 3)
+		data := make(map[string]*CacheData[string], 3)
 		for k, v := range kvs {
-			data[k] = &CacheData{
+			data[k] = &CacheData[string]{
 				CreateAt: now.UnixMilli(),
 				Data:     v,
 			}
@@ -384,9 +384,9 @@ func TestRedisCache_MSet(t *testing.T) {
 			"key2": "value2",
 			"key3": "value3",
 		}
-		data := make(map[string]*CacheData, 3)
+		data := make(map[string]*CacheData[string], 3)
 		for k, v := range kvs {
-			data[k] = &CacheData{
+			data[k] = &CacheData[string]{
 				CreateAt: now.UnixMilli(),
 				Data:     v,
 			}
@@ -407,7 +407,7 @@ func TestRedisCache_Set(t *testing.T) {
 	client := redis.NewClient(&redis.Options{
 		Addr: mr.Addr(),
 	})
-	cache := &RedisCache{
+	cache := &RedisCache[string]{
 		redisClient: client,
 		ttl:         time.Second * 30,
 	}
@@ -416,7 +416,7 @@ func TestRedisCache_Set(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		defer resetMiniRedis(mr)
 		now := time.Now()
-		data := &CacheData{
+		data := &CacheData[string]{
 			CreateAt: now.UnixMilli(),
 			Data:     "test",
 		}
@@ -431,7 +431,7 @@ func TestRedisCache_Set(t *testing.T) {
 	t.Run("success/test_expired", func(t *testing.T) {
 		defer resetMiniRedis(mr)
 		now := time.Now()
-		data := &CacheData{
+		data := &CacheData[string]{
 			CreateAt: now.UnixMilli(),
 			Data:     "test",
 		}
@@ -450,7 +450,7 @@ func TestRedisCache_Set(t *testing.T) {
 		defer resetMiniRedis(mr)
 		mr.SetError("test")
 		now := time.Now()
-		data := &CacheData{
+		data := &CacheData[string]{
 			CreateAt: now.UnixMilli(),
 			Data:     "test",
 		}
@@ -463,11 +463,11 @@ func TestRedisCache_Set(t *testing.T) {
 }
 
 func TestRedisCache_marshal(t *testing.T) {
-	cache := &RedisCache{}
+	cache := &RedisCache[string]{}
 
 	t.Run("success", func(t *testing.T) {
 		now := time.Now()
-		data := &CacheData{
+		data := &CacheData[string]{
 			CreateAt: now.UnixMilli(),
 			Data:     "test",
 		}
@@ -482,11 +482,11 @@ func TestRedisCache_marshal(t *testing.T) {
 }
 
 func TestRedisCache_unmarshal(t *testing.T) {
-	cache := &RedisCache{}
+	cache := &RedisCache[string]{}
 
 	t.Run("success", func(t *testing.T) {
 		now := time.Now()
-		want := &CacheData{
+		want := &CacheData[string]{
 			CreateAt: now.UnixMilli(),
 			Data:     "test",
 		}
@@ -505,7 +505,7 @@ func TestRedisCache_unmarshal(t *testing.T) {
 func TestRedisCache_isExpired(t *testing.T) {
 	t.Run("expired", func(t *testing.T) {
 		now := time.Now()
-		cache := &RedisCache{
+		cache := &RedisCache[string]{
 			ttl: 30 * time.Second,
 		}
 		got := cache.isExpired(now.Add(-31*time.Second).UnixMilli(), now.UnixMilli())
@@ -513,7 +513,7 @@ func TestRedisCache_isExpired(t *testing.T) {
 	})
 	t.Run("not_expired/less", func(t *testing.T) {
 		now := time.Now()
-		cache := &RedisCache{
+		cache := &RedisCache[string]{
 			ttl: 30 * time.Second,
 		}
 		got := cache.isExpired(now.Add(-29*time.Second).UnixMilli(), now.UnixMilli())
@@ -521,7 +521,7 @@ func TestRedisCache_isExpired(t *testing.T) {
 	})
 	t.Run("not_expired/equal", func(t *testing.T) {
 		now := time.Now()
-		cache := &RedisCache{
+		cache := &RedisCache[string]{
 			ttl: 30 * time.Second,
 		}
 		got := cache.isExpired(now.Add(-30*time.Second).UnixMilli(), now.UnixMilli())
@@ -529,7 +529,7 @@ func TestRedisCache_isExpired(t *testing.T) {
 	})
 	t.Run("never_expired", func(t *testing.T) {
 		now := time.Now()
-		cache := &RedisCache{
+		cache := &RedisCache[string]{
 			ttl: 0,
 		}
 		got := cache.isExpired(now.Add(-30*time.Second).UnixMilli(), now.UnixMilli())
@@ -544,12 +544,12 @@ func TestRedisCache_isExpired(t *testing.T) {
 }
 
 func TestRedisCache_Name(t *testing.T) {
-	cache := &RedisCache{}
+	cache := &RedisCache[string]{}
 	assert.Equal(t, "RedisCache", cache.Name())
 }
 
 func getValue(data string, createAt time.Time) string {
-	return fmt.Sprintf(`{"c":%v,"d":"%v"}`, cast.ToString(createAt.UnixMilli()), data)
+	return fmt.Sprintf(`{"c":%v,"d":"%v","z":0}`, cast.ToString(createAt.UnixMilli()), data)
 }
 
 func resetMiniRedis(mr *miniredis.Miniredis) {

@@ -29,19 +29,19 @@ func SetLogger(l Logger) {
 
 type defaultLogger struct{}
 
-func (defaultLogger) Debug(ctx context.Context, logs string) {
+func (defaultLogger) Debug(_ context.Context, logs string) {
 	log.Printf("[DEBUG] %v\n", logs)
 }
 
-func (defaultLogger) Info(ctx context.Context, logs string) {
+func (defaultLogger) Info(_ context.Context, logs string) {
 	log.Printf("[INFO] %v\n", logs)
 }
 
-func (defaultLogger) Warn(ctx context.Context, logs string) {
+func (defaultLogger) Warn(_ context.Context, logs string) {
 	log.Printf("[WARN] %v\n", logs)
 }
 
-func (defaultLogger) Error(ctx context.Context, logs string) {
+func (defaultLogger) Error(_ context.Context, logs string) {
 	log.Printf("[Error] %v\n", logs)
 }
 

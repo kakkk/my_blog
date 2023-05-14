@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"my_blog/biz/components/cachex"
-	"my_blog/biz/dto"
 	"my_blog/biz/repository/mysql"
 	"my_blog/biz/repository/redis"
 )
@@ -14,7 +13,7 @@ import (
 var categoryPostListStorage *CategoryPostListStorage
 
 type CategoryPostListStorage struct {
-	cacheX *cachex.CacheX[*dto.Int64List, int64]
+	cacheX *cachex.CacheX[int64, []int64]
 }
 
 func GetCategoryPostListStorage() *CategoryPostListStorage {
@@ -22,9 +21,9 @@ func GetCategoryPostListStorage() *CategoryPostListStorage {
 }
 
 func initCategoryPostListStorage(ctx context.Context) error {
-	redisCache := cachex.NewRedisCache(ctx, redis.GetRedisClient(ctx), time.Minute*30)
-	lruCache := cachex.NewLRUCache(ctx, 1, time.Minute)
-	cache := cachex.NewSerializableCacheX[*dto.Int64List, int64]("category_post_list", false, false).
+	redisCache := cachex.NewRedisCache[[]int64](ctx, redis.GetRedisClient(ctx), time.Minute*30)
+	lruCache := cachex.NewLRUCache[[]int64](ctx, 1, time.Minute)
+	cache := cachex.NewCacheX[int64, []int64]("category_post_list", false, false).
 		SetGetCacheKey(categoryPostListGetKey).
 		SetGetRealData(categoryPostListGetRealData).
 		AddCache(ctx, true, lruCache).
@@ -44,12 +43,12 @@ func categoryPostListGetKey(id int64) string {
 	return fmt.Sprintf("category_post_list_%v", id)
 }
 
-func categoryPostListGetRealData(ctx context.Context, id int64) (*dto.Int64List, error) {
+func categoryPostListGetRealData(ctx context.Context, id int64) ([]int64, error) {
 	list, err := mysql.SelectPostIDsByCategoryID(mysql.GetDB(ctx), id)
 	if err != nil {
-		return parseSqlError(&dto.Int64List{}, err)
+		return parseSqlError(list, err)
 	}
-	return dto.NewInt64List(list), nil
+	return list, nil
 }
 
 func (p *CategoryPostListStorage) Get(ctx context.Context, id int64) ([]int64, error) {
@@ -57,7 +56,7 @@ func (p *CategoryPostListStorage) Get(ctx context.Context, id int64) ([]int64, e
 	if err != nil {
 		return nil, fmt.Errorf("get from cachex error:[%w]", err)
 	}
-	return order.ToInt64List(), err
+	return order, err
 }
 
 // 重建缓存

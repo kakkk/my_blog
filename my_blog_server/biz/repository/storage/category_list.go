@@ -15,15 +15,15 @@ import (
 )
 
 type CategoryListStorage struct {
-	cacheX *cachex.CacheX[*dto.CategoryList, int]
+	cacheX *cachex.CacheX[int, *dto.CategoryList]
 }
 
 var categoryListStorage *CategoryListStorage
 
 func initCategoryListStorage(ctx context.Context) error {
-	redisCache := cachex.NewRedisCache(ctx, redis.GetRedisClient(ctx), 6*time.Hour)
-	lruCache := cachex.NewLRUCache(ctx, 1, time.Hour)
-	cache := cachex.NewSerializableCacheX[*dto.CategoryList, int]("category_list", false, false).
+	redisCache := cachex.NewRedisCache[*dto.CategoryList](ctx, redis.GetRedisClient(ctx), 6*time.Hour)
+	lruCache := cachex.NewLRUCache[*dto.CategoryList](ctx, 1, time.Hour)
+	cache := cachex.NewCacheX[int, *dto.CategoryList]("category_list", false, false).
 		SetGetCacheKey(categoryListGetKey).
 		SetGetRealData(categoryListGetRealData).
 		AddCache(ctx, true, lruCache).

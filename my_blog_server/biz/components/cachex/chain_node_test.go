@@ -10,19 +10,19 @@ import (
 
 func Test_chainNode_Delete(t *testing.T) {
 	ctx := context.Background()
-	cache1 := NewTestCache(ctx, 10)
-	cache2 := NewTestCache(ctx, 10)
-	_, tail := newTestCacheChain(cache1, cache2)
+	cache1 := NewTestCache[string](ctx, 10)
+	cache2 := NewTestCache[string](ctx, 10)
+	_, tail := newTestCacheChain[string](cache1, cache2)
 
 	key1 := "key1"
 	key2 := "key2"
-	val1 := &CacheData{
+	val1 := &CacheData[string]{
 		Data: "val1",
 	}
-	val2 := &CacheData{
+	val2 := &CacheData[string]{
 		Data: "val2",
 	}
-	kvs := map[string]*CacheData{
+	kvs := map[string]*CacheData[string]{
 		key1: val1,
 		key2: val2,
 	}
@@ -112,19 +112,19 @@ func Test_chainNode_Delete(t *testing.T) {
 
 func Test_chainNode_Get(t *testing.T) {
 	ctx := context.Background()
-	cache1 := NewTestCache(ctx, 10)
-	cache2 := NewTestCache(ctx, 10)
-	head, _ := newTestCacheChain(cache1, cache2)
+	cache1 := NewTestCache[string](ctx, 10)
+	cache2 := NewTestCache[string](ctx, 10)
+	head, _ := newTestCacheChain[string](cache1, cache2)
 
 	key1 := "key1"
 	key2 := "key2"
-	val1 := &CacheData{
+	val1 := &CacheData[string]{
 		Data: "val1",
 	}
-	val2 := &CacheData{
+	val2 := &CacheData[string]{
 		Data: "val2",
 	}
-	kvs := map[string]*CacheData{
+	kvs := map[string]*CacheData[string]{
 		key1: val1,
 		key2: val2,
 	}
@@ -191,23 +191,23 @@ func Test_chainNode_Get(t *testing.T) {
 
 func Test_chainNode_MDelete(t *testing.T) {
 	ctx := context.Background()
-	cache1 := NewTestCache(ctx, 10)
-	cache2 := NewTestCache(ctx, 10)
-	_, tail := newTestCacheChain(cache1, cache2)
+	cache1 := NewTestCache[string](ctx, 10)
+	cache2 := NewTestCache[string](ctx, 10)
+	_, tail := newTestCacheChain[string](cache1, cache2)
 
 	key1 := "key1"
 	key2 := "key2"
 	key3 := "key3"
-	val1 := &CacheData{
+	val1 := &CacheData[string]{
 		Data: "val1",
 	}
-	val2 := &CacheData{
+	val2 := &CacheData[string]{
 		Data: "val2",
 	}
-	val3 := &CacheData{
+	val3 := &CacheData[string]{
 		Data: "val3",
 	}
-	kvs := map[string]*CacheData{
+	kvs := map[string]*CacheData[string]{
 		key1: val1,
 		key2: val2,
 		key3: val3,
@@ -281,23 +281,23 @@ func Test_chainNode_MDelete(t *testing.T) {
 
 func Test_chainNode_MGet(t *testing.T) {
 	ctx := context.Background()
-	cache1 := NewTestCache(ctx, 10)
-	cache2 := NewTestCache(ctx, 10)
-	head, _ := newTestCacheChain(cache1, cache2)
+	cache1 := NewTestCache[string](ctx, 10)
+	cache2 := NewTestCache[string](ctx, 10)
+	head, _ := newTestCacheChain[string](cache1, cache2)
 
 	key1 := "key1"
 	key2 := "key2"
 	key3 := "key3"
-	val1 := &CacheData{
+	val1 := &CacheData[string]{
 		Data: "val1",
 	}
-	val2 := &CacheData{
+	val2 := &CacheData[string]{
 		Data: "val2",
 	}
-	val3 := &CacheData{
+	val3 := &CacheData[string]{
 		Data: "val3",
 	}
-	kvs := map[string]*CacheData{
+	kvs := map[string]*CacheData[string]{
 		key1: val1,
 		key2: val2,
 		key3: val3,
@@ -323,7 +323,7 @@ func Test_chainNode_MGet(t *testing.T) {
 
 	t.Run("cache1 error", func(t *testing.T) {
 		defer resetTestCache(cache1, cache2)
-		_ = cache1.MSet(ctx, map[string]*CacheData{
+		_ = cache1.MSet(ctx, map[string]*CacheData[string]{
 			key1: {Data: "test"},
 		})
 		_ = cache2.MSet(ctx, kvs)
@@ -332,25 +332,25 @@ func Test_chainNode_MGet(t *testing.T) {
 		assert.Nil(t, err)
 		assert.EqualValues(t, kvs, got)
 		cache1.SetError(nil)
-		checkCache(t, cache1, map[string]*CacheData{
+		checkCache(t, cache1, map[string]*CacheData[string]{
 			key1: {Data: "test"},
 		})
 	})
 
 	t.Run("get by cache1 cache2", func(t *testing.T) {
 		defer resetTestCache(cache1, cache2)
-		_ = cache1.MSet(ctx, map[string]*CacheData{
+		_ = cache1.MSet(ctx, map[string]*CacheData[string]{
 			key1: val1,
 			key3: val3,
 		})
-		_ = cache2.MSet(ctx, map[string]*CacheData{
+		_ = cache2.MSet(ctx, map[string]*CacheData[string]{
 			key2: val2,
 		})
 		got, err := head.MGet(ctx, []string{key1, key2, key3})
 		assert.Nil(t, err)
 		assert.EqualValues(t, kvs, got)
 		checkCache(t, cache1, kvs)
-		checkCache(t, cache2, map[string]*CacheData{
+		checkCache(t, cache2, map[string]*CacheData[string]{
 			key2: val2,
 		})
 	})
@@ -359,19 +359,19 @@ func Test_chainNode_MGet(t *testing.T) {
 		defer resetTestCache(cache1, cache2)
 		got, err := head.MGet(ctx, []string{key1, key2, key3})
 		assert.Nil(t, err)
-		assert.EqualValues(t, map[string]*CacheData{}, got)
+		assert.EqualValues(t, map[string]*CacheData[string]{}, got)
 	})
 	t.Run("some not found", func(t *testing.T) {
 		defer resetTestCache(cache1, cache2)
-		_ = cache2.MSet(ctx, map[string]*CacheData{
+		_ = cache2.MSet(ctx, map[string]*CacheData[string]{
 			key2: val2,
 		})
 		got, err := head.MGet(ctx, []string{key1, key2, key3})
 		assert.Nil(t, err)
-		assert.EqualValues(t, map[string]*CacheData{
+		assert.EqualValues(t, map[string]*CacheData[string]{
 			key2: val2,
 		}, got)
-		checkCache(t, cache1, map[string]*CacheData{
+		checkCache(t, cache1, map[string]*CacheData[string]{
 			key2: val2,
 		})
 	})
@@ -386,25 +386,25 @@ func Test_chainNode_Set(t *testing.T) {
 }
 
 func Test_newDefaultCacheData(t *testing.T) {
-	got := newDefaultCacheData()
+	got := newDefaultCacheData[string]()
 	assert.NotEqual(t, 0, got.CreateAt)
 	assert.Equal(t, "", got.Data)
 }
 
-func newTestCacheChain(c1 Cache, c2 Cache) (*chainNode, *chainNode) {
-	head := &chainNode{
-		cache: &defaultCache{},
+func newTestCacheChain[T any](c1 Cache[T], c2 Cache[T]) (*chainNode[T], *chainNode[T]) {
+	head := &chainNode[T]{
+		cache: &defaultCache[T]{},
 	}
-	cache1 := &chainNode{
+	cache1 := &chainNode[T]{
 		cache: c1,
 		prev:  head,
 	}
-	cache2 := &chainNode{
+	cache2 := &chainNode[T]{
 		cache: c2,
 		prev:  cache1,
 	}
-	tail := &chainNode{
-		cache: &defaultCache{},
+	tail := &chainNode[T]{
+		cache: &defaultCache[T]{},
 		prev:  cache2,
 	}
 	head.next = cache1
@@ -413,17 +413,17 @@ func newTestCacheChain(c1 Cache, c2 Cache) (*chainNode, *chainNode) {
 	return head, tail
 }
 
-func resetTestCache(c1 *testCache, c2 *testCache) {
+func resetTestCache[T any](c1 *TestCache[T], c2 *TestCache[T]) {
 	c1.ResetCache()
 	c2.ResetCache()
 }
 
-func resetTestCacheErr(c1 *testCache, c2 *testCache) {
+func resetTestCacheErr[T any](c1 *TestCache[T], c2 *TestCache[T]) {
 	c1.ResetError()
 	c2.ResetError()
 }
 
-func checkCache(t *testing.T, c *testCache, want map[string]*CacheData) {
+func checkCache[T any](t *testing.T, c *TestCache[T], want map[string]*CacheData[T]) {
 	ctx := context.Background()
 	for k, v := range want {
 		got, _ := c.Get(ctx, k)

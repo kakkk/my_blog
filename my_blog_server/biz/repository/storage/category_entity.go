@@ -16,7 +16,7 @@ import (
 var categoryEntityStorage *CategoryEntityStorage
 
 type CategoryEntityStorage struct {
-	cacheX *cachex.CacheX[*entity.Category, int64]
+	cacheX *cachex.CacheX[int64, *entity.Category]
 }
 
 func GetCategoryEntityStorage() *CategoryEntityStorage {
@@ -24,9 +24,9 @@ func GetCategoryEntityStorage() *CategoryEntityStorage {
 }
 
 func initCategoryEntityStorage(ctx context.Context) error {
-	redisCache := cachex.NewRedisCache(ctx, redis.GetRedisClient(ctx), time.Minute*30)
-	lruCache := cachex.NewLRUCache(ctx, 1000, time.Minute)
-	cache := cachex.NewSerializableCacheX[*entity.Category, int64]("category_entity", false, true).
+	redisCache := cachex.NewRedisCache[*entity.Category](ctx, redis.GetRedisClient(ctx), time.Minute*30)
+	lruCache := cachex.NewLRUCache[*entity.Category](ctx, 1000, time.Minute)
+	cache := cachex.NewCacheX[int64, *entity.Category]("category_entity", false, true).
 		SetGetCacheKey(categoryStorageGetKey).
 		SetGetRealData(categoryEntityStorageGetRealData).
 		SetMGetRealData(categoryEntityStorageMGetRealData).

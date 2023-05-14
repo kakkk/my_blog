@@ -12,7 +12,7 @@ import (
 func TestNewLRUCache(t *testing.T) {
 	ctx := context.Background()
 	t.Run("normal", func(t *testing.T) {
-		got := NewLRUCache(ctx, 10, time.Second*10)
+		got := NewLRUCache[string](ctx, 10, time.Second*10)
 		assert.Equal(t, time.Second*10, got.ttl)
 		assert.NotNil(t, got)
 		assert.NotNil(t, got.cache)
@@ -24,7 +24,7 @@ func TestLRUCache_Delete(t *testing.T) {
 	t.Run("normal", func(t *testing.T) {
 		key, val := "key", "val"
 		c := lru.New(5)
-		cache := &LRUCache{
+		cache := &LRUCache[string]{
 			cache: c,
 			ttl:   time.Second,
 		}
@@ -41,12 +41,12 @@ func TestLRUCache_Get(t *testing.T) {
 	ctx := context.Background()
 	t.Run("normal", func(t *testing.T) {
 		c := lru.New(5)
-		cache := &LRUCache{
+		cache := &LRUCache[string]{
 			cache: c,
 			ttl:   time.Hour,
 		}
 		key := "key"
-		val := &CacheData{
+		val := &CacheData[string]{
 			CreateAt: time.Now().UnixMilli(),
 			Data:     "test",
 		}
@@ -58,7 +58,7 @@ func TestLRUCache_Get(t *testing.T) {
 
 	t.Run("fail/not_exist", func(t *testing.T) {
 		c := lru.New(5)
-		cache := &LRUCache{
+		cache := &LRUCache[string]{
 			cache: c,
 			ttl:   time.Hour,
 		}
@@ -69,12 +69,12 @@ func TestLRUCache_Get(t *testing.T) {
 
 	t.Run("fail/expired", func(t *testing.T) {
 		c := lru.New(5)
-		cache := &LRUCache{
+		cache := &LRUCache[string]{
 			cache: c,
 			ttl:   time.Second,
 		}
 		key := "key"
-		val := &CacheData{
+		val := &CacheData[string]{
 			CreateAt: time.Now().Add(-1 * time.Hour).UnixMilli(),
 			Data:     "test",
 		}
@@ -93,12 +93,12 @@ func TestLRUCache_MDelete(t *testing.T) {
 	t.Run("normal", func(t *testing.T) {
 		c := lru.New(5)
 		now := time.Now()
-		kvs := map[string]*CacheData{
+		kvs := map[string]*CacheData[string]{
 			"key1": {CreateAt: now.UnixMilli(), Data: "value1"},
 			"key2": {CreateAt: now.UnixMilli(), Data: "value2"},
 			"key3": {CreateAt: now.UnixMilli(), Data: "value3"},
 		}
-		cache := &LRUCache{
+		cache := &LRUCache[string]{
 			cache: c,
 			ttl:   time.Second,
 		}
@@ -123,11 +123,11 @@ func TestLRUCache_MGet(t *testing.T) {
 	t.Run("normal", func(t *testing.T) {
 		now := time.Now()
 		c := lru.New(5)
-		cache := &LRUCache{
+		cache := &LRUCache[string]{
 			cache: c,
 			ttl:   time.Hour,
 		}
-		kvs := map[string]*CacheData{
+		kvs := map[string]*CacheData[string]{
 			"key1": {CreateAt: now.UnixMilli(), Data: "value1"},
 			"key2": {CreateAt: now.UnixMilli(), Data: "value2"},
 			"key3": {CreateAt: now.UnixMilli(), Data: "value3"},
@@ -143,11 +143,11 @@ func TestLRUCache_MGet(t *testing.T) {
 	t.Run("all_cases", func(t *testing.T) {
 		now := time.Now()
 		c := lru.New(5)
-		cache := &LRUCache{
+		cache := &LRUCache[string]{
 			cache: c,
 			ttl:   time.Hour,
 		}
-		kvs := map[string]*CacheData{
+		kvs := map[string]*CacheData[string]{
 			"key1": {CreateAt: now.UnixMilli(), Data: "value1"},
 			"key2": {CreateAt: now.UnixMilli(), Data: "value2"},
 			"key3": {CreateAt: now.UnixMilli(), Data: "value3"},
@@ -156,7 +156,7 @@ func TestLRUCache_MGet(t *testing.T) {
 		for k, v := range kvs {
 			c.Add(k, v)
 		}
-		want := map[string]*CacheData{
+		want := map[string]*CacheData[string]{
 			"key1": {CreateAt: now.UnixMilli(), Data: "value1"},
 			"key2": {CreateAt: now.UnixMilli(), Data: "value2"},
 			"key3": {CreateAt: now.UnixMilli(), Data: "value3"},
@@ -175,11 +175,11 @@ func TestLRUCache_MSet(t *testing.T) {
 	t.Run("normal", func(t *testing.T) {
 		now := time.Now()
 		c := lru.New(5)
-		cache := &LRUCache{
+		cache := &LRUCache[string]{
 			cache: c,
 			ttl:   time.Hour,
 		}
-		kvs := map[string]*CacheData{
+		kvs := map[string]*CacheData[string]{
 			"key1": {CreateAt: now.UnixMilli(), Data: "value1"},
 			"key2": {CreateAt: now.UnixMilli(), Data: "value2"},
 			"key3": {CreateAt: now.UnixMilli(), Data: "value3"},
@@ -199,12 +199,12 @@ func TestLRUCache_Set(t *testing.T) {
 
 	t.Run("normal", func(t *testing.T) {
 		c := lru.New(5)
-		cache := &LRUCache{
+		cache := &LRUCache[string]{
 			cache: c,
 			ttl:   time.Hour,
 		}
 		key := "key"
-		val := &CacheData{
+		val := &CacheData[string]{
 			CreateAt: time.Now().UnixMilli(),
 			Data:     "test",
 		}
@@ -219,7 +219,7 @@ func TestLRUCache_Set(t *testing.T) {
 func TestLRUCache_isExpired(t *testing.T) {
 	t.Run("expired", func(t *testing.T) {
 		now := time.Now()
-		cache := &LRUCache{
+		cache := &LRUCache[string]{
 			ttl: 30 * time.Second,
 		}
 		got := cache.isExpired(now.Add(-31*time.Second).UnixMilli(), now.UnixMilli())
@@ -227,7 +227,7 @@ func TestLRUCache_isExpired(t *testing.T) {
 	})
 	t.Run("not_expired/less", func(t *testing.T) {
 		now := time.Now()
-		cache := &LRUCache{
+		cache := &LRUCache[string]{
 			ttl: 30 * time.Second,
 		}
 		got := cache.isExpired(now.Add(-29*time.Second).UnixMilli(), now.UnixMilli())
@@ -235,7 +235,7 @@ func TestLRUCache_isExpired(t *testing.T) {
 	})
 	t.Run("not_expired/equal", func(t *testing.T) {
 		now := time.Now()
-		cache := &LRUCache{
+		cache := &LRUCache[string]{
 			ttl: 30 * time.Second,
 		}
 		got := cache.isExpired(now.Add(-30*time.Second).UnixMilli(), now.UnixMilli())
@@ -243,7 +243,7 @@ func TestLRUCache_isExpired(t *testing.T) {
 	})
 	t.Run("never_expired", func(t *testing.T) {
 		now := time.Now()
-		cache := &LRUCache{
+		cache := &LRUCache[string]{
 			ttl: 0,
 		}
 		got := cache.isExpired(now.Add(-30*time.Second).UnixMilli(), now.UnixMilli())

@@ -7,10 +7,10 @@
                 <h1>
                     <font style="vertical-align: inherit;">
                         {{- if (eq .Meta.PageType "PAGE_CATEGORY_POST_LIST")}}
-                            <font style="vertical-align: inherit;">"{{- .Name}}" 下的所有文章</font>
+                            <font style="vertical-align: inherit;">分类 "{{- .Name}}" 下的文章</font>
                         {{- end}}
                         {{- if (eq .Meta.PageType "PAGE_TAG_POST_LIST")}}
-                            <font style="vertical-align: inherit;">{{- .Name}}</font>
+                            <font style="vertical-align: inherit;">标签 "{{- .Name}}" 下的文章</font>
                         {{- end}}
                     </font>
                 </h1>

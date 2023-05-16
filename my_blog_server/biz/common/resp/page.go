@@ -60,7 +60,7 @@ func NewSomethingWrongErrorMeta() *page.PageMeta {
 		CDNDomain:   config.GetSiteConfig().CDNDomain,
 		SiteDomain:  config.GetSiteConfig().SiteDomain,
 		PageType:    page.PageTypeError,
-		ErrorCode:   "( •︠ˍ•︡ )",
+		ErrorCode:   "( •ˍ• )",
 	}
 }
 

@@ -2,13 +2,11 @@ package facade
 
 import (
 	"context"
-	"net/http"
 
 	"my_blog/biz/common/consts"
 	"my_blog/biz/common/errorx"
 	"my_blog/biz/common/log"
 	"my_blog/biz/common/resp"
-	"my_blog/biz/mock"
 	"my_blog/biz/model/blog/page"
 	"my_blog/biz/service"
 
@@ -65,16 +63,29 @@ func CategoryPostByPaginationPage(ctx context.Context, c *app.RequestContext) (i
 	return resp.PackPageResponse(rsp, pErr, consts.IndexTmpl)
 }
 
-func TagPostPage(ctx context.Context, c *app.RequestContext) (resp *page.PostListPageResp, code int) {
-	name := c.Param("name")
-	return mock.PostListPageRespMocker(page.PageTypeTagPostList, name, "", "2", ""), http.StatusOK
+func TagPostPage(ctx context.Context, c *app.RequestContext) (int, string, resp.IPageResponse) {
+	req := &page.PostListPageRequest{
+		Page:     thrift.Int64Ptr(1),
+		PageType: thrift.StringPtr(page.PageTypeTagPostList),
+	}
+	err := c.BindAndValidate(req)
+	if err != nil {
+		log.GetLoggerWithCtx(ctx).Warnf("parameter error:[%v]", err)
+		return resp.PackPageResponse(nil, errorx.NewNotFoundErrPageError(), consts.IndexTmpl)
+	}
+	rsp, pErr := service.TagPostListByPage(ctx, req)
+	return resp.PackPageResponse(rsp, pErr, consts.IndexTmpl)
 }
 
-func TagPostByPaginationPage(ctx context.Context, c *app.RequestContext) (resp *page.PostListPageResp, code int) {
-	p := c.Param("page")
-	if p == "1" {
-		return TagPostPage(ctx, c)
+func TagPostByPaginationPage(ctx context.Context, c *app.RequestContext) (int, string, resp.IPageResponse) {
+	req := &page.PostListPageRequest{
+		PageType: thrift.StringPtr(page.PageTypeTagPostList),
 	}
-	name := c.Param("name")
-	return mock.PostListPageRespMocker(page.PageTypeTagPostList, name, "1", "3", ""), http.StatusOK
+	err := c.BindAndValidate(req)
+	if err != nil {
+		log.GetLoggerWithCtx(ctx).Warnf("parameter error:[%v]", err)
+		return resp.PackPageResponse(nil, errorx.NewNotFoundErrPageError(), consts.IndexTmpl)
+	}
+	rsp, pErr := service.TagPostListByPage(ctx, req)
+	return resp.PackPageResponse(rsp, pErr, consts.IndexTmpl)
 }

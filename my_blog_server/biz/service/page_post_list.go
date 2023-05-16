@@ -64,6 +64,13 @@ func packPostListPageResp(currentPage int64, hasMore bool, pageType, name, slug 
 			title = fmt.Sprintf("分类 %v 下的文章 - 第%v页 - %v", name, currentPage, config.GetBlogName())
 		}
 		description = config.GetBlogDescription()
+	case page.PageTypeTagPostList:
+		if currentPage == 1 {
+			title = fmt.Sprintf("标签 %v 下的文章 - %v", name, config.GetBlogName())
+		} else {
+			title = fmt.Sprintf("标签 %v 下的文章 - 第%v页 - %v", name, currentPage, config.GetBlogName())
+		}
+		description = config.GetBlogDescription()
 	}
 	return &page.PostListPageResp{
 		Name:     name,

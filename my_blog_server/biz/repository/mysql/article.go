@@ -235,3 +235,21 @@ func SelectPostIDsByCategoryID(db *gorm.DB, cID int64) ([]int64, error) {
 	}
 	return list, nil
 }
+
+func SelectPostIDsByTagID(db *gorm.DB, cID int64) ([]int64, error) {
+	var list []int64
+	err := db.Model(&entity.ArticleTag{}).
+		Select("article_id").
+		Where("tag_id = ?", cID).
+		Where("delete_flag = ?", common.DeleteFlag_Exist).
+		Where("publish_at is not null").
+		Order("publish_at desc").
+		Find(&list).Error
+	if err != nil {
+		return nil, parseError(err)
+	}
+	if len(list) == 0 {
+		return nil, consts.ErrRecordNotFound
+	}
+	return list, nil
+}

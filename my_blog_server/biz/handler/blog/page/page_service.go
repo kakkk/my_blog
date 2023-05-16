@@ -38,15 +38,13 @@ func CategoryPostByPaginationPage(ctx context.Context, c *app.RequestContext) {
 // TagPostPage .
 // @router /tag/:name [GET]
 func TagPostPage(ctx context.Context, c *app.RequestContext) {
-	resp, code := facade.TagPostPage(ctx, c)
-	c.HTML(code, "index.tmpl", resp)
+	c.HTML(facade.TagPostPage(ctx, c))
 }
 
 // TagPostByPaginationPage .
 // @router /tag/:name/:page [GET]
 func TagPostByPaginationPage(ctx context.Context, c *app.RequestContext) {
-	resp, code := facade.TagPostByPaginationPage(ctx, c)
-	c.HTML(code, "index.tmpl", resp)
+	c.HTML(facade.TagPostByPaginationPage(ctx, c))
 }
 
 // ArchivesPage .

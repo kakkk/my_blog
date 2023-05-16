@@ -301,3 +301,15 @@ func UpdateArticleTagUpdateAtByArticleID(db *gorm.DB, id int64, publishAt *time.
 		Update("publish_at", publishAt).Error
 	return parseError(err)
 }
+
+func SelectTagIDByName(db *gorm.DB, name string) (int64, error) {
+	var id int64
+	err := db.Model(&entity.Tag{}).
+		Select("id").
+		Where("tag_name = ?", name).
+		First(&id).Error
+	if err != nil {
+		return 0, parseError(err)
+	}
+	return id, nil
+}

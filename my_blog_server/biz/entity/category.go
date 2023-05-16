@@ -1,7 +1,6 @@
 package entity
 
 import (
-	"encoding/json"
 	"time"
 
 	"my_blog/biz/model/blog/common"
@@ -17,20 +16,6 @@ type Category struct {
 
 func (*Category) TableName() string {
 	return "categories"
-}
-
-func (a *Category) Serialize() string {
-	bytes, _ := json.Marshal(a)
-	return string(bytes)
-}
-
-func (a *Category) Deserialize(str string) (*Category, error) {
-	category := &Category{}
-	err := json.Unmarshal([]byte(str), category)
-	if err != nil {
-		return nil, err
-	}
-	return category, nil
 }
 
 type ArticleCategory struct {

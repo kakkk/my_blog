@@ -1,7 +1,6 @@
 package entity
 
 import (
-	"encoding/json"
 	"time"
 
 	"my_blog/biz/model/blog/common"
@@ -24,18 +23,4 @@ type Article struct {
 
 func (*Article) TableName() string {
 	return "article"
-}
-
-func (a *Article) Serialize() string {
-	bytes, _ := json.Marshal(a)
-	return string(bytes)
-}
-
-func (a *Article) Deserialize(str string) (*Article, error) {
-	article := &Article{}
-	err := json.Unmarshal([]byte(str), article)
-	if err != nil {
-		return nil, err
-	}
-	return article, nil
 }

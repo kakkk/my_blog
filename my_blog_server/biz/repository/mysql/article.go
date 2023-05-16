@@ -253,3 +253,25 @@ func SelectPostIDsByTagID(db *gorm.DB, cID int64) ([]int64, error) {
 	}
 	return list, nil
 }
+
+func SelectAllPublishedPostWithBatch(db *gorm.DB) ([]*entity.Article, error) {
+	var list []*entity.Article
+	var results []*entity.Article
+	err := db.Model(&entity.Article{}).
+		Where("article_type = ?", common.ArticleType_Post).
+		Where("article_status = ?", common.ArticleStatus_PUBLISH).
+		Where("delete_flag = ?", common.DeleteFlag_Exist).
+		FindInBatches(&results, 5, func(tx *gorm.DB, batch int) error {
+			for _, result := range results {
+				list = append(list, result)
+			}
+			return nil
+		}).Error
+	if err != nil {
+		return nil, parseError(err)
+	}
+	if len(list) == 0 {
+		return nil, consts.ErrRecordNotFound
+	}
+	return list, nil
+}

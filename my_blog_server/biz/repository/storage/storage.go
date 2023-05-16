@@ -67,5 +67,6 @@ func InitStorage() error {
 	if err != nil {
 		return fmt.Errorf("init storage error: [%w]", err)
 	}
+	initArchivesStorage()
 	return nil
 }

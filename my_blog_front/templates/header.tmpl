@@ -38,11 +38,6 @@
             {{- $currentPage := . }}
             <ul id="menu">
                 <li>
-                    <a href="{{ .Meta.SiteDomain }}/archives/" title="归档">
-                        <span>归档</span>
-                    </a>
-                </li>
-                <li>
                     <a href="{{ .Meta.SiteDomain }}/categories/" title="分类">
                         <span>分类</span>
                     </a>
@@ -50,6 +45,11 @@
                 <li>
                     <a href="{{ .Meta.SiteDomain }}/tags/" title="标签">
                         <span>标签</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ .Meta.SiteDomain }}/archives/" title="归档">
+                        <span>归档</span>
                     </a>
                 </li>
                 <li>

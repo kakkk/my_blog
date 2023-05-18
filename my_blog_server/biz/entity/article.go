@@ -14,7 +14,7 @@ type Article struct {
 	Status      common.ArticleStatus `gorm:"column:article_status"`
 	Extra       string               `gorm:"column:extra"`
 	CreateUser  int64                `gorm:"column:create_user"`
-	PV          int64                `gorm:"column:pv"`
+	UV          int64                `gorm:"column:uv"`
 	CreateAt    time.Time            `gorm:"column:create_at"`
 	UpdateAt    time.Time            `gorm:"column:update_at"`
 	PublishAt   *time.Time           `gorm:"column:publish_at"`

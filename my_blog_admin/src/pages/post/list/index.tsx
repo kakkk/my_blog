@@ -32,7 +32,7 @@ export default function PostList(props) {
       title: string;
       categories: string;
       editor: string;
-      pv: number;
+      uv: number;
       status: number;
       updateAt: number;
       publishAt: number;
@@ -117,7 +117,7 @@ export default function PostList(props) {
           title: string;
           categories: string;
           editor: string;
-          pv: number;
+          uv: number;
           status: number;
           updateAt: number;
           publishAt: number;
@@ -128,7 +128,7 @@ export default function PostList(props) {
             const d = {
               id: datum.id,
               categories: categoryStr,
-              pv: datum.pv,
+              uv: datum.uv,
               editor: datum.editor,
               status: datum.status,
               publishAt: datum.publish_at,
@@ -238,7 +238,7 @@ export default function PostList(props) {
     },
     {
       title: '阅读',
-      dataIndex: 'pv',
+      dataIndex: 'uv',
       align: 'center',
     },
     {

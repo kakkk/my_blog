@@ -115,7 +115,7 @@ func packGetPostPageResp(post *entity.Article, prev *dto.PostMeta, next *dto.Pos
 		Info: &page.PostInfo{
 			Author:       author,
 			PublishAt:    utils.GetPublishAtStr(post.PublishAt),
-			UV:           cast.ToString(post.PV),
+			UV:           cast.ToString(post.UV),
 			WordCount:    utils.GetWordCount(post.Content),
 			CategoryList: categoryList,
 		},

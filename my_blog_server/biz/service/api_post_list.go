@@ -167,7 +167,7 @@ func GetPostListAPI(ctx context.Context, req *api.GetPostListAPIRequest) (rsp *a
 			CategoryList: categories,
 			Editor:       userName,
 			Status:       post.Status,
-			PV:           post.PV,
+			UV:           post.UV,
 			UpdateAt:     post.UpdateAt.Unix(),
 			PublishAt:    publishAt,
 		})

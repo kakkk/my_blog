@@ -6943,7 +6943,7 @@ type PostListItem struct {
 	CategoryList []string             `thrift:"CategoryList,3,required" form:"category_list,required" json:"category_list,required" query:"category_list,required"`
 	Editor       string               `thrift:"Editor,4,required" form:"editor,required" json:"editor,required" query:"editor,required"`
 	Status       common.ArticleStatus `thrift:"Status,5,required" form:"status,required" json:"status,required" query:"status,required"`
-	PV           int64                `thrift:"PV,6,required" form:"pv,required" json:"pv,required" query:"pv,required"`
+	UV           int64                `thrift:"UV,6,required" form:"uv,required" json:"uv,required" query:"uv,required"`
 	UpdateAt     int64                `thrift:"UpdateAt,7,required" form:"update_at,required" json:"update_at,required" query:"update_at,required"`
 	PublishAt    int64                `thrift:"PublishAt,8,required" form:"publish_at,required" json:"publish_at,required" query:"publish_at,required"`
 }
@@ -6972,8 +6972,8 @@ func (p *PostListItem) GetStatus() (v common.ArticleStatus) {
 	return p.Status
 }
 
-func (p *PostListItem) GetPV() (v int64) {
-	return p.PV
+func (p *PostListItem) GetUV() (v int64) {
+	return p.UV
 }
 
 func (p *PostListItem) GetUpdateAt() (v int64) {
@@ -6990,7 +6990,7 @@ var fieldIDToName_PostListItem = map[int16]string{
 	3: "CategoryList",
 	4: "Editor",
 	5: "Status",
-	6: "PV",
+	6: "UV",
 	7: "UpdateAt",
 	8: "PublishAt",
 }
@@ -7004,7 +7004,7 @@ func (p *PostListItem) Read(iprot thrift.TProtocol) (err error) {
 	var issetCategoryList bool = false
 	var issetEditor bool = false
 	var issetStatus bool = false
-	var issetPV bool = false
+	var issetUV bool = false
 	var issetUpdateAt bool = false
 	var issetPublishAt bool = false
 
@@ -7082,7 +7082,7 @@ func (p *PostListItem) Read(iprot thrift.TProtocol) (err error) {
 				if err = p.ReadField6(iprot); err != nil {
 					goto ReadFieldError
 				}
-				issetPV = true
+				issetUV = true
 			} else {
 				if err = iprot.Skip(fieldTypeId); err != nil {
 					goto SkipFieldError
@@ -7149,7 +7149,7 @@ func (p *PostListItem) Read(iprot thrift.TProtocol) (err error) {
 		goto RequiredFieldNotSetError
 	}
 
-	if !issetPV {
+	if !issetUV {
 		fieldId = 6
 		goto RequiredFieldNotSetError
 	}
@@ -7243,7 +7243,7 @@ func (p *PostListItem) ReadField6(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadI64(); err != nil {
 		return err
 	} else {
-		p.PV = v
+		p.UV = v
 	}
 	return nil
 }
@@ -7417,10 +7417,10 @@ WriteFieldEndError:
 }
 
 func (p *PostListItem) writeField6(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("PV", thrift.I64, 6); err != nil {
+	if err = oprot.WriteFieldBegin("UV", thrift.I64, 6); err != nil {
 		goto WriteFieldBeginError
 	}
-	if err := oprot.WriteI64(p.PV); err != nil {
+	if err := oprot.WriteI64(p.UV); err != nil {
 		return err
 	}
 	if err = oprot.WriteFieldEnd(); err != nil {

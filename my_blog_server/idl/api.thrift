@@ -214,7 +214,7 @@ struct PostListItem {
     3: required list<string> CategoryList
     4: required string Editor
     5: required common.ArticleStatus Status
-    6: required i64 PV
+    6: required i64 UV
     7: required i64 UpdateAt
     8: required i64 PublishAt
 

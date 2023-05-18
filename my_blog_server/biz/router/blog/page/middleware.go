@@ -10,7 +10,9 @@ import (
 
 func rootMw() []app.HandlerFunc {
 	// your code...
-	return middleware.GetRootMW()
+	mw := middleware.GetRootMW()
+	mw = append(mw, middleware.VisitorSessionMW())
+	return mw
 }
 
 func _indexpageMw() []app.HandlerFunc {

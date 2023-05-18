@@ -15,14 +15,14 @@ func rootMw() []app.HandlerFunc {
 
 func _apiMw() []app.HandlerFunc {
 	// your code...
-	return []app.HandlerFunc{
-		middleware.SessionMW(),
-	}
+	return nil
 }
 
 func _login_piMw() []app.HandlerFunc {
 	// your code...
-	return nil
+	return []app.HandlerFunc{
+		middleware.AdminSessionMW(false),
+	}
 }
 
 func _adminMw() []app.HandlerFunc {
@@ -38,14 +38,14 @@ func _userMw() []app.HandlerFunc {
 func _getuserinfo_piMw() []app.HandlerFunc {
 	// your code...
 	return []app.HandlerFunc{
-		middleware.SessionAuthMW(),
+		middleware.AdminSessionMW(true),
 	}
 }
 
 func _tagMw() []app.HandlerFunc {
 	// your code...
 	return []app.HandlerFunc{
-		middleware.SessionAuthMW(),
+		middleware.AdminSessionMW(true),
 	}
 }
 
@@ -67,7 +67,7 @@ func _gettaglist_piMw() []app.HandlerFunc {
 func _categoryMw() []app.HandlerFunc {
 	// your code...
 	return []app.HandlerFunc{
-		middleware.SessionAuthMW(),
+		middleware.AdminSessionMW(true),
 	}
 }
 
@@ -99,7 +99,7 @@ func _getpost_piMw() []app.HandlerFunc {
 func _postMw() []app.HandlerFunc {
 	// your code...
 	return []app.HandlerFunc{
-		middleware.SessionAuthMW(),
+		middleware.AdminSessionMW(true),
 	}
 }
 

@@ -58,12 +58,17 @@ func GetLoggerWithCtx(ctx context.Context) *logrus.Entry {
 	fields := logrus.Fields{}
 	// 从context中获取request_id
 	requestID, ok := ctx.Value("request_id").(string)
-	if ok {
+	if ok && requestID != "" {
 		fields["request_id"] = requestID
 	}
 
+	sessionID, ok := ctx.Value("session_id").(string)
+	if ok && sessionID != "" {
+		fields["session_id"] = sessionID
+	}
+
 	userID, ok := ctx.Value("user_id").(int64)
-	if ok {
+	if ok && userID != 0 {
 		fields["user_id"] = userID
 	}
 	return logger.WithFields(fields)

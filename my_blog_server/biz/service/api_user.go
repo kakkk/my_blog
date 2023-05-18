@@ -6,6 +6,7 @@ import (
 	"my_blog/biz/common/consts"
 	"my_blog/biz/common/log"
 	"my_blog/biz/common/resp"
+	"my_blog/biz/common/session"
 	"my_blog/biz/common/utils"
 	"my_blog/biz/model/blog/api"
 	"my_blog/biz/model/blog/common"
@@ -26,6 +27,14 @@ func LoginAPI(ctx context.Context, req *api.LoginRequest) (*api.LoginResponse, e
 	pass := utils.CompareHashAndPassword(user.PwdHash, req.GetPassword())
 	if !pass {
 		logger.Warnf("login fail: password incorrect, username:[%v], password:[%v]", req.GetUsername(), req.GetPassword())
+		return &api.LoginResponse{
+			BaseResp: resp.NewBaseResponse(common.RespCode_LoginFail, "login fail"),
+		}, nil
+	}
+
+	err = session.SetUserID(ctx, user.ID)
+	if err != nil {
+		logger.Errorf("set session error:[%v]", err)
 		return &api.LoginResponse{
 			BaseResp: resp.NewBaseResponse(common.RespCode_LoginFail, "login fail"),
 		}, nil

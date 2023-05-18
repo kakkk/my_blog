@@ -7,5 +7,6 @@ func GetRootMW() []app.HandlerFunc {
 		RequestIdMW(),
 		HertzLoggerMW(),
 		CorsMW(),
+		SessionMW(),
 	}
 }

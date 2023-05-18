@@ -37,5 +37,9 @@ func AdminSessionMW(auth bool) app.HandlerFunc {
 		logger.Infof("session user_id:[%v]", userID)
 		ctx = context.WithValue(ctx, "user_id", userID)
 		c.Next(ctx)
+		err := session.Save()
+		if err != nil {
+			log.GetLoggerWithCtx(ctx).Warnf("save session error:[%v]", err)
+		}
 	}
 }

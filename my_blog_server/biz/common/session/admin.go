@@ -13,9 +13,5 @@ func SetUserID(ctx context.Context, uid int64) error {
 		return fmt.Errorf("get session from ctx fail")
 	}
 	session.Set("user_id", uid)
-	err := session.Save()
-	if err != nil {
-		return fmt.Errorf("set session error:[%v]", err)
-	}
 	return nil
 }

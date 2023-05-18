@@ -9,6 +9,7 @@ import (
 	"my_blog/biz/common/errorx"
 	"my_blog/biz/common/log"
 	"my_blog/biz/common/resp"
+	"my_blog/biz/common/session"
 	"my_blog/biz/common/utils"
 	"my_blog/biz/dto"
 	"my_blog/biz/entity"
@@ -23,6 +24,7 @@ func PostPage(ctx context.Context, req *page.PostPageRequest) (rsp *page.PostPag
 		pErr = errorx.NewInternalErrPageError()
 		return
 	})()
+
 	// 获取post
 	post, err := storage.GetArticleEntityStorage().Get(ctx, req.GetID())
 	if err != nil {
@@ -30,7 +32,7 @@ func PostPage(ctx context.Context, req *page.PostPageRequest) (rsp *page.PostPag
 			logger.Warnf("post not found")
 			return nil, errorx.NewNotFoundErrPageError()
 		}
-		logger.Errorf("select post error:[%v]", err)
+		logger.Errorf("get post error:[%v]", err)
 		return nil, errorx.NewFailErrPageError()
 	}
 
@@ -40,20 +42,30 @@ func PostPage(ctx context.Context, req *page.PostPageRequest) (rsp *page.PostPag
 	// 获取作者
 	user, err := storage.GetUserEntityStorage().Get(ctx, post.CreateUser)
 	if err != nil {
-		logger.Warnf("select user error:[%v]", err)
+		logger.Warnf("get user error:[%v]", err)
 	}
 
 	// 获取标签
 	tags, err := storage.GetPostTagListStorage().Get(ctx, req.GetID())
 	if err != nil {
-		logger.Warnf("select tags error:[%v]", err)
+		logger.Warnf("get tags error:[%v]", err)
 	}
 
 	// 获取分类
 	categories, err := storage.GetPostCategoryListStorage().Get(ctx, req.GetID())
 	if err != nil {
-		logger.Warnf("select tags error:[%v]", err)
+		logger.Warnf("get categories error:[%v]", err)
 	}
+
+	// 获取uv
+	uv, err := storage.GetPostUVStorage().Get(ctx, req.GetID())
+	if err != nil {
+		logger.Warnf("get uv error:[%v]", err)
+	}
+	post.UV = uv
+
+	// uv相关处理
+	uvHandler(ctx, req.GetID())
 
 	return packGetPostPageResp(post, prev, next, user, tags, categories), nil
 
@@ -130,4 +142,25 @@ func packGetPostPageResp(post *entity.Article, prev *dto.PostMeta, next *dto.Pos
 		),
 	}
 	return rsp
+}
+
+func uvHandler(ctx context.Context, id int64) {
+	go func() {
+		logger := log.GetLoggerWithCtx(ctx)
+		vSession, err := session.NewVisitorSessionFromCtx(ctx)
+		if err != nil {
+			logger.Warnf("new visitor session error:[%v]", err)
+			return
+		}
+		if vSession.CheckPostHasVisited(id) {
+			return
+		}
+		vSession.SetPostHasVisited(id)
+		err = storage.GetPostUVStorage().Incr(ctx, id)
+		if err != nil {
+			logger.Warnf("ub incr error:[%v]", err)
+			return
+		}
+		return
+	}()
 }

@@ -31,21 +31,26 @@ func ArchivesPage(ctx context.Context) (rsp *page.ArchivesPageResp, pErr *errorx
 	archives, expired := storage.GetArchivesStorage().Get()
 	// 数据过期，异步拉取数据
 	if expired {
-		go RefreshArchives(ctx)
+		go RefreshArchives(ctx, nil)
 	}
 	rsp.PostArchives = archives
 	return rsp, nil
 }
 
-func RefreshArchives(ctx context.Context) {
-	// 不能使用postMeta，拉取全量数据会破坏LRU
+// 刷新文章归档数据
+func RefreshArchives(ctx context.Context, postFromDB []*entity.Article) {
 	logger := log.GetLoggerWithCtx(ctx)
 	defer utils.Recover(ctx, func() {})()
 
-	postFromDB, err := mysql.SelectAllPublishedPostWithBatch(mysql.GetDB(ctx))
-	if err != nil {
-		logger.Errorf("select all post error:[%v]", err)
-		return
+	// 未传参，拉取全量数据
+	// 此处不能使用postMeta，拉取全量数据会破坏LRU
+	if len(postFromDB) == 0 {
+		var err error
+		postFromDB, err = mysql.SelectAllPublishedPostWithBatch(mysql.GetDB(ctx))
+		if err != nil {
+			logger.Errorf("select all post error:[%v]", err)
+			return
+		}
 	}
 	// map[year][month][]post
 	postMap := map[int]map[time.Month][]*entity.Article{}

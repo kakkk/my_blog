@@ -6,7 +6,7 @@ import (
 	"my_blog/biz/model/blog/page"
 )
 
-const ArchivesStorageTTL = 30 // 过期时间，单位：分钟
+const ArchivesStorageTTL = 1440 // 过期时间，单位：分钟
 
 var archivesStorage *ArchivesStorage
 
@@ -19,7 +19,7 @@ type ArchivesStorage struct {
 func initArchivesStorage() {
 	archivesStorage = &ArchivesStorage{
 		cache:    []*page.ArchiveByYear{},
-		updateAt: 0, // 初始化的UpdateAt为0，一定会返回过期
+		updateAt: 0,
 	}
 }
 

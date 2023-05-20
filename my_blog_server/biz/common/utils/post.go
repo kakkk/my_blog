@@ -33,6 +33,12 @@ func cutContentByCount(content string, count int) string {
 	return fmt.Sprintf("%v...", string(cut))
 }
 
+func StripContent(content string) string {
+	striped := stripmd.Strip(content)
+	striped = strings.Replace(striped, "\n", " ", -1)
+	return striped
+}
+
 func GetWordCount(content string) string {
 	return cast.ToString(utf8.RuneCountInString(stripmd.Strip(content)))
 }

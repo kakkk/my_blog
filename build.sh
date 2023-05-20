@@ -13,5 +13,6 @@ cp conf/* output/conf/
 cp my_blog_front/templates/* output/templates/
 cp my_blog_front/assets/css/stylesheet.min.css output/assets/css/stylesheet.min.css
 cp my_blog_front/assets/js/highlight.min.js output/assets/js/highlight.min.js
+cp my_blog_front/assets/js/search.js output/assets/js/search.js
 cp -r my_blog_front/assets/katex/* output/assets/katex/
 cd my_blog_server && go build -o ../output/bin/my_blog

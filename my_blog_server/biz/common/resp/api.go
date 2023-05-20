@@ -65,6 +65,10 @@ func NewFailBaseResp() *api.BaseResp {
 	return NewBaseResponse(common.RespCode_Fail, "fail")
 }
 
+func NewInternalErrorBaseResp() *api.BaseResp {
+	return NewBaseResponse(common.RespCode_InternalError, "internal error")
+}
+
 func NewSuccessBaseResp() *api.BaseResp {
 	return NewBaseResponse(common.RespCode_Success, "ok")
 }

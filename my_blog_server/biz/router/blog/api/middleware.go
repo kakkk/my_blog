@@ -127,3 +127,8 @@ func _deletepost_piMw() []app.HandlerFunc {
 	// your code...
 	return nil
 }
+
+func _search_piMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}

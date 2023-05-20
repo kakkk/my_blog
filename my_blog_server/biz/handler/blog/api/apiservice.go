@@ -112,3 +112,9 @@ func GetPostListAPI(ctx context.Context, c *app.RequestContext) {
 func DeletePostAPI(ctx context.Context, c *app.RequestContext) {
 	c.JSON(facade.DeletePostAPI(ctx, c))
 }
+
+// SearchAPI .
+// @router /api/search [GET]
+func SearchAPI(ctx context.Context, c *app.RequestContext) {
+	c.JSON(facade.SearchAPI(ctx, c))
+}

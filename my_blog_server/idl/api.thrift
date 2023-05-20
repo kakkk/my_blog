@@ -233,6 +233,25 @@ struct DeletePostAPIRequest {
     1: required i64 ID (api.path="post_id")
 }
 
+// ==========用户侧接口=============
+
+// 搜索
+struct SearchAPIRequest {
+    1: required string Query (api.query="q")
+}
+
+struct SearchResultItem {
+    1: required string Link
+    2: required string Title
+    3: required string Abstract
+}
+
+struct SearchAPIResponse {
+    1: optional list<SearchResultItem> Results
+
+    255: required BaseResp BaseResp (go.tag="json:\"-\"")
+}
+
 
 service APIService {
     // ==========用户相关=============
@@ -273,4 +292,7 @@ service APIService {
     GetPostListAPIResponse GetPostListAPI(1:GetPostListAPIRequest request) (api.post="/api/admin/post/list")
     // 删除文章
     CommonResponse DeletePostAPI(1:DeletePostAPIRequest request) (api.delete="/api/admin/post/:post_id")
+    // ==========用户侧接口============
+    // 搜索
+    SearchAPIResponse SearchAPI(1:SearchAPIRequest request) (api.get="/api/search")
 }

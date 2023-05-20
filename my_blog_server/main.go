@@ -8,9 +8,11 @@ import (
 	"my_blog/biz/common/config"
 	"my_blog/biz/common/log"
 	"my_blog/biz/middleware"
+	"my_blog/biz/repository/index"
 	"my_blog/biz/repository/mysql"
 	"my_blog/biz/repository/redis"
 	"my_blog/biz/repository/storage"
+	"my_blog/biz/service"
 
 	"github.com/cloudwego/hertz/pkg/app/server"
 	"github.com/cloudwego/hertz/pkg/common/hlog"
@@ -46,6 +48,16 @@ func main() {
 
 	// session
 	if err := middleware.InitSession(); err != nil {
+		panic(err)
+	}
+
+	// index
+	if err := index.InitArticleIndex(); err != nil {
+		panic(err)
+	}
+
+	// init service
+	if err := service.InitService(); err != nil {
 		panic(err)
 	}
 

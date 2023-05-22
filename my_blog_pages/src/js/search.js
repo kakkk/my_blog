@@ -101,10 +101,22 @@ function reset() {
     sInput.focus(); // shift focus to input box
 }
 
+// 防抖
+function debounce(func, delay) {
+    let timeout;
 
-sInput.onkeyup = function (e) {
-    search(this.value.trim()) // the actual query being run using fuse.js
+    return function(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+            func.apply(this, args);
+        }, delay);
+    };
 }
+
+
+sInput.onkeyup = debounce(function (e) {
+    search(this.value.trim())
+}, 500); // 设定500毫秒的延迟
 
 sInput.addEventListener('search', function (e) {
     // clicked on x

@@ -37,4 +37,5 @@ dumped_hertz_remote_config.json
 conf
 logs
 node_modules
+dist
 /my_blog_pages/assets/css/stylesheet.min.css

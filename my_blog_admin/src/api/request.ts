@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { Notification } from '@arco-design/web-react';
+import history from '../history';
 
 export const request = (config) => {
   const http = axios.create({
@@ -30,7 +31,7 @@ export const request = (config) => {
         switch (res.data.code) {
           case 400100:
             Notification.error({ title: '登录已过期', content: res.data.msg });
-            location.href = '/login';
+            history.push('/user/login');
             break;
           default:
             Notification.error({ title: '操作失败', content: res.data.msg });
@@ -45,12 +46,12 @@ export const request = (config) => {
       if (response && response.status) {
         if (response.status === 403) {
           // location.href = '/403';
-          location.href = '/login';
+          history.push('/user/login');
           Notification.error({ title: '权限错误', content: response.data.msg });
         }
         if (response.status === 401) {
           localStorage.removeItem('login');
-          location.href = '/login';
+          history.push('/user/login');
           Notification.error({ title: '登陆过期', content: '登陆过期，请重新登录' });
         }
       }

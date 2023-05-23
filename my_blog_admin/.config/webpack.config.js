@@ -10,6 +10,7 @@ exports.site = (config, env) => {
   config.context = path.resolve(__dirname, '..');
   config.entry = path.resolve(__dirname, '../src/index');
   config.output.path = path.resolve(__dirname, '../dist');
+  config.output.publicPath = '/admin/';
 
   config.plugins[0] = new HtmlWebpackPlugin({
     template: path.resolve(__dirname, '../public/index.html'),

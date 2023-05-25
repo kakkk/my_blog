@@ -2,9 +2,19 @@ import axios from 'axios';
 import { Notification } from '@arco-design/web-react';
 import history from '../history';
 
+function getBaseURL(): string {
+  if (process.env.NODE_ENV === 'development') {
+    return 'http://localhost:8888/api';
+  }
+  const protocol = window.location.protocol;
+  const host = window.location.hostname;
+  const port = window.location.port;
+  return `${protocol}//${host}${port ? `:${port}` : ''}/api`;
+}
+
 export const request = (config) => {
   const http = axios.create({
-    baseURL: 'http://localhost:8888/api',
+    baseURL: getBaseURL(),
     headers: {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Credentials': 'true',

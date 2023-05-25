@@ -6,11 +6,20 @@ const { themeColor } = require('../src/settings.json');
 
 const ArcoDesignWebpackPlugin = require('@arco-design/webpack-plugin');
 
+var publicPath
+if (process.env.NODE_ENV === 'development') {
+  publicPath = '/'
+}
+if (process.env.NODE_ENV === 'production') {
+  publicPath = '/admin/'
+}
+
 exports.site = (config, env) => {
   config.context = path.resolve(__dirname, '..');
   config.entry = path.resolve(__dirname, '../src/index');
   config.output.path = path.resolve(__dirname, '../dist');
-  config.output.publicPath = '/admin/';
+
+  config.output.publicPath = publicPath;
 
   config.plugins[0] = new HtmlWebpackPlugin({
     template: path.resolve(__dirname, '../public/index.html'),

@@ -1,6 +1,6 @@
 const path = require('path');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-
+const ArcoWebpackPlugin = require('@arco-plugins/webpack-react');
 module.exports = {
     entry: './src/index.tsx',
     output: {
@@ -17,6 +17,18 @@ module.exports = {
                 exclude: /node_modules/,
                 use: ['ts-loader'],
             },
+            {
+                test: /\.css$/,
+                use: ['style-loader', 'css-loader']
+            },
+            {
+                test: /\.less$/,
+                use: [
+                    'style-loader',
+                    'css-loader',
+                    'less-loader'
+                ]
+            }
         ],
     },
     devServer: {
@@ -32,5 +44,6 @@ module.exports = {
                 { from: 'public/index.html', to: 'index.html' },
             ],
         }),
+        new ArcoWebpackPlugin({}),
     ],
 };

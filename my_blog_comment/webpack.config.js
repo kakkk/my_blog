@@ -42,6 +42,7 @@ module.exports = {
         new CopyWebpackPlugin({
             patterns: [
                 { from: 'public/index.html', to: 'index.html' },
+                { from: 'public/assets', to: 'assets' },
             ],
         }),
         new ArcoWebpackPlugin({}),

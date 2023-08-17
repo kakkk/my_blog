@@ -1,12 +1,337 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh" dir="auto">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test Page</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="robots" content="index, follow">
+
+    <title>Hello World - kakkk&#39;s Blog</title>
+
+    <meta name="description" content="Hello World  hello, welcome to kakkk&#39;s blog !">
+
+    <link href="./assets/stylesheet.min.css"
+          rel="preload stylesheet" as="style">
+    <script defer src="./assets/main.min.js"></script>
+    <script defer src="bundle.js"></script>
+    <link rel="icon" href="https://cdn.kakkk.net/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="https://cdn.kakkk.net/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://cdn.kakkk.net/favicon.ico">
+    <link rel="apple-touch-icon" href="https://cdn.kakkk.net/favicon.ico">
+    <link rel="mask-icon" href="https://cdn.kakkk.net/favicon.ico">
+    <meta name="theme-color" content="#1d1e20">
+    <meta name="msapplication-TileColor" content="#f5f5f5">
+    <noscript>
+        <style>
+            #theme-toggle,
+            .top-link {
+                display: none;
+            }
+
+        </style>
+        <style>
+            @media (prefers-color-scheme: dark) {
+                :root {
+                    --theme: rgb(29, 30, 32);
+                    --entry: rgb(46, 46, 51);
+                    --primary: rgb(218, 218, 219);
+                    --secondary: rgb(155, 156, 157);
+                    --tertiary: rgb(65, 66, 68);
+                    --content: rgb(196, 196, 197);
+                    --hljs-bg: rgb(46, 46, 51);
+                    --code-bg: rgb(55, 56, 62);
+                    --border: rgb(51, 51, 51);
+                }
+
+                .list {
+                    background: var(--theme);
+                }
+
+                .list:not(.dark)::-webkit-scrollbar-track {
+                    background: 0 0;
+                }
+
+                .list:not(.dark)::-webkit-scrollbar-thumb {
+                    border-color: var(--theme);
+                }
+            }
+
+        </style>
+    </noscript>
+
 </head>
-<body>
-<div id="root"></div>
-<script src="./bundle.js"></script>
+
+<body class="list light dark" id="top">
+<script>
+    if (localStorage.getItem("pref-theme") === "dark") {
+        document.body.classList.add('dark');
+    } else if (localStorage.getItem("pref-theme") === "light") {
+        document.body.classList.remove('dark')
+    } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.body.classList.add('dark');
+    }
+
+</script>
+
+<header class="header">
+    <nav class="nav">
+        <div class="logo">
+            <a href="http://localhost:8888" title="kakkk's blog">kakkk's blog</a>
+            <span class="logo-switches">
+                    <button id="theme-toggle" accesskey="t" title="(Alt + T)">
+                    <svg id="moon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                    <svg id="sun" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    </button>
+                </span>
+        </div>
+        <ul id="menu">
+            <li>
+                <a href="http://localhost:8888/categories/" title="分类">
+                    <span>分类</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:8888/tags/" title="标签">
+                    <span>标签</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:8888/archives/" title="归档">
+                    <span>归档</span>
+                </a>
+            </li>
+            <li>
+                <a href="http://localhost:8888/search/" title="🔍">
+                    <span>🔍</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+</header>
+
+<main class="main">
+    <article class="post-single">
+        <header class="post-header">
+            <h1 class="post-title">Hello World
+            </h1>
+            <div class="post-meta">
+
+                <style >
+
+                </style>
+                <ul class="meta-info">
+
+                    <li class="meta-author">
+            <span class="post-icons">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16px" height="16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            </span>
+                        <span class="meta-value">
+                kakkk
+            </span>
+                    </li>
+
+                    <li class="meta-time">
+            <span class="post-icons">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16px" height="16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-clock"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            </span>
+                        <span class="meta-value">
+                December 19, 2022
+            </span>
+                    </li>
+
+                    <li class="meta-view">
+            <span class="post-icons">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16px" height="16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-eye"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            </span>
+                        <span class="meta-value">
+                165
+            </span>
+                    </li>
+
+                    <li class="meta-word">
+            <span class="post-icons">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16px" height="16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-pen-tool"><path d="M12 19l7-7 3 3-7 7-3-3z"></path><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path><path d="M2 2l7.586 7.586"></path><circle cx="11" cy="11" r="2"></circle></svg>
+            </span>
+                        <span class="meta-value">
+                45
+            </span>
+                    </li>
+
+                    <li class="meta-category">
+            <span class="post-icons">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16px" height="16px" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-hash"><line x1="4" y1="9" x2="20" y2="9"></line><line x1="4" y1="15" x2="20" y2="15"></line><line x1="10" y1="3" x2="8" y2="21"></line><line x1="16" y1="3" x2="14" y2="21"></line></svg>
+            </span>
+                        <span class="meta-value">
+
+                <a href="http://localhost:8888/category/default">
+                    默认分类
+                </a>
+
+            </span>
+                    </li>
+
+                </ul>
+
+            </div>
+        </header>
+        <div class="post-content"><h2>Hello World</h2>
+
+            <p>hello, welcome to kakkk&rsquo;s blog !</p>
+
+        </div>
+        <footer class="post-footer">
+            <ul class="post-tags">
+                <li><a href="http://localhost:8888/tag/%e6%a0%87%e7%ad%be/">标签</a></li>
+                <li><a href="http://localhost:8888/tag/%e6%b5%8b%e8%af%95/">测试</a></li>
+            </ul>
+            <nav class="paginav">
+                <a class="prev" href="http://localhost:8888/archives/2/">
+                    <span class="title">« PREV PAGE</span>
+                    <br>
+                    <span>测试一下</span>
+                    <div></div>
+                </a>
+            </nav>
+        </footer>
+    </article>
+    <div id="comment"></div>
+</main>
+
+<footer class="footer">
+    <span>&copy; 2020-2022 <a href="https://blog.kakkk.net">kakkk</a></span>
+
+    <span> | Powered by <a href="https://github.com/kakkk/my_blog" rel="noopener noreferrer" target="_blank">kakkk/my_blog</a></span>
+</footer>
+
+<a href="#top" aria-label="go to top" title="Go to Top (Alt + G)" class="top-link" id="top-link" accesskey="g">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 12 6" fill="currentColor">
+        <path d="M12 6H0l6-6z"/>
+    </svg>
+</a>
+
+<script>
+    let menu = document.getElementById('menu')
+    if (menu) {
+        menu.scrollLeft = localStorage.getItem("menu-scroll-position");
+        menu.onscroll = function () {
+            localStorage.setItem("menu-scroll-position", menu.scrollLeft);
+        }
+    }
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+            var id = this.getAttribute("href").substr(1);
+            if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView({
+                    behavior: "smooth"
+                });
+            } else {
+                document.querySelector(`[id='${decodeURIComponent(id)}']`).scrollIntoView();
+            }
+            if (id === "top") {
+                history.replaceState(null, null, " ");
+            } else {
+                history.pushState(null, null, `#${id}`);
+            }
+        });
+    });
+
+</script>
+
+<script>
+    var mybutton = document.getElementById("top-link");
+    window.onscroll = function () {
+        if (document.body.scrollTop > 800 || document.documentElement.scrollTop > 800) {
+            mybutton.style.visibility = "visible";
+            mybutton.style.opacity = "1";
+        } else {
+            mybutton.style.visibility = "hidden";
+            mybutton.style.opacity = "0";
+        }
+    };
+
+</script>
+
+<script>
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        if (document.body.className.includes("dark")) {
+            document.body.classList.remove('dark');
+            localStorage.setItem("pref-theme", 'light');
+            document.body.removeAttribute('arco-theme');
+        } else {
+            document.body.classList.add('dark');
+            localStorage.setItem("pref-theme", 'dark');
+            document.body.setAttribute('arco-theme', 'dark');
+        }
+    })
+
+</script>
+<script>
+    document.querySelectorAll('pre > code').forEach((codeblock) => {
+        const container = codeblock.parentNode.parentNode;
+
+        const copybutton = document.createElement('button');
+        copybutton.classList.add('copy-code');
+        copybutton.innerText = 'copy';
+
+        function copyingDone() {
+            copybutton.innerText = 'copied';
+            setTimeout(() => {
+                copybutton.innerText = 'copy';
+            }, 2000);
+        }
+
+        copybutton.addEventListener('click', (cb) => {
+            if ('clipboard' in navigator) {
+                navigator.clipboard.writeText(codeblock.textContent);
+                copyingDone();
+                return;
+            }
+
+            const range = document.createRange();
+            range.selectNodeContents(codeblock);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            try {
+                document.execCommand('copy');
+                copyingDone();
+            } catch (e) {
+            }
+            ;
+            selection.removeRange(range);
+        });
+
+        if (container.classList.contains("highlight")) {
+            container.appendChild(copybutton);
+        } else if (container.parentNode.firstChild == container) {
+
+        } else if (codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName == "TABLE") {
+
+            codeblock.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(copybutton);
+        } else {
+
+            codeblock.parentNode.appendChild(copybutton);
+        }
+    });
+</script>
+
 </body>
+
 </html>

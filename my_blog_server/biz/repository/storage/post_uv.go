@@ -19,7 +19,7 @@ func GetPostUVStorage() *PostUVStorage {
 }
 
 func (s *PostUVStorage) Get(ctx context.Context, id int64) (int64, error) {
-	uv, err := redis.GetPostUV(redis.GetRedisClient(ctx), getPostUVKey(id))
+	uv, err := redis.GetPostUV(ctx, redis.GetRedisClient(), getPostUVKey(id))
 	if err != nil {
 		if errors.Is(err, consts.ErrRecordNotFound) {
 			return s.updateRedis(ctx, id), nil
@@ -30,7 +30,7 @@ func (s *PostUVStorage) Get(ctx context.Context, id int64) (int64, error) {
 }
 
 func (s *PostUVStorage) Incr(ctx context.Context, id int64) error {
-	return redis.IncrPostUV(redis.GetRedisClient(ctx), getPostUVKey(id))
+	return redis.IncrPostUV(ctx, redis.GetRedisClient(), getPostUVKey(id))
 }
 
 func (s *PostUVStorage) updateRedis(ctx context.Context, id int64) int64 {
@@ -45,7 +45,7 @@ func (s *PostUVStorage) updateRedis(ctx context.Context, id int64) int64 {
 		logger.Errorf("get post entity error:[%v]", err)
 		return 0
 	}
-	err = redis.SetPostUVNX(redis.GetRedisClient(ctx), getPostUVKey(id), postEntity.UV)
+	err = redis.SetPostUVNX(ctx, redis.GetRedisClient(), getPostUVKey(id), postEntity.UV)
 	if err != nil {
 		logger.Errorf("set post uv nx error:[%v]", err)
 	}

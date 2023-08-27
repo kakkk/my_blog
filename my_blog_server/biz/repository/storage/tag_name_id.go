@@ -5,15 +5,18 @@ import (
 	"fmt"
 	"time"
 
-	"my_blog/biz/components/cachex"
+	"github.com/kakkk/cachex"
+
+	"my_blog/biz/common/config"
+	"my_blog/biz/common/consts"
 	"my_blog/biz/repository/mysql"
-	"my_blog/biz/repository/redis"
 )
 
 var tagNameIDStorage *TagNameIDStorage
 
 type TagNameIDStorage struct {
 	cacheX *cachex.CacheX[string, int64]
+	expire time.Duration
 }
 
 func GetTagNameIDStorage() *TagNameIDStorage {
@@ -21,26 +24,18 @@ func GetTagNameIDStorage() *TagNameIDStorage {
 }
 
 func initTagNameIDStorage(ctx context.Context) error {
-	redisCache := cachex.NewRedisCache[int64](ctx, redis.GetRedisClient(ctx), time.Minute*30)
-	lruCache := cachex.NewLRUCache[int64](ctx, 1, time.Minute)
-	cache := cachex.NewCacheX[string, int64]("tag_name_id", false, false).
-		SetGetCacheKey(tagNameIDGetKey).
+	cfg := config.GetStorageSettingByName("tag_name_id")
+	cache, err := NewCacheXBuilderByConfig[string, int64](ctx, cfg).
 		SetGetRealData(tagNameIDGetRealData).
-		AddCache(ctx, true, lruCache).
-		AddCache(ctx, false, redisCache)
-
-	err := cache.Initialize(ctx)
+		Build()
 	if err != nil {
 		return fmt.Errorf("init cachex error: %w", err)
 	}
 	tagNameIDStorage = &TagNameIDStorage{
 		cacheX: cache,
+		expire: cfg.GetExpire(),
 	}
 	return nil
-}
-
-func tagNameIDGetKey(slug string) string {
-	return fmt.Sprintf("tag_name_id_%v", slug)
 }
 
 func tagNameIDGetRealData(ctx context.Context, name string) (int64, error) {
@@ -51,10 +46,10 @@ func tagNameIDGetRealData(ctx context.Context, name string) (int64, error) {
 	return id, nil
 }
 
-func (c *TagNameIDStorage) Get(ctx context.Context, slug string) (int64, error) {
-	id, err := c.cacheX.Get(ctx, slug)
-	if err != nil {
-		return parseCacheXError(id, err)
+func (c *TagNameIDStorage) Get(ctx context.Context, name string) (int64, error) {
+	id, ok := c.cacheX.Get(ctx, name, c.expire)
+	if !ok {
+		return id, consts.ErrRecordNotFound
 	}
 	return id, nil
 }

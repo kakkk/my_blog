@@ -5,15 +5,18 @@ import (
 	"fmt"
 	"time"
 
-	"my_blog/biz/components/cachex"
+	"github.com/kakkk/cachex"
+
+	"my_blog/biz/common/config"
+	"my_blog/biz/common/consts"
 	"my_blog/biz/repository/mysql"
-	"my_blog/biz/repository/redis"
 )
 
 var postTagListStorage *PostTagListStorage
 
 type PostTagListStorage struct {
 	cacheX *cachex.CacheX[int64, []string]
+	expire time.Duration
 }
 
 func GetPostTagListStorage() *PostTagListStorage {
@@ -21,26 +24,18 @@ func GetPostTagListStorage() *PostTagListStorage {
 }
 
 func initPostTagListStorage(ctx context.Context) error {
-	redisCache := cachex.NewRedisCache[[]string](ctx, redis.GetRedisClient(ctx), time.Minute*30)
-	lruCache := cachex.NewLRUCache[[]string](ctx, 200, time.Minute)
-	cache := cachex.NewCacheX[int64, []string]("post_tag_list", false, true).
-		SetGetCacheKey(postTagListGetKey).
+	cfg := config.GetStorageSettingByName("post_tag_list")
+	cache, err := NewCacheXBuilderByConfig[int64, []string](ctx, cfg).
 		SetGetRealData(postTagListGetRealData).
-		AddCache(ctx, true, lruCache).
-		AddCache(ctx, false, redisCache)
-
-	err := cache.Initialize(ctx)
+		Build()
 	if err != nil {
 		return fmt.Errorf("init cachex error: %w", err)
 	}
 	postTagListStorage = &PostTagListStorage{
 		cacheX: cache,
+		expire: cfg.GetExpire(),
 	}
 	return nil
-}
-
-func postTagListGetKey(id int64) string {
-	return fmt.Sprintf("post_tag_list_%v", id)
 }
 
 func postTagListGetRealData(ctx context.Context, id int64) ([]string, error) {
@@ -53,16 +48,16 @@ func postTagListGetRealData(ctx context.Context, id int64) ([]string, error) {
 }
 
 func (p *PostTagListStorage) Get(ctx context.Context, id int64) ([]string, error) {
-	tags, err := p.cacheX.Get(ctx, id)
-	if err != nil {
-		return nil, fmt.Errorf("get from cachex error:[%w]", err)
+	tags, ok := p.cacheX.Get(ctx, id, p.expire)
+	if !ok {
+		return nil, consts.ErrRecordNotFound
 	}
-	return tags, err
+	return tags, nil
 }
 
 // 重建缓存
 func (p *PostTagListStorage) Rebuild(ctx context.Context, id int64) {
-	p.cacheX.Delete(ctx, id)
-	_, _ = p.cacheX.Get(ctx, id)
+	_ = p.cacheX.Delete(ctx, id)
+	_, _ = p.cacheX.Get(ctx, id, 0)
 	return
 }

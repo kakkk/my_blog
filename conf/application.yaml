@@ -1,0 +1,23 @@
+app:
+  name: my_blog
+  release: false
+  port: 8888
+  log_level: debug
+  log_path: ../logs
+
+site:
+  site_domain: http://localhost:8888
+  cdn_domain: http://localhost:8888
+
+mysql:
+  user: root
+  password: root
+  host: 127.0.0.1
+  port: 3306
+  db: my_blog
+
+redis:
+  host: 127.0.0.1
+  port: 6379
+  password:
+  db: 0

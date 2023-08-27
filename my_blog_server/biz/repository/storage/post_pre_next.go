@@ -5,7 +5,10 @@ import (
 	"fmt"
 	"time"
 
-	"my_blog/biz/components/cachex"
+	"github.com/kakkk/cachex"
+
+	"my_blog/biz/common/config"
+	"my_blog/biz/common/consts"
 	"my_blog/biz/dto"
 )
 
@@ -13,6 +16,7 @@ var postPrevNextStorage *PostPrevNextStorage
 
 type PostPrevNextStorage struct {
 	cacheX *cachex.CacheX[int64, *dto.PostPrevNext]
+	expire time.Duration
 }
 
 func GetPostPrevNextStorage() *PostPrevNextStorage {
@@ -20,24 +24,18 @@ func GetPostPrevNextStorage() *PostPrevNextStorage {
 }
 
 func initPostPrevNextStorage(ctx context.Context) error {
-	lruCache := cachex.NewLRUCache[*dto.PostPrevNext](ctx, 200, 5*time.Minute)
-	cache := cachex.NewCacheX[int64, *dto.PostPrevNext]("post_order_list", false, true).
-		SetGetCacheKey(postPrevNextGetKey).
+	cfg := config.GetStorageSettingByName("post_pre_next")
+	cache, err := NewCacheXBuilderByConfig[int64, *dto.PostPrevNext](ctx, cfg).
 		SetGetRealData(postPrevNextGetRealData).
-		AddCache(ctx, true, lruCache)
-
-	err := cache.Initialize(ctx)
+		Build()
 	if err != nil {
 		return fmt.Errorf("init cachex error: %w", err)
 	}
 	postPrevNextStorage = &PostPrevNextStorage{
 		cacheX: cache,
+		expire: cfg.GetExpire(),
 	}
 	return nil
-}
-
-func postPrevNextGetKey(id int64) string {
-	return fmt.Sprintf("post_prev_next_%v", id)
 }
 
 func postPrevNextGetRealData(ctx context.Context, id int64) (*dto.PostPrevNext, error) {
@@ -62,16 +60,16 @@ func postPrevNextGetRealData(ctx context.Context, id int64) (*dto.PostPrevNext, 
 }
 
 func (p *PostPrevNextStorage) Get(ctx context.Context, id int64) (*dto.PostPrevNext, error) {
-	pn, err := p.cacheX.Get(ctx, id)
-	if err != nil {
-		return nil, fmt.Errorf("get from cachex error:[%w]", err)
+	pn, ok := p.cacheX.Get(ctx, id, p.expire)
+	if !ok {
+		return nil, consts.ErrRecordNotFound
 	}
-	return pn, err
+	return pn, nil
 }
 
 // 重建缓存
 func (p *PostPrevNextStorage) Rebuild(ctx context.Context, id int64) {
-	p.cacheX.Delete(ctx, id)
-	_, _ = p.cacheX.Get(ctx, id)
+	_ = p.cacheX.Delete(ctx, id)
+	_, _ = p.cacheX.Get(ctx, id, 0)
 	return
 }

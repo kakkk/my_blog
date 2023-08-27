@@ -5,15 +5,18 @@ import (
 	"fmt"
 	"time"
 
-	"my_blog/biz/components/cachex"
+	"github.com/kakkk/cachex"
+
+	"my_blog/biz/common/config"
+	"my_blog/biz/common/consts"
 	"my_blog/biz/repository/mysql"
-	"my_blog/biz/repository/redis"
 )
 
 var categorySlugIDStorage *CategorySlugIDStorage
 
 type CategorySlugIDStorage struct {
 	cacheX *cachex.CacheX[string, int64]
+	expire time.Duration
 }
 
 func GetCategorySlugIDStorage() *CategorySlugIDStorage {
@@ -21,26 +24,19 @@ func GetCategorySlugIDStorage() *CategorySlugIDStorage {
 }
 
 func initCategorySlugIDStorage(ctx context.Context) error {
-	redisCache := cachex.NewRedisCache[int64](ctx, redis.GetRedisClient(ctx), time.Minute*30)
-	lruCache := cachex.NewLRUCache[int64](ctx, 1, time.Minute)
-	cache := cachex.NewCacheX[string, int64]("category_slug_id", false, false).
-		SetGetCacheKey(categorySlugIDGetKey).
+	cfg := config.GetStorageSettingByName("category_slug_id")
+	cache, err := NewCacheXBuilderByConfig[string, int64](ctx, cfg).
 		SetGetRealData(categorySlugIDGetRealData).
-		AddCache(ctx, true, lruCache).
-		AddCache(ctx, false, redisCache)
+		Build()
 
-	err := cache.Initialize(ctx)
 	if err != nil {
 		return fmt.Errorf("init cachex error: %w", err)
 	}
 	categorySlugIDStorage = &CategorySlugIDStorage{
 		cacheX: cache,
+		expire: cfg.GetExpire(),
 	}
 	return nil
-}
-
-func categorySlugIDGetKey(slug string) string {
-	return fmt.Sprintf("category_slug_id_%v", slug)
 }
 
 func categorySlugIDGetRealData(ctx context.Context, slug string) (int64, error) {
@@ -52,9 +48,9 @@ func categorySlugIDGetRealData(ctx context.Context, slug string) (int64, error) 
 }
 
 func (c *CategorySlugIDStorage) Get(ctx context.Context, slug string) (int64, error) {
-	id, err := c.cacheX.Get(ctx, slug)
-	if err != nil {
-		return parseCacheXError(id, err)
+	id, ok := c.cacheX.Get(ctx, slug, c.expire)
+	if !ok {
+		return 0, consts.ErrRecordNotFound
 	}
 	return id, nil
 }

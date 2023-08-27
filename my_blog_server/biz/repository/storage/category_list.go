@@ -2,45 +2,38 @@ package storage
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"time"
 
+	"github.com/kakkk/cachex"
+
+	"my_blog/biz/common/config"
 	"my_blog/biz/common/consts"
 	"my_blog/biz/common/log"
-	"my_blog/biz/components/cachex"
 	"my_blog/biz/dto"
 	"my_blog/biz/repository/mysql"
-	"my_blog/biz/repository/redis"
 )
 
 type CategoryListStorage struct {
-	cacheX *cachex.CacheX[int, *dto.CategoryList]
+	cacheX *cachex.CacheX[string, *dto.CategoryList]
+	expire time.Duration
 }
 
 var categoryListStorage *CategoryListStorage
 
 func initCategoryListStorage(ctx context.Context) error {
-	redisCache := cachex.NewRedisCache[*dto.CategoryList](ctx, redis.GetRedisClient(ctx), 6*time.Hour)
-	lruCache := cachex.NewLRUCache[*dto.CategoryList](ctx, 1, time.Hour)
-	cache := cachex.NewCacheX[int, *dto.CategoryList]("category_list", false, false).
-		SetGetCacheKey(categoryListGetKey).
+	cfg := config.GetStorageSettingByName("category_list")
+	cache, err := NewCacheXBuilderByConfig[string, *dto.CategoryList](ctx, cfg).
 		SetGetRealData(categoryListGetRealData).
-		AddCache(ctx, true, lruCache).
-		AddCache(ctx, false, redisCache)
-
-	err := cache.Initialize(ctx)
+		Build()
 	if err != nil {
 		return fmt.Errorf("init cachex error: %w", err)
 	}
 	categoryListStorage = &CategoryListStorage{
 		cacheX: cache,
+		expire: cfg.GetExpire(),
 	}
 	return nil
-}
-
-func categoryListGetKey(_ int) string {
-	return "category_list"
 }
 
 func categoryListGetFromDB(ctx context.Context, withPublish bool) (*dto.CategoryList, error) {
@@ -77,7 +70,7 @@ func categoryListGetFromDB(ctx context.Context, withPublish bool) (*dto.Category
 	return &list, nil
 }
 
-func categoryListGetRealData(ctx context.Context, _ int) (*dto.CategoryList, error) {
+func categoryListGetRealData(ctx context.Context, _ string) (*dto.CategoryList, error) {
 	return categoryListGetFromDB(ctx, true)
 }
 
@@ -86,12 +79,9 @@ func GetCategoryListStorage() *CategoryListStorage {
 }
 
 func (c *CategoryListStorage) Get(ctx context.Context) (*dto.CategoryList, error) {
-	got, err := c.cacheX.Get(ctx, 0)
-	if err != nil {
-		if errors.Is(err, cachex.ErrNotFound) {
-			return nil, consts.ErrRecordNotFound
-		}
-		return nil, fmt.Errorf("get from cachex error:[%v]", err)
+	got, ok := c.cacheX.Get(ctx, "", c.expire)
+	if !ok {
+		return nil, consts.ErrRecordNotFound
 	}
 	return got, nil
 }
@@ -101,6 +91,6 @@ func (c *CategoryListStorage) GetFromDB(ctx context.Context) (*dto.CategoryList,
 }
 
 func (c *CategoryListStorage) RebuildCache(ctx context.Context) {
-	c.cacheX.Delete(ctx, 0)
-	_, _ = c.cacheX.Get(ctx, 0)
+	_ = c.cacheX.Delete(ctx, "")
+	_, _ = c.cacheX.Get(ctx, "", 0)
 }

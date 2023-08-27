@@ -4,13 +4,14 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/kakkk/cachex"
+
 	"my_blog/biz/common/consts"
-	"my_blog/biz/components/cachex"
 )
 
 func parseSqlError[T any](val T, err error) (T, error) {
 	var zero T
-	if err == consts.ErrRecordNotFound {
+	if errors.Is(err, consts.ErrRecordNotFound) {
 		return zero, cachex.ErrNotFound
 	}
 	return zero, fmt.Errorf("sql error: %w", err)

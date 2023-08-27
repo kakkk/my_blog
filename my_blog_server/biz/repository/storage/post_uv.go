@@ -53,5 +53,5 @@ func (s *PostUVStorage) updateRedis(ctx context.Context, id int64) int64 {
 }
 
 func getPostUVKey(id int64) string {
-	return fmt.Sprintf("my_blog_uv_%v", id)
+	return fmt.Sprintf("my_blog:post_uv:%v", id)
 }

@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="zh" dir="auto">
 
@@ -21,7 +22,9 @@
     <link rel="apple-touch-icon" href="https://cdn.kakkk.net/favicon.ico">
     <link rel="mask-icon" href="https://cdn.kakkk.net/favicon.ico">
     <meta name="theme-color" content="#1d1e20">
-    <meta name="msapplication-TileColor" content="#f5f5f5">
+    <meta name="msapplication-TileColor" content="#ffffff">
+
+
     <noscript>
         <style>
             #theme-toggle,
@@ -60,16 +63,20 @@
         </style>
     </noscript>
 
+
 </head>
 
 <body class="list light dark" id="top">
 <script>
     if (localStorage.getItem("pref-theme") === "dark") {
         document.body.classList.add('dark');
+        document.body.setAttribute('arco-theme', 'dark');
     } else if (localStorage.getItem("pref-theme") === "light") {
         document.body.classList.remove('dark')
+        document.body.removeAttribute('arco-theme');
     } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
         document.body.classList.add('dark');
+        document.body.setAttribute('arco-theme', 'dark');
     }
 
 </script>
@@ -208,8 +215,33 @@
                 </a>
             </nav>
         </footer>
+        <style>
+            .comments_details summary::marker {
+                font-size: 20px;
+                content: '👉展开评论';
+                color: var(--content);
+            }
+            .comments_details[open] summary::marker{
+                font-size: 20px;
+                content: '👇关闭评论';
+                color: var(--content);
+            }
+        </style>
+
+
+        <div>
+            <details class="comments_details">
+                <summary style="cursor: pointer; margin: 50px 0 20px 0;width: 130px;">
+                    <span style="font-size: 20px;color: var(--content);">...</span>
+                </summary>
+                <div id="comment"></div>
+            </details>
+
+            <script src="./comment.min.js">
+            </script>
+        </div>
     </article>
-    <div id="comment"></div>
+
 </main>
 
 <footer class="footer">

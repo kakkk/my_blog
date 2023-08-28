@@ -1,6 +1,6 @@
 import React from 'react';
-import { Comment, Avatar, Input, Button } from '@arco-design/web-react';
-import { IconHeart, IconMessage, IconStar } from '@arco-design/web-react/icon';
+import { Comment, Input, Button } from '@arco-design/web-react';
+import {IconMessage } from '@arco-design/web-react/icon';
 import { Grid } from '@arco-design/web-react';
 import './App.css'
 

@@ -2,6 +2,7 @@ import React from 'react';
 import { Comment } from '@arco-design/web-react';
 import {IconMessage } from '@arco-design/web-react/icon';
 import './App.css'
+import './Reset.css'
 import CommentReply from './components/CommentReply';
 import CommentItem from './components/CommonItem';
 

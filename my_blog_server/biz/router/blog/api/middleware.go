@@ -132,3 +132,58 @@ func _search_piMw() []app.HandlerFunc {
 	// your code...
 	return nil
 }
+
+func _getcaptcha_piMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _commentMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _getcommentlist_dmin_piMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _comment_idMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _replycomment_dmin_piMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _comment0Mw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _comment_rticle_piMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _getcommentlist_piMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _replycomment_piMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _deletecomment_dmin_piMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _updatecommentstatus_dmin_piMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}

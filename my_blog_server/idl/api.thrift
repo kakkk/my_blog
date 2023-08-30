@@ -233,6 +233,55 @@ struct DeletePostAPIRequest {
     1: required i64 ID (api.path="post_id")
 }
 
+// 获取评论列表
+struct GetCommentListAdminAPIRequest {
+    1: optional string Email
+    2: optional string Nickname
+    3: optional i64 ArticleID
+    4: optional list<common.CommentStatus> Status
+    5: optional i32 Page (api.query="page")
+    6: optional i32 Limit (api.query="limit")
+}
+
+struct ArticleMeta {
+    1: required i64 ID
+    2: required string Title
+}
+
+struct GetCommentListAdminItem {
+    1: required i64 ID
+    2: required string Nickname
+    3: required string Avatar
+    4: required string Website
+    5: required ArticleMeta Article
+    6: required string Content
+    7: optional i64 ReplyToID
+    8: optional string ReplyToContent
+    9: required common.CommentStatus Status
+}
+
+// 获取评论列表
+struct GetCommentListAdminAPIResponse {
+    1: required Pagination Pagination
+    2: optional list<PostListItem> PostList
+
+    255: required BaseResp BaseResp (go.tag="json:\"-\"")
+}
+
+struct ReplyCommentAdminAPIRequest {
+    1: required i64 CommentID (api.path="comment_id")
+    2: required string Content
+}
+
+struct UpdateCommentStatusAdminAPIRequest {
+    1: required i64 CommentID (api.path="comment_id")
+    2: required common.CommentStatus Status
+}
+
+struct DeleteCommentAdminAPIRequest {
+    1: required i64 CommentID (api.path="comment_id")
+}
+
 // ==========用户侧接口=============
 
 // 搜索
@@ -251,6 +300,60 @@ struct SearchAPIResponse {
 
     255: required BaseResp BaseResp (go.tag="json:\"-\"")
 }
+
+// 评论
+struct Comment {
+    1: required string Nickname
+    2: required string Avatar
+    3: required string Website
+    4: required string Content
+    5: required string CommentAt
+}
+
+struct CommentListItem {
+    1: required Comment Comment
+    2: optional list<Comment> Replys
+}
+
+struct GetCommentListAPIResponse {
+    1: required list<CommentListItem> Comments
+    2: required bool HasMore
+
+    255: required BaseResp BaseResp (go.tag="json:\"-\"")
+}
+
+struct GetCommentListAPIRequest {
+    1: required i64 ArticleID (api.query="article_id")
+}
+
+struct CommentArticleAPIRequest {
+    1: required i64 ArticleID           // 文章ID
+    2: required string Nickname         // 昵称
+    3: required string Email            // 邮箱
+    4: optional string Website          // 网址
+    5: required string Content          // 评论内容
+    6: required string VerifyID         // 验证码ID
+    7: required string VerifyCode       // 验证码
+}
+
+struct ReplyCommentAPIRequest {
+    1: required i64 ArticleID           // 文章ID
+    2: optional i64 ReplyID             // 回复的评论ID
+    3: required string Nickname         // 昵称
+    4: required string Email            // 邮箱
+    5: optional string Website          // 网址
+    6: required string Content          // 评论内容
+    7: required string VerifyID         // 验证码ID
+    8: required string VerifyCode       // 验证码
+}
+
+// 验证码
+struct GetCaptchaAPIResponse {
+    1: required string Captcha
+
+    255: required BaseResp BaseResp (go.tag="json:\"-\"")
+}
+
 
 
 service APIService {
@@ -292,7 +395,26 @@ service APIService {
     GetPostListAPIResponse GetPostListAPI(1:GetPostListAPIRequest request) (api.post="/api/admin/post/list")
     // 删除文章
     CommonResponse DeletePostAPI(1:DeletePostAPIRequest request) (api.delete="/api/admin/post/:post_id")
+    // ==========评论相关=============
+    // 获取评论列表
+    GetCommentListAdminAPIResponse GetCommentListAdminAPI(1:GetCommentListAdminAPIRequest request) (api.get="/api/admin/comment/list")
+    // 管理员回复评论
+    CommonResponse ReplyCommentAdminAPI(1:ReplyCommentAdminAPIRequest request) (api.post="/api/admin/comment/:comment_id/reply")
+    // 修改评论状态
+    CommonResponse UpdateCommentStatusAdminAPI(1:UpdateCommentStatusAdminAPIRequest request) (api.put="/api/admin/comment/:comment_id/status")
+    // 删除评论
+    CommonResponse DeleteCommentAdminAPI(1:DeleteCommentAdminAPIRequest request) (api.put="/api/admin/comment/:comment_id")
+
     // ==========用户侧接口============
     // 搜索
     SearchAPIResponse SearchAPI(1:SearchAPIRequest request) (api.get="/api/search")
+    // 获取评论列表
+    GetCommentListAPIResponse GetCommentListAPI(1:GetCommentListAPIRequest request) (api.get="/api/comment/list")
+    // 评论文章
+    CommonResponse CommentArticleAPI(1:CommentArticleAPIRequest requset) (api.post="/api/comment/article")
+    // 回复评论
+    CommonResponse ReplyCommentAPI(1:ReplyCommentAPIRequest requset) (api.post="/api/comment/reply")
+    // 获取验证码
+    GetCaptchaAPIResponse GetCaptchaAPI() (api.get="/api/captcha")
+
 }

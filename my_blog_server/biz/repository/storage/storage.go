@@ -28,7 +28,7 @@ func InitStorage() error {
 	if err != nil {
 		return fmt.Errorf("init storage error: [%w]", err)
 	}
-	err = initPostMetaStorage(ctx)
+	err = initArticleMetaStorage(ctx)
 	if err != nil {
 		return fmt.Errorf("init storage error: [%w]", err)
 	}

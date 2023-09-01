@@ -83,7 +83,7 @@ post_category_list:
   redis_setting:
     ttl: 90     # Minute
 
-post_meta:
+article_meta:
   expire: 20 # Minute
   key_format: 'my_blog:post_category_list:%v'
   cachex_setting:

@@ -26,7 +26,7 @@ func (p *PostMeta) ToPostItem() *page.PostItem {
 	}
 }
 
-func NewPostMetaByEntity(post *entity.Article, editor *entity.User) *PostMeta {
+func NewArticleMetaByEntity(post *entity.Article, editor *entity.User) *PostMeta {
 	var editorName string
 	// 降级
 	if editor == nil {

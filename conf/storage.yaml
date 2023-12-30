@@ -85,7 +85,7 @@ post_category_list:
 
 article_meta:
   expire: 20 # Minute
-  key_format: 'my_blog:post_category_list:%v'
+  key_format: 'my_blog:article_meta:%v'
   cachex_setting:
     allow_downgrade: true
     downgrade_expire: 180 # Minute
@@ -198,3 +198,33 @@ user_entity:
     ttl: 30     # Minute
   redis_setting:
     ttl: 90     # Minute
+
+comment:
+  expire: 20 # Minute
+  key_format: 'my_blog:comment:%v'
+  cachex_setting:
+    allow_downgrade: true
+    downgrade_expire: 180 # Minute
+    caches:
+      - redis
+      - freecache
+    freecache_setting:
+      size: 20    # MB
+      ttl: 30     # Minute
+    redis_setting:
+      ttl: 90     # Minute
+
+article_comment_ids:
+  expire: 20 # Minute
+  key_format: 'my_blog:article_comment_ids:%v'
+  cachex_setting:
+    allow_downgrade: true
+    downgrade_expire: 180 # Minute
+    caches:
+      - redis
+      - freecache
+    freecache_setting:
+      size: 10    # MB
+      ttl: 30     # Minute
+    redis_setting:
+      ttl: 90     # Minute

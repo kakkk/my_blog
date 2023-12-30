@@ -26,8 +26,8 @@ func GetArticleMetaStorage() *ArticleMetaStorage {
 func initArticleMetaStorage(ctx context.Context) error {
 	cfg := config.GetStorageSettingByName("article_meta")
 	cache, err := NewCacheXBuilderByConfig[int64, *dto.PostMeta](ctx, cfg).
-		SetGetRealData(postMetaStorageGetRealData).
-		SetMGetRealData(postMetaStorageMGetRealData).
+		SetGetRealData(articleMetaStorageGetRealData).
+		SetMGetRealData(articleMetaStorageMGetRealData).
 		Build()
 	if err != nil {
 		return fmt.Errorf("init cachex error: %w", err)
@@ -39,7 +39,7 @@ func initArticleMetaStorage(ctx context.Context) error {
 	return nil
 }
 
-func postMetaStorageGetRealData(ctx context.Context, id int64) (*dto.PostMeta, error) {
+func articleMetaStorageGetRealData(ctx context.Context, id int64) (*dto.PostMeta, error) {
 	post, err := GetArticleEntityStorage().Get(ctx, id)
 	if err != nil {
 		return nil, err
@@ -51,7 +51,7 @@ func postMetaStorageGetRealData(ctx context.Context, id int64) (*dto.PostMeta, e
 	return dto.NewArticleMetaByEntity(post, editor), nil
 }
 
-func postMetaStorageMGetRealData(ctx context.Context, ids []int64) (map[int64]*dto.PostMeta, error) {
+func articleMetaStorageMGetRealData(ctx context.Context, ids []int64) (map[int64]*dto.PostMeta, error) {
 	posts := GetArticleEntityStorage().MGet(ctx, ids)
 	result := make(map[int64]*dto.PostMeta, len(posts))
 	userIDs := make([]int64, 0, len(posts))

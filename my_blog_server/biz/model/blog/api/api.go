@@ -10610,15 +10610,21 @@ func (p *SearchAPIResponse) String() string {
 
 // 评论
 type Comment struct {
-	Nickname  string `thrift:"Nickname,1,required" form:"nickname,required" json:"nickname,required" query:"nickname,required"`
-	Avatar    string `thrift:"Avatar,2,required" form:"avatar,required" json:"avatar,required" query:"avatar,required"`
-	Website   string `thrift:"Website,3,required" form:"website,required" json:"website,required" query:"website,required"`
-	Content   string `thrift:"Content,4,required" form:"content,required" json:"content,required" query:"content,required"`
-	CommentAt string `thrift:"CommentAt,5,required" form:"comment_at,required" json:"comment_at,required" query:"comment_at,required"`
+	ID        int64  `thrift:"ID,1,required" form:"id,required" json:"id,required" query:"id,required"`
+	Nickname  string `thrift:"Nickname,2,required" form:"nickname,required" json:"nickname,required" query:"nickname,required"`
+	Avatar    string `thrift:"Avatar,3,required" form:"avatar,required" json:"avatar,required" query:"avatar,required"`
+	Website   string `thrift:"Website,4,required" form:"website,required" json:"website,required" query:"website,required"`
+	Content   string `thrift:"Content,5,required" form:"content,required" json:"content,required" query:"content,required"`
+	CommentAt string `thrift:"CommentAt,6,required" form:"comment_at,required" json:"comment_at,required" query:"comment_at,required"`
+	ReplyUser string `thrift:"ReplyUser,7,required" form:"reply_user,required" json:"reply_user,required" query:"reply_user,required"`
 }
 
 func NewComment() *Comment {
 	return &Comment{}
+}
+
+func (p *Comment) GetID() (v int64) {
+	return p.ID
 }
 
 func (p *Comment) GetNickname() (v string) {
@@ -10641,23 +10647,31 @@ func (p *Comment) GetCommentAt() (v string) {
 	return p.CommentAt
 }
 
+func (p *Comment) GetReplyUser() (v string) {
+	return p.ReplyUser
+}
+
 var fieldIDToName_Comment = map[int16]string{
-	1: "Nickname",
-	2: "Avatar",
-	3: "Website",
-	4: "Content",
-	5: "CommentAt",
+	1: "ID",
+	2: "Nickname",
+	3: "Avatar",
+	4: "Website",
+	5: "Content",
+	6: "CommentAt",
+	7: "ReplyUser",
 }
 
 func (p *Comment) Read(iprot thrift.TProtocol) (err error) {
 
 	var fieldTypeId thrift.TType
 	var fieldId int16
+	var issetID bool = false
 	var issetNickname bool = false
 	var issetAvatar bool = false
 	var issetWebsite bool = false
 	var issetContent bool = false
 	var issetCommentAt bool = false
+	var issetReplyUser bool = false
 
 	if _, err = iprot.ReadStructBegin(); err != nil {
 		goto ReadStructBeginError
@@ -10674,11 +10688,11 @@ func (p *Comment) Read(iprot thrift.TProtocol) (err error) {
 
 		switch fieldId {
 		case 1:
-			if fieldTypeId == thrift.STRING {
+			if fieldTypeId == thrift.I64 {
 				if err = p.ReadField1(iprot); err != nil {
 					goto ReadFieldError
 				}
-				issetNickname = true
+				issetID = true
 			} else {
 				if err = iprot.Skip(fieldTypeId); err != nil {
 					goto SkipFieldError
@@ -10689,7 +10703,7 @@ func (p *Comment) Read(iprot thrift.TProtocol) (err error) {
 				if err = p.ReadField2(iprot); err != nil {
 					goto ReadFieldError
 				}
-				issetAvatar = true
+				issetNickname = true
 			} else {
 				if err = iprot.Skip(fieldTypeId); err != nil {
 					goto SkipFieldError
@@ -10700,7 +10714,7 @@ func (p *Comment) Read(iprot thrift.TProtocol) (err error) {
 				if err = p.ReadField3(iprot); err != nil {
 					goto ReadFieldError
 				}
-				issetWebsite = true
+				issetAvatar = true
 			} else {
 				if err = iprot.Skip(fieldTypeId); err != nil {
 					goto SkipFieldError
@@ -10711,7 +10725,7 @@ func (p *Comment) Read(iprot thrift.TProtocol) (err error) {
 				if err = p.ReadField4(iprot); err != nil {
 					goto ReadFieldError
 				}
-				issetContent = true
+				issetWebsite = true
 			} else {
 				if err = iprot.Skip(fieldTypeId); err != nil {
 					goto SkipFieldError
@@ -10722,7 +10736,29 @@ func (p *Comment) Read(iprot thrift.TProtocol) (err error) {
 				if err = p.ReadField5(iprot); err != nil {
 					goto ReadFieldError
 				}
+				issetContent = true
+			} else {
+				if err = iprot.Skip(fieldTypeId); err != nil {
+					goto SkipFieldError
+				}
+			}
+		case 6:
+			if fieldTypeId == thrift.STRING {
+				if err = p.ReadField6(iprot); err != nil {
+					goto ReadFieldError
+				}
 				issetCommentAt = true
+			} else {
+				if err = iprot.Skip(fieldTypeId); err != nil {
+					goto SkipFieldError
+				}
+			}
+		case 7:
+			if fieldTypeId == thrift.STRING {
+				if err = p.ReadField7(iprot); err != nil {
+					goto ReadFieldError
+				}
+				issetReplyUser = true
 			} else {
 				if err = iprot.Skip(fieldTypeId); err != nil {
 					goto SkipFieldError
@@ -10742,28 +10778,38 @@ func (p *Comment) Read(iprot thrift.TProtocol) (err error) {
 		goto ReadStructEndError
 	}
 
-	if !issetNickname {
+	if !issetID {
 		fieldId = 1
 		goto RequiredFieldNotSetError
 	}
 
-	if !issetAvatar {
+	if !issetNickname {
 		fieldId = 2
 		goto RequiredFieldNotSetError
 	}
 
-	if !issetWebsite {
+	if !issetAvatar {
 		fieldId = 3
 		goto RequiredFieldNotSetError
 	}
 
-	if !issetContent {
+	if !issetWebsite {
 		fieldId = 4
 		goto RequiredFieldNotSetError
 	}
 
-	if !issetCommentAt {
+	if !issetContent {
 		fieldId = 5
+		goto RequiredFieldNotSetError
+	}
+
+	if !issetCommentAt {
+		fieldId = 6
+		goto RequiredFieldNotSetError
+	}
+
+	if !issetReplyUser {
+		fieldId = 7
 		goto RequiredFieldNotSetError
 	}
 	return nil
@@ -10785,10 +10831,10 @@ RequiredFieldNotSetError:
 }
 
 func (p *Comment) ReadField1(iprot thrift.TProtocol) error {
-	if v, err := iprot.ReadString(); err != nil {
+	if v, err := iprot.ReadI64(); err != nil {
 		return err
 	} else {
-		p.Nickname = v
+		p.ID = v
 	}
 	return nil
 }
@@ -10797,7 +10843,7 @@ func (p *Comment) ReadField2(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadString(); err != nil {
 		return err
 	} else {
-		p.Avatar = v
+		p.Nickname = v
 	}
 	return nil
 }
@@ -10806,7 +10852,7 @@ func (p *Comment) ReadField3(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadString(); err != nil {
 		return err
 	} else {
-		p.Website = v
+		p.Avatar = v
 	}
 	return nil
 }
@@ -10815,7 +10861,7 @@ func (p *Comment) ReadField4(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadString(); err != nil {
 		return err
 	} else {
-		p.Content = v
+		p.Website = v
 	}
 	return nil
 }
@@ -10824,7 +10870,25 @@ func (p *Comment) ReadField5(iprot thrift.TProtocol) error {
 	if v, err := iprot.ReadString(); err != nil {
 		return err
 	} else {
+		p.Content = v
+	}
+	return nil
+}
+
+func (p *Comment) ReadField6(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return err
+	} else {
 		p.CommentAt = v
+	}
+	return nil
+}
+
+func (p *Comment) ReadField7(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadString(); err != nil {
+		return err
+	} else {
+		p.ReplyUser = v
 	}
 	return nil
 }
@@ -10855,6 +10919,14 @@ func (p *Comment) Write(oprot thrift.TProtocol) (err error) {
 			fieldId = 5
 			goto WriteFieldError
 		}
+		if err = p.writeField6(oprot); err != nil {
+			fieldId = 6
+			goto WriteFieldError
+		}
+		if err = p.writeField7(oprot); err != nil {
+			fieldId = 7
+			goto WriteFieldError
+		}
 
 	}
 	if err = oprot.WriteFieldStop(); err != nil {
@@ -10875,10 +10947,10 @@ WriteStructEndError:
 }
 
 func (p *Comment) writeField1(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("Nickname", thrift.STRING, 1); err != nil {
+	if err = oprot.WriteFieldBegin("ID", thrift.I64, 1); err != nil {
 		goto WriteFieldBeginError
 	}
-	if err := oprot.WriteString(p.Nickname); err != nil {
+	if err := oprot.WriteI64(p.ID); err != nil {
 		return err
 	}
 	if err = oprot.WriteFieldEnd(); err != nil {
@@ -10892,10 +10964,10 @@ WriteFieldEndError:
 }
 
 func (p *Comment) writeField2(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("Avatar", thrift.STRING, 2); err != nil {
+	if err = oprot.WriteFieldBegin("Nickname", thrift.STRING, 2); err != nil {
 		goto WriteFieldBeginError
 	}
-	if err := oprot.WriteString(p.Avatar); err != nil {
+	if err := oprot.WriteString(p.Nickname); err != nil {
 		return err
 	}
 	if err = oprot.WriteFieldEnd(); err != nil {
@@ -10909,10 +10981,10 @@ WriteFieldEndError:
 }
 
 func (p *Comment) writeField3(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("Website", thrift.STRING, 3); err != nil {
+	if err = oprot.WriteFieldBegin("Avatar", thrift.STRING, 3); err != nil {
 		goto WriteFieldBeginError
 	}
-	if err := oprot.WriteString(p.Website); err != nil {
+	if err := oprot.WriteString(p.Avatar); err != nil {
 		return err
 	}
 	if err = oprot.WriteFieldEnd(); err != nil {
@@ -10926,10 +10998,10 @@ WriteFieldEndError:
 }
 
 func (p *Comment) writeField4(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("Content", thrift.STRING, 4); err != nil {
+	if err = oprot.WriteFieldBegin("Website", thrift.STRING, 4); err != nil {
 		goto WriteFieldBeginError
 	}
-	if err := oprot.WriteString(p.Content); err != nil {
+	if err := oprot.WriteString(p.Website); err != nil {
 		return err
 	}
 	if err = oprot.WriteFieldEnd(); err != nil {
@@ -10943,10 +11015,10 @@ WriteFieldEndError:
 }
 
 func (p *Comment) writeField5(oprot thrift.TProtocol) (err error) {
-	if err = oprot.WriteFieldBegin("CommentAt", thrift.STRING, 5); err != nil {
+	if err = oprot.WriteFieldBegin("Content", thrift.STRING, 5); err != nil {
 		goto WriteFieldBeginError
 	}
-	if err := oprot.WriteString(p.CommentAt); err != nil {
+	if err := oprot.WriteString(p.Content); err != nil {
 		return err
 	}
 	if err = oprot.WriteFieldEnd(); err != nil {
@@ -10959,6 +11031,40 @@ WriteFieldEndError:
 	return thrift.PrependError(fmt.Sprintf("%T write field 5 end error: ", p), err)
 }
 
+func (p *Comment) writeField6(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("CommentAt", thrift.STRING, 6); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteString(p.CommentAt); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 6 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 6 end error: ", p), err)
+}
+
+func (p *Comment) writeField7(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("ReplyUser", thrift.STRING, 7); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteString(p.ReplyUser); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 7 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 7 end error: ", p), err)
+}
+
 func (p *Comment) String() string {
 	if p == nil {
 		return "<nil>"
@@ -10968,7 +11074,7 @@ func (p *Comment) String() string {
 
 type CommentListItem struct {
 	Comment *Comment   `thrift:"Comment,1,required" form:"comment,required" json:"comment,required" query:"comment,required"`
-	Replys  []*Comment `thrift:"Replys,2,optional" form:"replys" json:"replys,omitempty" query:"replys"`
+	Replies []*Comment `thrift:"Replies,2,optional" form:"replies" json:"replies,omitempty" query:"replies"`
 }
 
 func NewCommentListItem() *CommentListItem {
@@ -10984,26 +11090,26 @@ func (p *CommentListItem) GetComment() (v *Comment) {
 	return p.Comment
 }
 
-var CommentListItem_Replys_DEFAULT []*Comment
+var CommentListItem_Replies_DEFAULT []*Comment
 
-func (p *CommentListItem) GetReplys() (v []*Comment) {
-	if !p.IsSetReplys() {
-		return CommentListItem_Replys_DEFAULT
+func (p *CommentListItem) GetReplies() (v []*Comment) {
+	if !p.IsSetReplies() {
+		return CommentListItem_Replies_DEFAULT
 	}
-	return p.Replys
+	return p.Replies
 }
 
 var fieldIDToName_CommentListItem = map[int16]string{
 	1: "Comment",
-	2: "Replys",
+	2: "Replies",
 }
 
 func (p *CommentListItem) IsSetComment() bool {
 	return p.Comment != nil
 }
 
-func (p *CommentListItem) IsSetReplys() bool {
-	return p.Replys != nil
+func (p *CommentListItem) IsSetReplies() bool {
+	return p.Replies != nil
 }
 
 func (p *CommentListItem) Read(iprot thrift.TProtocol) (err error) {
@@ -11096,14 +11202,14 @@ func (p *CommentListItem) ReadField2(iprot thrift.TProtocol) error {
 	if err != nil {
 		return err
 	}
-	p.Replys = make([]*Comment, 0, size)
+	p.Replies = make([]*Comment, 0, size)
 	for i := 0; i < size; i++ {
 		_elem := NewComment()
 		if err := _elem.Read(iprot); err != nil {
 			return err
 		}
 
-		p.Replys = append(p.Replys, _elem)
+		p.Replies = append(p.Replies, _elem)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return err
@@ -11162,14 +11268,14 @@ WriteFieldEndError:
 }
 
 func (p *CommentListItem) writeField2(oprot thrift.TProtocol) (err error) {
-	if p.IsSetReplys() {
-		if err = oprot.WriteFieldBegin("Replys", thrift.LIST, 2); err != nil {
+	if p.IsSetReplies() {
+		if err = oprot.WriteFieldBegin("Replies", thrift.LIST, 2); err != nil {
 			goto WriteFieldBeginError
 		}
-		if err := oprot.WriteListBegin(thrift.STRUCT, len(p.Replys)); err != nil {
+		if err := oprot.WriteListBegin(thrift.STRUCT, len(p.Replies)); err != nil {
 			return err
 		}
-		for _, v := range p.Replys {
+		for _, v := range p.Replies {
 			if err := v.Write(oprot); err != nil {
 				return err
 			}
@@ -12085,6 +12191,265 @@ func (p *CommentArticleAPIRequest) String() string {
 	return fmt.Sprintf("CommentArticleAPIRequest(%+v)", *p)
 }
 
+type CommentArticleAPIResponse struct {
+	ID            int64                `thrift:"ID,1,required" form:"id,required" json:"id,required" query:"id,required"`
+	CommentStatus common.CommentStatus `thrift:"CommentStatus,2,required" form:"comment_status,required" json:"comment_status,required" query:"comment_status,required"`
+	BaseResp      *BaseResp            `thrift:"BaseResp,255,required" json:"-" form:"base_resp,required" query:"base_resp,required"`
+}
+
+func NewCommentArticleAPIResponse() *CommentArticleAPIResponse {
+	return &CommentArticleAPIResponse{}
+}
+
+func (p *CommentArticleAPIResponse) GetID() (v int64) {
+	return p.ID
+}
+
+func (p *CommentArticleAPIResponse) GetCommentStatus() (v common.CommentStatus) {
+	return p.CommentStatus
+}
+
+var CommentArticleAPIResponse_BaseResp_DEFAULT *BaseResp
+
+func (p *CommentArticleAPIResponse) GetBaseResp() (v *BaseResp) {
+	if !p.IsSetBaseResp() {
+		return CommentArticleAPIResponse_BaseResp_DEFAULT
+	}
+	return p.BaseResp
+}
+
+var fieldIDToName_CommentArticleAPIResponse = map[int16]string{
+	1:   "ID",
+	2:   "CommentStatus",
+	255: "BaseResp",
+}
+
+func (p *CommentArticleAPIResponse) IsSetBaseResp() bool {
+	return p.BaseResp != nil
+}
+
+func (p *CommentArticleAPIResponse) Read(iprot thrift.TProtocol) (err error) {
+
+	var fieldTypeId thrift.TType
+	var fieldId int16
+	var issetID bool = false
+	var issetCommentStatus bool = false
+	var issetBaseResp bool = false
+
+	if _, err = iprot.ReadStructBegin(); err != nil {
+		goto ReadStructBeginError
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err = iprot.ReadFieldBegin()
+		if err != nil {
+			goto ReadFieldBeginError
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+
+		switch fieldId {
+		case 1:
+			if fieldTypeId == thrift.I64 {
+				if err = p.ReadField1(iprot); err != nil {
+					goto ReadFieldError
+				}
+				issetID = true
+			} else {
+				if err = iprot.Skip(fieldTypeId); err != nil {
+					goto SkipFieldError
+				}
+			}
+		case 2:
+			if fieldTypeId == thrift.I32 {
+				if err = p.ReadField2(iprot); err != nil {
+					goto ReadFieldError
+				}
+				issetCommentStatus = true
+			} else {
+				if err = iprot.Skip(fieldTypeId); err != nil {
+					goto SkipFieldError
+				}
+			}
+		case 255:
+			if fieldTypeId == thrift.STRUCT {
+				if err = p.ReadField255(iprot); err != nil {
+					goto ReadFieldError
+				}
+				issetBaseResp = true
+			} else {
+				if err = iprot.Skip(fieldTypeId); err != nil {
+					goto SkipFieldError
+				}
+			}
+		default:
+			if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
+		}
+
+		if err = iprot.ReadFieldEnd(); err != nil {
+			goto ReadFieldEndError
+		}
+	}
+	if err = iprot.ReadStructEnd(); err != nil {
+		goto ReadStructEndError
+	}
+
+	if !issetID {
+		fieldId = 1
+		goto RequiredFieldNotSetError
+	}
+
+	if !issetCommentStatus {
+		fieldId = 2
+		goto RequiredFieldNotSetError
+	}
+
+	if !issetBaseResp {
+		fieldId = 255
+		goto RequiredFieldNotSetError
+	}
+	return nil
+ReadStructBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T read struct begin error: ", p), err)
+ReadFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T read field %d begin error: ", p, fieldId), err)
+ReadFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_CommentArticleAPIResponse[fieldId]), err)
+SkipFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T field %d skip type %d error: ", p, fieldId, fieldTypeId), err)
+
+ReadFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T read field end error", p), err)
+ReadStructEndError:
+	return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+RequiredFieldNotSetError:
+	return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field %s is not set", fieldIDToName_CommentArticleAPIResponse[fieldId]))
+}
+
+func (p *CommentArticleAPIResponse) ReadField1(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadI64(); err != nil {
+		return err
+	} else {
+		p.ID = v
+	}
+	return nil
+}
+
+func (p *CommentArticleAPIResponse) ReadField2(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadI32(); err != nil {
+		return err
+	} else {
+		p.CommentStatus = common.CommentStatus(v)
+	}
+	return nil
+}
+
+func (p *CommentArticleAPIResponse) ReadField255(iprot thrift.TProtocol) error {
+	p.BaseResp = NewBaseResp()
+	if err := p.BaseResp.Read(iprot); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (p *CommentArticleAPIResponse) Write(oprot thrift.TProtocol) (err error) {
+	var fieldId int16
+	if err = oprot.WriteStructBegin("CommentArticleAPIResponse"); err != nil {
+		goto WriteStructBeginError
+	}
+	if p != nil {
+		if err = p.writeField1(oprot); err != nil {
+			fieldId = 1
+			goto WriteFieldError
+		}
+		if err = p.writeField2(oprot); err != nil {
+			fieldId = 2
+			goto WriteFieldError
+		}
+		if err = p.writeField255(oprot); err != nil {
+			fieldId = 255
+			goto WriteFieldError
+		}
+
+	}
+	if err = oprot.WriteFieldStop(); err != nil {
+		goto WriteFieldStopError
+	}
+	if err = oprot.WriteStructEnd(); err != nil {
+		goto WriteStructEndError
+	}
+	return nil
+WriteStructBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+WriteFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T write field %d error: ", p, fieldId), err)
+WriteFieldStopError:
+	return thrift.PrependError(fmt.Sprintf("%T write field stop error: ", p), err)
+WriteStructEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write struct end error: ", p), err)
+}
+
+func (p *CommentArticleAPIResponse) writeField1(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("ID", thrift.I64, 1); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteI64(p.ID); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 1 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 1 end error: ", p), err)
+}
+
+func (p *CommentArticleAPIResponse) writeField2(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("CommentStatus", thrift.I32, 2); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteI32(int32(p.CommentStatus)); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 2 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 2 end error: ", p), err)
+}
+
+func (p *CommentArticleAPIResponse) writeField255(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("BaseResp", thrift.STRUCT, 255); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := p.BaseResp.Write(oprot); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 255 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 255 end error: ", p), err)
+}
+
+func (p *CommentArticleAPIResponse) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("CommentArticleAPIResponse(%+v)", *p)
+}
+
 type ReplyCommentAPIRequest struct {
 	ArticleID  int64   `thrift:"ArticleID,1,required" form:"article_id,required" json:"article_id,required" query:"article_id,required"`
 	ReplyID    *int64  `thrift:"ReplyID,2,optional" form:"reply_id" json:"reply_id,omitempty" query:"reply_id"`
@@ -12609,6 +12974,265 @@ func (p *ReplyCommentAPIRequest) String() string {
 	return fmt.Sprintf("ReplyCommentAPIRequest(%+v)", *p)
 }
 
+type ReplyCommentAPIResponse struct {
+	ID            int64                `thrift:"ID,1,required" form:"id,required" json:"id,required" query:"id,required"`
+	CommentStatus common.CommentStatus `thrift:"CommentStatus,2,required" form:"comment_status,required" json:"comment_status,required" query:"comment_status,required"`
+	BaseResp      *BaseResp            `thrift:"BaseResp,255,required" json:"-" form:"base_resp,required" query:"base_resp,required"`
+}
+
+func NewReplyCommentAPIResponse() *ReplyCommentAPIResponse {
+	return &ReplyCommentAPIResponse{}
+}
+
+func (p *ReplyCommentAPIResponse) GetID() (v int64) {
+	return p.ID
+}
+
+func (p *ReplyCommentAPIResponse) GetCommentStatus() (v common.CommentStatus) {
+	return p.CommentStatus
+}
+
+var ReplyCommentAPIResponse_BaseResp_DEFAULT *BaseResp
+
+func (p *ReplyCommentAPIResponse) GetBaseResp() (v *BaseResp) {
+	if !p.IsSetBaseResp() {
+		return ReplyCommentAPIResponse_BaseResp_DEFAULT
+	}
+	return p.BaseResp
+}
+
+var fieldIDToName_ReplyCommentAPIResponse = map[int16]string{
+	1:   "ID",
+	2:   "CommentStatus",
+	255: "BaseResp",
+}
+
+func (p *ReplyCommentAPIResponse) IsSetBaseResp() bool {
+	return p.BaseResp != nil
+}
+
+func (p *ReplyCommentAPIResponse) Read(iprot thrift.TProtocol) (err error) {
+
+	var fieldTypeId thrift.TType
+	var fieldId int16
+	var issetID bool = false
+	var issetCommentStatus bool = false
+	var issetBaseResp bool = false
+
+	if _, err = iprot.ReadStructBegin(); err != nil {
+		goto ReadStructBeginError
+	}
+
+	for {
+		_, fieldTypeId, fieldId, err = iprot.ReadFieldBegin()
+		if err != nil {
+			goto ReadFieldBeginError
+		}
+		if fieldTypeId == thrift.STOP {
+			break
+		}
+
+		switch fieldId {
+		case 1:
+			if fieldTypeId == thrift.I64 {
+				if err = p.ReadField1(iprot); err != nil {
+					goto ReadFieldError
+				}
+				issetID = true
+			} else {
+				if err = iprot.Skip(fieldTypeId); err != nil {
+					goto SkipFieldError
+				}
+			}
+		case 2:
+			if fieldTypeId == thrift.I32 {
+				if err = p.ReadField2(iprot); err != nil {
+					goto ReadFieldError
+				}
+				issetCommentStatus = true
+			} else {
+				if err = iprot.Skip(fieldTypeId); err != nil {
+					goto SkipFieldError
+				}
+			}
+		case 255:
+			if fieldTypeId == thrift.STRUCT {
+				if err = p.ReadField255(iprot); err != nil {
+					goto ReadFieldError
+				}
+				issetBaseResp = true
+			} else {
+				if err = iprot.Skip(fieldTypeId); err != nil {
+					goto SkipFieldError
+				}
+			}
+		default:
+			if err = iprot.Skip(fieldTypeId); err != nil {
+				goto SkipFieldError
+			}
+		}
+
+		if err = iprot.ReadFieldEnd(); err != nil {
+			goto ReadFieldEndError
+		}
+	}
+	if err = iprot.ReadStructEnd(); err != nil {
+		goto ReadStructEndError
+	}
+
+	if !issetID {
+		fieldId = 1
+		goto RequiredFieldNotSetError
+	}
+
+	if !issetCommentStatus {
+		fieldId = 2
+		goto RequiredFieldNotSetError
+	}
+
+	if !issetBaseResp {
+		fieldId = 255
+		goto RequiredFieldNotSetError
+	}
+	return nil
+ReadStructBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T read struct begin error: ", p), err)
+ReadFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T read field %d begin error: ", p, fieldId), err)
+ReadFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T read field %d '%s' error: ", p, fieldId, fieldIDToName_ReplyCommentAPIResponse[fieldId]), err)
+SkipFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T field %d skip type %d error: ", p, fieldId, fieldTypeId), err)
+
+ReadFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T read field end error", p), err)
+ReadStructEndError:
+	return thrift.PrependError(fmt.Sprintf("%T read struct end error: ", p), err)
+RequiredFieldNotSetError:
+	return thrift.NewTProtocolExceptionWithType(thrift.INVALID_DATA, fmt.Errorf("required field %s is not set", fieldIDToName_ReplyCommentAPIResponse[fieldId]))
+}
+
+func (p *ReplyCommentAPIResponse) ReadField1(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadI64(); err != nil {
+		return err
+	} else {
+		p.ID = v
+	}
+	return nil
+}
+
+func (p *ReplyCommentAPIResponse) ReadField2(iprot thrift.TProtocol) error {
+	if v, err := iprot.ReadI32(); err != nil {
+		return err
+	} else {
+		p.CommentStatus = common.CommentStatus(v)
+	}
+	return nil
+}
+
+func (p *ReplyCommentAPIResponse) ReadField255(iprot thrift.TProtocol) error {
+	p.BaseResp = NewBaseResp()
+	if err := p.BaseResp.Read(iprot); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (p *ReplyCommentAPIResponse) Write(oprot thrift.TProtocol) (err error) {
+	var fieldId int16
+	if err = oprot.WriteStructBegin("ReplyCommentAPIResponse"); err != nil {
+		goto WriteStructBeginError
+	}
+	if p != nil {
+		if err = p.writeField1(oprot); err != nil {
+			fieldId = 1
+			goto WriteFieldError
+		}
+		if err = p.writeField2(oprot); err != nil {
+			fieldId = 2
+			goto WriteFieldError
+		}
+		if err = p.writeField255(oprot); err != nil {
+			fieldId = 255
+			goto WriteFieldError
+		}
+
+	}
+	if err = oprot.WriteFieldStop(); err != nil {
+		goto WriteFieldStopError
+	}
+	if err = oprot.WriteStructEnd(); err != nil {
+		goto WriteStructEndError
+	}
+	return nil
+WriteStructBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write struct begin error: ", p), err)
+WriteFieldError:
+	return thrift.PrependError(fmt.Sprintf("%T write field %d error: ", p, fieldId), err)
+WriteFieldStopError:
+	return thrift.PrependError(fmt.Sprintf("%T write field stop error: ", p), err)
+WriteStructEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write struct end error: ", p), err)
+}
+
+func (p *ReplyCommentAPIResponse) writeField1(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("ID", thrift.I64, 1); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteI64(p.ID); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 1 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 1 end error: ", p), err)
+}
+
+func (p *ReplyCommentAPIResponse) writeField2(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("CommentStatus", thrift.I32, 2); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := oprot.WriteI32(int32(p.CommentStatus)); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 2 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 2 end error: ", p), err)
+}
+
+func (p *ReplyCommentAPIResponse) writeField255(oprot thrift.TProtocol) (err error) {
+	if err = oprot.WriteFieldBegin("BaseResp", thrift.STRUCT, 255); err != nil {
+		goto WriteFieldBeginError
+	}
+	if err := p.BaseResp.Write(oprot); err != nil {
+		return err
+	}
+	if err = oprot.WriteFieldEnd(); err != nil {
+		goto WriteFieldEndError
+	}
+	return nil
+WriteFieldBeginError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 255 begin error: ", p), err)
+WriteFieldEndError:
+	return thrift.PrependError(fmt.Sprintf("%T write field 255 end error: ", p), err)
+}
+
+func (p *ReplyCommentAPIResponse) String() string {
+	if p == nil {
+		return "<nil>"
+	}
+	return fmt.Sprintf("ReplyCommentAPIResponse(%+v)", *p)
+}
+
 // 验证码
 type GetCaptchaAPIResponse struct {
 	Captcha  string    `thrift:"Captcha,1,required" form:"captcha,required" json:"captcha,required" query:"captcha,required"`
@@ -12870,9 +13494,9 @@ type APIService interface {
 	// 获取评论列表
 	GetCommentListAPI(ctx context.Context, request *GetCommentListAPIRequest) (r *GetCommentListAPIResponse, err error)
 	// 评论文章
-	CommentArticleAPI(ctx context.Context, requset *CommentArticleAPIRequest) (r *CommonResponse, err error)
+	CommentArticleAPI(ctx context.Context, requset *CommentArticleAPIRequest) (r *CommentArticleAPIResponse, err error)
 	// 回复评论
-	ReplyCommentAPI(ctx context.Context, requset *ReplyCommentAPIRequest) (r *CommonResponse, err error)
+	ReplyCommentAPI(ctx context.Context, requset *ReplyCommentAPIRequest) (r *ReplyCommentAPIResponse, err error)
 	// 获取验证码
 	GetCaptchaAPI(ctx context.Context) (r *GetCaptchaAPIResponse, err error)
 }
@@ -13108,7 +13732,7 @@ func (p *APIServiceClient) GetCommentListAPI(ctx context.Context, request *GetCo
 	}
 	return _result.GetSuccess(), nil
 }
-func (p *APIServiceClient) CommentArticleAPI(ctx context.Context, requset *CommentArticleAPIRequest) (r *CommonResponse, err error) {
+func (p *APIServiceClient) CommentArticleAPI(ctx context.Context, requset *CommentArticleAPIRequest) (r *CommentArticleAPIResponse, err error) {
 	var _args APIServiceCommentArticleAPIArgs
 	_args.Requset = requset
 	var _result APIServiceCommentArticleAPIResult
@@ -13117,7 +13741,7 @@ func (p *APIServiceClient) CommentArticleAPI(ctx context.Context, requset *Comme
 	}
 	return _result.GetSuccess(), nil
 }
-func (p *APIServiceClient) ReplyCommentAPI(ctx context.Context, requset *ReplyCommentAPIRequest) (r *CommonResponse, err error) {
+func (p *APIServiceClient) ReplyCommentAPI(ctx context.Context, requset *ReplyCommentAPIRequest) (r *ReplyCommentAPIResponse, err error) {
 	var _args APIServiceReplyCommentAPIArgs
 	_args.Requset = requset
 	var _result APIServiceReplyCommentAPIResult
@@ -14324,7 +14948,7 @@ func (p *aPIServiceProcessorCommentArticleAPI) Process(ctx context.Context, seqI
 	iprot.ReadMessageEnd()
 	var err2 error
 	result := APIServiceCommentArticleAPIResult{}
-	var retval *CommonResponse
+	var retval *CommentArticleAPIResponse
 	if retval, err2 = p.handler.CommentArticleAPI(ctx, args.Requset); err2 != nil {
 		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing CommentArticleAPI: "+err2.Error())
 		oprot.WriteMessageBegin("CommentArticleAPI", thrift.EXCEPTION, seqId)
@@ -14372,7 +14996,7 @@ func (p *aPIServiceProcessorReplyCommentAPI) Process(ctx context.Context, seqId 
 	iprot.ReadMessageEnd()
 	var err2 error
 	result := APIServiceReplyCommentAPIResult{}
-	var retval *CommonResponse
+	var retval *ReplyCommentAPIResponse
 	if retval, err2 = p.handler.ReplyCommentAPI(ctx, args.Requset); err2 != nil {
 		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing ReplyCommentAPI: "+err2.Error())
 		oprot.WriteMessageBegin("ReplyCommentAPI", thrift.EXCEPTION, seqId)
@@ -21183,16 +21807,16 @@ func (p *APIServiceCommentArticleAPIArgs) String() string {
 }
 
 type APIServiceCommentArticleAPIResult struct {
-	Success *CommonResponse `thrift:"success,0,optional"`
+	Success *CommentArticleAPIResponse `thrift:"success,0,optional"`
 }
 
 func NewAPIServiceCommentArticleAPIResult() *APIServiceCommentArticleAPIResult {
 	return &APIServiceCommentArticleAPIResult{}
 }
 
-var APIServiceCommentArticleAPIResult_Success_DEFAULT *CommonResponse
+var APIServiceCommentArticleAPIResult_Success_DEFAULT *CommentArticleAPIResponse
 
-func (p *APIServiceCommentArticleAPIResult) GetSuccess() (v *CommonResponse) {
+func (p *APIServiceCommentArticleAPIResult) GetSuccess() (v *CommentArticleAPIResponse) {
 	if !p.IsSetSuccess() {
 		return APIServiceCommentArticleAPIResult_Success_DEFAULT
 	}
@@ -21267,7 +21891,7 @@ ReadStructEndError:
 }
 
 func (p *APIServiceCommentArticleAPIResult) ReadField0(iprot thrift.TProtocol) error {
-	p.Success = NewCommonResponse()
+	p.Success = NewCommentArticleAPIResponse()
 	if err := p.Success.Read(iprot); err != nil {
 		return err
 	}
@@ -21475,16 +22099,16 @@ func (p *APIServiceReplyCommentAPIArgs) String() string {
 }
 
 type APIServiceReplyCommentAPIResult struct {
-	Success *CommonResponse `thrift:"success,0,optional"`
+	Success *ReplyCommentAPIResponse `thrift:"success,0,optional"`
 }
 
 func NewAPIServiceReplyCommentAPIResult() *APIServiceReplyCommentAPIResult {
 	return &APIServiceReplyCommentAPIResult{}
 }
 
-var APIServiceReplyCommentAPIResult_Success_DEFAULT *CommonResponse
+var APIServiceReplyCommentAPIResult_Success_DEFAULT *ReplyCommentAPIResponse
 
-func (p *APIServiceReplyCommentAPIResult) GetSuccess() (v *CommonResponse) {
+func (p *APIServiceReplyCommentAPIResult) GetSuccess() (v *ReplyCommentAPIResponse) {
 	if !p.IsSetSuccess() {
 		return APIServiceReplyCommentAPIResult_Success_DEFAULT
 	}
@@ -21559,7 +22183,7 @@ ReadStructEndError:
 }
 
 func (p *APIServiceReplyCommentAPIResult) ReadField0(iprot thrift.TProtocol) error {
-	p.Success = NewCommonResponse()
+	p.Success = NewReplyCommentAPIResponse()
 	if err := p.Success.Read(iprot); err != nil {
 		return err
 	}

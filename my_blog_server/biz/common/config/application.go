@@ -7,11 +7,12 @@ import (
 )
 
 const (
-	DefaultBlogName        = "kakkk'blog"       // 默认博客名称
+	DefaultBlogName        = "kakkk's blog"     // 默认博客名称
 	DefaultBlogSubTitle    = "小朱的博客"            // 默认子标题
 	DefaultBlogDescription = "这是kakkk（小朱）的技术博客" // 默认博客描述
 	DefaultUserName        = "kakkk"            // 默认显示坐着（兜底）
 	pageListSize           = 5                  // 列表页大小
+	DefaultGravatarCDN     = "https://dn-qiniu-avatar.qbox.me/avatar/"
 )
 
 var appConf *ApplicationConfig
@@ -99,4 +100,8 @@ func GetDefaultUserName() string {
 
 func GetBlogDescription() string {
 	return DefaultBlogDescription
+}
+
+func GetGravatarCDN() string {
+	return DefaultGravatarCDN
 }

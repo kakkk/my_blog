@@ -72,6 +72,14 @@ func InitStorage() error {
 	if err != nil {
 		return fmt.Errorf("init storage error: [%w]", err)
 	}
+	err = initCommentStorageStorage(ctx)
+	if err != nil {
+		return fmt.Errorf("init storage error: [%w]", err)
+	}
+	err = initPostCommentIDsStorage(ctx)
+	if err != nil {
+		return fmt.Errorf("init storage error: [%w]", err)
+	}
 	initArchivesStorage()
 	return nil
 }

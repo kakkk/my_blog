@@ -7,7 +7,9 @@ import (
 	"github.com/cloudwego/hertz/pkg/app"
 
 	"my_blog/biz/common/resp"
+	"my_blog/biz/common/utils"
 	"my_blog/biz/model/blog/api"
+	"my_blog/biz/service"
 )
 
 // ========管理员接口=========
@@ -73,10 +75,9 @@ func GetCommentListAPI(ctx context.Context, c *app.RequestContext) (int, *resp.A
 	if err != nil {
 		return http.StatusBadRequest, resp.NewParameterErrorResp()
 	}
-	var rsp api.GetCommentListAPIResponse
 
-	//rsp := service.GetCommentListAPI(ctx, &req)
-	return http.StatusOK, resp.NewAPIResponse(&rsp)
+	rsp := service.GetCommentListAPI(ctx, &req)
+	return http.StatusOK, resp.NewAPIResponse(rsp)
 }
 
 func CommentArticleAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIResponse) {
@@ -86,10 +87,20 @@ func CommentArticleAPI(ctx context.Context, c *app.RequestContext) (int, *resp.A
 	if err != nil {
 		return http.StatusBadRequest, resp.NewParameterErrorResp()
 	}
-	var rsp api.CommonResponse
+	// 参数校验
+	if req.GetNickname() == "" ||
+		req.GetEmail() == "" ||
+		req.GetContent() == "" ||
+		req.GetArticleID() == 0 {
+		return http.StatusBadRequest, resp.NewParameterErrorResp()
+	}
+	if !utils.CheckIsEmail(req.GetEmail()) || !utils.CheckIsURL(req.GetWebsite()) {
+		return http.StatusBadRequest, resp.NewParameterErrorResp()
+	}
 
-	//rsp := service.GetCommentListAPI(ctx, &req)
-	return http.StatusOK, resp.NewAPIResponse(&rsp)
+	rsp := service.CommentArticleAPI(ctx, &req)
+
+	return http.StatusOK, resp.NewAPIResponse(rsp)
 }
 
 func ReplyCommentAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIResponse) {
@@ -99,8 +110,18 @@ func ReplyCommentAPI(ctx context.Context, c *app.RequestContext) (int, *resp.API
 	if err != nil {
 		return http.StatusBadRequest, resp.NewParameterErrorResp()
 	}
-	var rsp api.CommonResponse
+	// 参数校验
+	if req.GetNickname() == "" ||
+		req.GetEmail() == "" ||
+		req.GetContent() == "" ||
+		req.GetArticleID() == 0 ||
+		req.GetReplyID() == 0 {
+		return http.StatusBadRequest, resp.NewParameterErrorResp()
+	}
+	if !utils.CheckIsEmail(req.GetEmail()) || !utils.CheckIsURL(req.GetWebsite()) {
+		return http.StatusBadRequest, resp.NewParameterErrorResp()
+	}
 
-	//rsp := service.GetCommentListAPI(ctx, &req)
-	return http.StatusOK, resp.NewAPIResponse(&rsp)
+	rsp := service.ReplyCommentAPI(ctx, &req)
+	return http.StatusOK, resp.NewAPIResponse(rsp)
 }

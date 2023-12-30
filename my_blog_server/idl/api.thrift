@@ -303,16 +303,18 @@ struct SearchAPIResponse {
 
 // 评论
 struct Comment {
-    1: required string Nickname
-    2: required string Avatar
-    3: required string Website
-    4: required string Content
-    5: required string CommentAt
+    1: required i64 ID
+    2: required string Nickname
+    3: required string Avatar
+    4: required string Website
+    5: required string Content
+    6: required string CommentAt
+    7: required string ReplyUser
 }
 
 struct CommentListItem {
     1: required Comment Comment
-    2: optional list<Comment> Replys
+    2: optional list<Comment> Replies
 }
 
 struct GetCommentListAPIResponse {
@@ -336,6 +338,13 @@ struct CommentArticleAPIRequest {
     7: required string VerifyCode       // 验证码
 }
 
+struct CommentArticleAPIResponse {
+    1: required i64 ID
+    2: required common.CommentStatus CommentStatus
+
+    255: required BaseResp BaseResp (go.tag="json:\"-\"")
+}
+
 struct ReplyCommentAPIRequest {
     1: required i64 ArticleID           // 文章ID
     2: optional i64 ReplyID             // 回复的评论ID
@@ -345,6 +354,13 @@ struct ReplyCommentAPIRequest {
     6: required string Content          // 评论内容
     7: required string VerifyID         // 验证码ID
     8: required string VerifyCode       // 验证码
+}
+
+struct ReplyCommentAPIResponse {
+    1: required i64 ID
+    2: required common.CommentStatus CommentStatus
+
+    255: required BaseResp BaseResp (go.tag="json:\"-\"")
 }
 
 // 验证码
@@ -411,9 +427,9 @@ service APIService {
     // 获取评论列表
     GetCommentListAPIResponse GetCommentListAPI(1:GetCommentListAPIRequest request) (api.get="/api/comment/list")
     // 评论文章
-    CommonResponse CommentArticleAPI(1:CommentArticleAPIRequest requset) (api.post="/api/comment/article")
+    CommentArticleAPIResponse CommentArticleAPI(1:CommentArticleAPIRequest requset) (api.post="/api/comment/article")
     // 回复评论
-    CommonResponse ReplyCommentAPI(1:ReplyCommentAPIRequest requset) (api.post="/api/comment/reply")
+    ReplyCommentAPIResponse ReplyCommentAPI(1:ReplyCommentAPIRequest requset) (api.post="/api/comment/reply")
     // 获取验证码
     GetCaptchaAPIResponse GetCaptchaAPI() (api.get="/api/captcha")
 

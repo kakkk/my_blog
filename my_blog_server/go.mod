@@ -1,6 +1,6 @@
 module my_blog
 
-go 1.20
+go 1.21.1
 
 replace github.com/apache/thrift => github.com/apache/thrift v0.13.0
 
@@ -13,9 +13,9 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/hertz-contrib/logger/logrus v1.0.0
 	github.com/hertz-contrib/sessions v1.0.1
-	github.com/kakkk/cachex v1.0.1
+	github.com/kakkk/cachex v1.0.3
 	github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
-	github.com/redis/go-redis/v9 v9.1.0
+	github.com/redis/go-redis/v9 v9.2.1
 	github.com/rifflock/lfshook v0.0.0-20180920164130-b9218ef580f5
 	github.com/russross/blackfriday/v2 v2.1.0
 	github.com/sirupsen/logrus v1.9.0
@@ -50,12 +50,12 @@ require (
 	github.com/boj/redistore v0.0.0-20180917114910-cd5dcc76aeff // indirect
 	github.com/bytedance/go-tagexpr/v2 v2.9.2 // indirect
 	github.com/bytedance/gopkg v0.0.0-20220413063733-65bf48ffb3a7 // indirect
-	github.com/bytedance/sonic v1.10.0 // indirect
+	github.com/bytedance/sonic v1.10.1 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20230717121745-296ad89f973d // indirect
 	github.com/chenzhuoyu/iasm v0.9.0 // indirect
 	github.com/cloudwego/netpoll v0.3.1 // indirect
-	github.com/coocood/freecache v1.2.3 // indirect
+	github.com/coocood/freecache v1.2.4 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/fsnotify/fsnotify v1.5.4 // indirect
@@ -66,6 +66,7 @@ require (
 	github.com/gorilla/context v1.1.1 // indirect
 	github.com/gorilla/securecookie v1.1.1 // indirect
 	github.com/gorilla/sessions v1.2.1 // indirect
+	github.com/hashicorp/golang-lru/v2 v2.0.7 // indirect
 	github.com/henrylee2cn/ameda v1.4.10 // indirect
 	github.com/henrylee2cn/goutil v0.0.0-20210127050712-89660552f6f8 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect

@@ -68,7 +68,7 @@ func CategoryPostListByPage(ctx context.Context, req *page.PostListPageRequest) 
 		logger.Warnf("no article")
 		return rsp, nil
 	}
-	postMetas := storage.GetPostMetaStorage().MGet(ctx, postIDs)
+	postMetas := storage.GetArticleMetaStorage().MGet(ctx, postIDs)
 	if len(postMetas) == 0 {
 		logger.Warnf("no article")
 		return rsp, nil

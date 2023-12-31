@@ -53,14 +53,16 @@ func (p *DeleteFlag) Value() (driver.Value, error) {
 type RespCode int64
 
 const (
-	RespCode_Success        RespCode = 0
-	RespCode_Fail           RespCode = 1
-	RespCode_LoginFail      RespCode = 200001
-	RespCode_HasExist       RespCode = 200002
-	RespCode_NotFound       RespCode = 200003
-	RespCode_ParameterError RespCode = 400000
-	RespCode_Unauthorized   RespCode = 400100
-	RespCode_InternalError  RespCode = 500000
+	RespCode_Success          RespCode = 0
+	RespCode_Fail             RespCode = 1
+	RespCode_LoginFail        RespCode = 200001
+	RespCode_HasExist         RespCode = 200002
+	RespCode_NotFound         RespCode = 200003
+	RespCode_NeedAudite       RespCode = 200004
+	RespCode_ParameterError   RespCode = 400000
+	RespCode_Unauthorized     RespCode = 400100
+	RespCode_VerificationFail RespCode = 403001
+	RespCode_InternalError    RespCode = 500000
 )
 
 func (p RespCode) String() string {
@@ -75,10 +77,14 @@ func (p RespCode) String() string {
 		return "HasExist"
 	case RespCode_NotFound:
 		return "NotFound"
+	case RespCode_NeedAudite:
+		return "NeedAudite"
 	case RespCode_ParameterError:
 		return "ParameterError"
 	case RespCode_Unauthorized:
 		return "Unauthorized"
+	case RespCode_VerificationFail:
+		return "VerificationFail"
 	case RespCode_InternalError:
 		return "InternalError"
 	}
@@ -97,10 +103,14 @@ func RespCodeFromString(s string) (RespCode, error) {
 		return RespCode_HasExist, nil
 	case "NotFound":
 		return RespCode_NotFound, nil
+	case "NeedAudite":
+		return RespCode_NeedAudite, nil
 	case "ParameterError":
 		return RespCode_ParameterError, nil
 	case "Unauthorized":
 		return RespCode_Unauthorized, nil
+	case "VerificationFail":
+		return RespCode_VerificationFail, nil
 	case "InternalError":
 		return RespCode_InternalError, nil
 	}
@@ -252,6 +262,58 @@ func (p *ArticleStatus) Scan(value interface{}) (err error) {
 }
 
 func (p *ArticleStatus) Value() (driver.Value, error) {
+	if p == nil {
+		return nil, nil
+	}
+	return int64(*p), nil
+}
+
+type CommentStatus int64
+
+const (
+	CommentStatus_Unaudited CommentStatus = 1
+	CommentStatus_Approved  CommentStatus = 2
+	CommentStatus_Denied    CommentStatus = 3
+	CommentStatus_Deleted   CommentStatus = 10
+)
+
+func (p CommentStatus) String() string {
+	switch p {
+	case CommentStatus_Unaudited:
+		return "Unaudited"
+	case CommentStatus_Approved:
+		return "Approved"
+	case CommentStatus_Denied:
+		return "Denied"
+	case CommentStatus_Deleted:
+		return "Deleted"
+	}
+	return "<UNSET>"
+}
+
+func CommentStatusFromString(s string) (CommentStatus, error) {
+	switch s {
+	case "Unaudited":
+		return CommentStatus_Unaudited, nil
+	case "Approved":
+		return CommentStatus_Approved, nil
+	case "Denied":
+		return CommentStatus_Denied, nil
+	case "Deleted":
+		return CommentStatus_Deleted, nil
+	}
+	return CommentStatus(0), fmt.Errorf("not a valid CommentStatus string")
+}
+
+func CommentStatusPtr(v CommentStatus) *CommentStatus { return &v }
+func (p *CommentStatus) Scan(value interface{}) (err error) {
+	var result sql.NullInt64
+	err = result.Scan(value)
+	*p = CommentStatus(result.Int64)
+	return
+}
+
+func (p *CommentStatus) Value() (driver.Value, error) {
 	if p == nil {
 		return nil, nil
 	}

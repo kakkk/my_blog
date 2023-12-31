@@ -12,34 +12,34 @@ import (
 	"my_blog/biz/dto"
 )
 
-var postMetaStorage *PostMetaStorage
+var articleMetaStorage *ArticleMetaStorage
 
-type PostMetaStorage struct {
+type ArticleMetaStorage struct {
 	cacheX *cachex.CacheX[int64, *dto.PostMeta]
 	expire time.Duration
 }
 
-func GetPostMetaStorage() *PostMetaStorage {
-	return postMetaStorage
+func GetArticleMetaStorage() *ArticleMetaStorage {
+	return articleMetaStorage
 }
 
-func initPostMetaStorage(ctx context.Context) error {
-	cfg := config.GetStorageSettingByName("post_meta")
+func initArticleMetaStorage(ctx context.Context) error {
+	cfg := config.GetStorageSettingByName("article_meta")
 	cache, err := NewCacheXBuilderByConfig[int64, *dto.PostMeta](ctx, cfg).
-		SetGetRealData(postMetaStorageGetRealData).
-		SetMGetRealData(postMetaStorageMGetRealData).
+		SetGetRealData(articleMetaStorageGetRealData).
+		SetMGetRealData(articleMetaStorageMGetRealData).
 		Build()
 	if err != nil {
 		return fmt.Errorf("init cachex error: %w", err)
 	}
-	postMetaStorage = &PostMetaStorage{
+	articleMetaStorage = &ArticleMetaStorage{
 		cacheX: cache,
 		expire: cfg.GetExpire(),
 	}
 	return nil
 }
 
-func postMetaStorageGetRealData(ctx context.Context, id int64) (*dto.PostMeta, error) {
+func articleMetaStorageGetRealData(ctx context.Context, id int64) (*dto.PostMeta, error) {
 	post, err := GetArticleEntityStorage().Get(ctx, id)
 	if err != nil {
 		return nil, err
@@ -48,10 +48,10 @@ func postMetaStorageGetRealData(ctx context.Context, id int64) (*dto.PostMeta, e
 	if err != nil {
 		return nil, err
 	}
-	return dto.NewPostMetaByEntity(post, editor), nil
+	return dto.NewArticleMetaByEntity(post, editor), nil
 }
 
-func postMetaStorageMGetRealData(ctx context.Context, ids []int64) (map[int64]*dto.PostMeta, error) {
+func articleMetaStorageMGetRealData(ctx context.Context, ids []int64) (map[int64]*dto.PostMeta, error) {
 	posts := GetArticleEntityStorage().MGet(ctx, ids)
 	result := make(map[int64]*dto.PostMeta, len(posts))
 	userIDs := make([]int64, 0, len(posts))
@@ -60,16 +60,16 @@ func postMetaStorageMGetRealData(ctx context.Context, ids []int64) (map[int64]*d
 	}
 	users := GetUserEntityStorage().MGet(ctx, userIDs)
 	for id, article := range posts {
-		result[id] = dto.NewPostMetaByEntity(article, users[article.ID])
+		result[id] = dto.NewArticleMetaByEntity(article, users[article.ID])
 	}
 	return result, nil
 }
 
-func (p *PostMetaStorage) MGet(ctx context.Context, ids []int64) map[int64]*dto.PostMeta {
+func (p *ArticleMetaStorage) MGet(ctx context.Context, ids []int64) map[int64]*dto.PostMeta {
 	return p.cacheX.MGet(ctx, ids, p.expire)
 }
 
-func (p *PostMetaStorage) Get(ctx context.Context, id int64) (*dto.PostMeta, error) {
+func (p *ArticleMetaStorage) Get(ctx context.Context, id int64) (*dto.PostMeta, error) {
 	article, ok := p.cacheX.Get(ctx, id, p.expire)
 	if !ok {
 		return nil, consts.ErrRecordNotFound

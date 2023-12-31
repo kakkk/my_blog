@@ -30,7 +30,7 @@ func PostListByPage(ctx context.Context, req *page.PostListPageRequest) (rsp *pa
 	if len(postIDs) == 0 {
 		return nil, errorx.NewNotFoundErrPageError()
 	}
-	postMetas := storage.GetPostMetaStorage().MGet(ctx, postIDs)
+	postMetas := storage.GetArticleMetaStorage().MGet(ctx, postIDs)
 	if len(postMetas) == 0 {
 		return nil, errorx.NewNotFoundErrPageError()
 	}

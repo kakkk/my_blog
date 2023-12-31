@@ -118,3 +118,51 @@ func DeletePostAPI(ctx context.Context, c *app.RequestContext) {
 func SearchAPI(ctx context.Context, c *app.RequestContext) {
 	c.JSON(facade.SearchAPI(ctx, c))
 }
+
+// GetCommentListAdminAPI .
+// @router /api/admin/comment/list [GET]
+func GetCommentListAdminAPI(ctx context.Context, c *app.RequestContext) {
+	c.JSON(facade.GetCommentListAdminAPI(ctx, c))
+}
+
+// ReplyCommentAdminAPI .
+// @router /api/admin/comment/:comment_id/reply [POST]
+func ReplyCommentAdminAPI(ctx context.Context, c *app.RequestContext) {
+	c.JSON(facade.ReplyCommentAdminAPI(ctx, c))
+}
+
+// UpdateCommentStatusAdminAPI .
+// @router /api/admin/comment/:comment_id/status [PUT]
+func UpdateCommentStatusAdminAPI(ctx context.Context, c *app.RequestContext) {
+	c.JSON(facade.UpdateCommentStatusAdminAPI(ctx, c))
+}
+
+// DeleteCommentAdminAPI .
+// @router /api/admin/comment/:comment_id [PUT]
+func DeleteCommentAdminAPI(ctx context.Context, c *app.RequestContext) {
+	c.JSON(facade.DeleteCommentAdminAPI(ctx, c))
+}
+
+// GetCommentListAPI .
+// @router /api/comment/list [GET]
+func GetCommentListAPI(ctx context.Context, c *app.RequestContext) {
+	c.JSON(facade.GetCommentListAPI(ctx, c))
+}
+
+// CommentArticleAPI .
+// @router /api/comment/article [GET]
+func CommentArticleAPI(ctx context.Context, c *app.RequestContext) {
+	c.JSON(facade.CommentArticleAPI(ctx, c))
+}
+
+// ReplyCommentAPI .
+// @router /api/comment/reply [GET]
+func ReplyCommentAPI(ctx context.Context, c *app.RequestContext) {
+	c.JSON(facade.ReplyCommentAPI(ctx, c))
+}
+
+// GetCaptchaAPI .
+// @router /api/captcha [GET]
+func GetCaptchaAPI(ctx context.Context, c *app.RequestContext) {
+	c.JSON(facade.GetCaptchaAPI(ctx, c))
+}

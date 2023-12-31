@@ -19,10 +19,27 @@ func Register(r *server.Hertz) {
 	root := r.Group("/", rootMw()...)
 	{
 		_api := root.Group("/api", _apiMw()...)
+		_api.GET("/captcha", append(_getcaptcha_piMw(), api.GetCaptchaAPI)...)
 		_api.GET("/search", append(_search_piMw(), api.SearchAPI)...)
 		{
 			_admin := _api.Group("/admin", _adminMw()...)
 			_admin.POST("/login", append(_login_piMw(), api.LoginAPI)...)
+			_admin.POST("/category", append(_categoryMw(), api.CreateCategoryAPI)...)
+			_category := _admin.Group("/category", _categoryMw()...)
+			_category.PUT("/:category_id", append(_updatecategory_piMw(), api.UpdateCategoryAPI)...)
+			_category.DELETE("/:category_id", append(_deletecategory_piMw(), api.DeleteCategoryAPI)...)
+			_category.GET("/list", append(_getcategorylist_piMw(), api.GetCategoryListAPI)...)
+			_category.PUT("/order", append(_updatecategoryorder_piMw(), api.UpdateCategoryOrderAPI)...)
+			{
+				_comment := _admin.Group("/comment", _commentMw()...)
+				_comment.PUT("/:comment_id", append(_deletecomment_dmin_piMw(), api.DeleteCommentAdminAPI)...)
+				_comment.GET("/list", append(_getcommentlist_dmin_piMw(), api.GetCommentListAdminAPI)...)
+				{
+					_comment_id := _comment.Group("/:comment_id", _comment_idMw()...)
+					_comment_id.POST("/reply", append(_replycomment_dmin_piMw(), api.ReplyCommentAdminAPI)...)
+					_comment_id.PUT("/status", append(_updatecommentstatus_dmin_piMw(), api.UpdateCommentStatusAdminAPI)...)
+				}
+			}
 			_admin.POST("/post", append(_postMw(), api.CreatePostAPI)...)
 			_post := _admin.Group("/post", _postMw()...)
 			_post.PUT("/:post_id", append(_updatepost_piMw(), api.UpdatePostAPI)...)
@@ -31,12 +48,6 @@ func Register(r *server.Hertz) {
 			_post.GET("/:post_id", append(_post_idMw(), api.GetPostAPI)...)
 			_post_id := _post.Group("/:post_id", _post_idMw()...)
 			_post_id.PUT("/status", append(_updatepoststatus_piMw(), api.UpdatePostStatusAPI)...)
-			_admin.POST("/category", append(_categoryMw(), api.CreateCategoryAPI)...)
-			_category := _admin.Group("/category", _categoryMw()...)
-			_category.PUT("/:category_id", append(_updatecategory_piMw(), api.UpdateCategoryAPI)...)
-			_category.DELETE("/:category_id", append(_deletecategory_piMw(), api.DeleteCategoryAPI)...)
-			_category.GET("/list", append(_getcategorylist_piMw(), api.GetCategoryListAPI)...)
-			_category.PUT("/order", append(_updatecategoryorder_piMw(), api.UpdateCategoryOrderAPI)...)
 			_admin.POST("/tag", append(_tagMw(), api.CreateTagAPI)...)
 			_tag := _admin.Group("/tag", _tagMw()...)
 			_tag.PUT("/:tag_id", append(_updatetag_piMw(), api.UpdateTagAPI)...)
@@ -46,6 +57,12 @@ func Register(r *server.Hertz) {
 				_user := _admin.Group("/user", _userMw()...)
 				_user.GET("/info", append(_getuserinfo_piMw(), api.GetUserInfoAPI)...)
 			}
+		}
+		{
+			_comment0 := _api.Group("/comment", _comment0Mw()...)
+			_comment0.POST("/article", append(_comment_rticle_piMw(), api.CommentArticleAPI)...)
+			_comment0.GET("/list", append(_getcommentlist_piMw(), api.GetCommentListAPI)...)
+			_comment0.POST("/reply", append(_replycomment_piMw(), api.ReplyCommentAPI)...)
 		}
 	}
 }

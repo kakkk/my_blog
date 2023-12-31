@@ -86,7 +86,7 @@ func getPrevNextPostMeta(ctx context.Context, id int64) (*dto.PostMeta, *dto.Pos
 	}
 	var prev *dto.PostMeta
 	var next *dto.PostMeta
-	metas := storage.GetPostMetaStorage().MGet(ctx, ids)
+	metas := storage.GetArticleMetaStorage().MGet(ctx, ids)
 	if prevNext.Prev != nil {
 		prev = metas[*prevNext.Prev]
 	}

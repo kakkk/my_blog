@@ -7,9 +7,10 @@ import (
 
 	"github.com/kakkk/cachex"
 
-	"my_blog/biz/common/config"
-	"my_blog/biz/common/consts"
+	"my_blog/biz/consts"
 	"my_blog/biz/dto"
+	"my_blog/biz/infra/config"
+	cachex2 "my_blog/biz/infra/repository/cachex"
 )
 
 var postPrevNextStorage *PostPrevNextStorage
@@ -25,7 +26,7 @@ func GetPostPrevNextStorage() *PostPrevNextStorage {
 
 func initPostPrevNextStorage(ctx context.Context) error {
 	cfg := config.GetStorageSettingByName("post_pre_next")
-	cache, err := NewCacheXBuilderByConfig[int64, *dto.PostPrevNext](ctx, cfg).
+	cache, err := cachex2.NewCacheXBuilderByConfig[int64, *dto.PostPrevNext](ctx, cfg).
 		SetGetRealData(postPrevNextGetRealData).
 		Build()
 	if err != nil {

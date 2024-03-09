@@ -5,12 +5,11 @@ package main
 import (
 	"fmt"
 
-	"my_blog/biz/common/config"
-	"my_blog/biz/common/log"
-	"my_blog/biz/middleware"
+	"my_blog/biz/infra/config"
+	"my_blog/biz/infra/pkg/log"
+	"my_blog/biz/infra/repository"
+	"my_blog/biz/infra/session"
 	"my_blog/biz/repository/index"
-	"my_blog/biz/repository/mysql"
-	"my_blog/biz/repository/redis"
 	"my_blog/biz/repository/storage"
 	"my_blog/biz/service"
 
@@ -20,34 +19,20 @@ import (
 )
 
 func main() {
-	// config
-	if err := config.InitConfig(); err != nil {
-		panic(err)
-	}
-	conf := config.GetAppConfig()
+	// 先初始化配置
+	config.MustInit()
 
-	// logger
-	if err := log.InitLogger(conf.LogPath, conf.LogLevel); err != nil {
-		panic(err)
-	}
+	// 日志
+	log.MustInit()
 
-	// mysql
-	if err := mysql.InitMySQL(); err != nil {
-		panic(err)
-	}
+	// 存储
+	repository.MustInit()
 
-	// redis
-	if err := redis.InitRedis(); err != nil {
-		panic(err)
-	}
+	// session
+	session.MustInit()
 
 	// storage
 	if err := storage.InitStorage(); err != nil {
-		panic(err)
-	}
-
-	// session
-	if err := middleware.InitSession(); err != nil {
 		panic(err)
 	}
 
@@ -68,9 +53,9 @@ func main() {
 }
 
 func initHertz() *server.Hertz {
-	conf := config.GetAppConfig()
+	cfg := config.GetAppConfig()
 	h := server.Default(
-		server.WithHostPorts(fmt.Sprintf("127.0.0.1:%v", conf.Port)),
+		server.WithHostPorts(fmt.Sprintf("127.0.0.1:%v", cfg.Port)),
 	)
 	hlog.SetLogger(hertzlogrus.NewLogger(
 		hertzlogrus.WithLogger(log.GetLogger()),

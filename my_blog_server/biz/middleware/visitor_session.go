@@ -6,7 +6,7 @@ import (
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/hertz-contrib/sessions"
 
-	"my_blog/biz/common/log"
+	"my_blog/biz/infra/pkg/log"
 )
 
 func VisitorSessionMW() app.HandlerFunc {

@@ -5,7 +5,7 @@ import (
 
 	"github.com/spf13/cast"
 
-	"my_blog/biz/entity"
+	"my_blog/biz/infra/repository/model"
 	"my_blog/biz/model/blog/page"
 )
 
@@ -29,7 +29,7 @@ func (c *TagList) ToPageCategoryListModel() []*page.TermListItem {
 	return result
 }
 
-func NewTagList(tags []*entity.Tag, countMap map[int64]int64) *TagList {
+func NewTagList(tags []*model.Tag, countMap map[int64]int64) *TagList {
 	result := make([]*TagListItem, 0, len(tags))
 	for _, tag := range tags {
 		result = append(result, &TagListItem{

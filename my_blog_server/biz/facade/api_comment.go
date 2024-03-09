@@ -7,7 +7,7 @@ import (
 	"github.com/cloudwego/hertz/pkg/app"
 
 	"my_blog/biz/common/resp"
-	"my_blog/biz/common/utils"
+	"my_blog/biz/infra/misc"
 	"my_blog/biz/model/blog/api"
 	"my_blog/biz/service"
 )
@@ -94,7 +94,7 @@ func CommentArticleAPI(ctx context.Context, c *app.RequestContext) (int, *resp.A
 		req.GetArticleID() == 0 {
 		return http.StatusBadRequest, resp.NewParameterErrorResp()
 	}
-	if !utils.CheckIsEmail(req.GetEmail()) || !utils.CheckIsURL(req.GetWebsite()) {
+	if !misc.CheckIsEmail(req.GetEmail()) || !misc.CheckIsURL(req.GetWebsite()) {
 		return http.StatusBadRequest, resp.NewParameterErrorResp()
 	}
 
@@ -118,7 +118,7 @@ func ReplyCommentAPI(ctx context.Context, c *app.RequestContext) (int, *resp.API
 		req.GetReplyID() == 0 {
 		return http.StatusBadRequest, resp.NewParameterErrorResp()
 	}
-	if !utils.CheckIsEmail(req.GetEmail()) || !utils.CheckIsURL(req.GetWebsite()) {
+	if !misc.CheckIsEmail(req.GetEmail()) || !misc.CheckIsURL(req.GetWebsite()) {
 		return http.StatusBadRequest, resp.NewParameterErrorResp()
 	}
 

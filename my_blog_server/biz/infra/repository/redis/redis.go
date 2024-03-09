@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"time"
 
-	"my_blog/biz/common/config"
-
 	"github.com/redis/go-redis/v9"
+
+	"my_blog/biz/infra/config"
 )
 
 var (
@@ -15,11 +15,11 @@ var (
 )
 
 func InitRedis() (err error) {
-	conf := config.GetRedisConfig()
+	cfg := config.GetRedisConfig()
 	client = redis.NewClient(&redis.Options{
-		Addr:            fmt.Sprintf("%s:%s", conf.Host, conf.Port),
-		Password:        conf.Password, // no password set
-		DB:              conf.DB,       // use default DB
+		Addr:            fmt.Sprintf("%s:%s", cfg.Host, cfg.Port),
+		Password:        cfg.Password, // no password set
+		DB:              cfg.DB,       // use default DB
 		ReadTimeout:     500 * time.Millisecond,
 		WriteTimeout:    500 * time.Millisecond,
 		ConnMaxIdleTime: 60 * time.Second,
@@ -33,6 +33,6 @@ func InitRedis() (err error) {
 	return err
 }
 
-func GetRedisClient() *redis.Client {
+func GetClient() *redis.Client {
 	return client
 }

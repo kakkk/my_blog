@@ -4,10 +4,10 @@ import (
 	"errors"
 	"fmt"
 
-	"my_blog/biz/common/consts"
-
 	"github.com/go-sql-driver/mysql"
 	"gorm.io/gorm"
+
+	"my_blog/biz/consts"
 )
 
 func parseError(err error) error {

@@ -4,8 +4,8 @@ import (
 	"context"
 	"net/http"
 
-	"my_blog/biz/common/log"
 	"my_blog/biz/common/resp"
+	"my_blog/biz/infra/pkg/log"
 	"my_blog/biz/model/blog/common"
 
 	"github.com/cloudwego/hertz/pkg/app"

@@ -4,10 +4,10 @@ import (
 	"context"
 	"time"
 
-	"my_blog/biz/common/log"
-
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/sirupsen/logrus"
+
+	"my_blog/biz/infra/pkg/log"
 )
 
 func HertzLoggerMW() app.HandlerFunc {

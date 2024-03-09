@@ -5,8 +5,8 @@ import (
 
 	"github.com/cloudwego/hertz/pkg/app"
 
-	"my_blog/biz/common/consts"
 	"my_blog/biz/common/resp"
+	"my_blog/biz/consts"
 	"my_blog/biz/service"
 )
 

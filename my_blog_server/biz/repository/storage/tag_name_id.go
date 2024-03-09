@@ -7,8 +7,10 @@ import (
 
 	"github.com/kakkk/cachex"
 
-	"my_blog/biz/common/config"
-	"my_blog/biz/common/consts"
+	"my_blog/biz/consts"
+	"my_blog/biz/infra/config"
+	cachex2 "my_blog/biz/infra/repository/cachex"
+	mysql2 "my_blog/biz/infra/repository/mysql"
 	"my_blog/biz/repository/mysql"
 )
 
@@ -25,7 +27,7 @@ func GetTagNameIDStorage() *TagNameIDStorage {
 
 func initTagNameIDStorage(ctx context.Context) error {
 	cfg := config.GetStorageSettingByName("tag_name_id")
-	cache, err := NewCacheXBuilderByConfig[string, int64](ctx, cfg).
+	cache, err := cachex2.NewCacheXBuilderByConfig[string, int64](ctx, cfg).
 		SetGetRealData(tagNameIDGetRealData).
 		Build()
 	if err != nil {
@@ -39,7 +41,7 @@ func initTagNameIDStorage(ctx context.Context) error {
 }
 
 func tagNameIDGetRealData(ctx context.Context, name string) (int64, error) {
-	id, err := mysql.SelectTagIDByName(mysql.GetDB(ctx), name)
+	id, err := mysql.SelectTagIDByName(mysql2.GetDB(ctx), name)
 	if err != nil {
 		return parseSqlError(id, err)
 	}

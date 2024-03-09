@@ -1,9 +1,9 @@
 package dto
 
 import (
-	"my_blog/biz/common/config"
 	"my_blog/biz/common/utils"
-	"my_blog/biz/entity"
+	"my_blog/biz/infra/config"
+	"my_blog/biz/infra/repository/model"
 	"my_blog/biz/model/blog/page"
 
 	"github.com/spf13/cast"
@@ -26,7 +26,7 @@ func (p *PostMeta) ToPostItem() *page.PostItem {
 	}
 }
 
-func NewArticleMetaByEntity(post *entity.Article, editor *entity.User) *PostMeta {
+func NewArticleMetaByEntity(post *model.Article, editor *model.User) *PostMeta {
 	var editorName string
 	// 降级
 	if editor == nil {

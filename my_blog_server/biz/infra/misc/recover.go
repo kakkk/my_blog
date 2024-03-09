@@ -1,10 +1,10 @@
-package utils
+package misc
 
 import (
 	"context"
 	"runtime/debug"
 
-	"my_blog/biz/common/log"
+	"my_blog/biz/infra/pkg/log"
 )
 
 func Recover(ctx context.Context, fn func()) func() {

@@ -7,8 +7,10 @@ import (
 
 	"github.com/kakkk/cachex"
 
-	"my_blog/biz/common/config"
-	"my_blog/biz/common/consts"
+	"my_blog/biz/consts"
+	"my_blog/biz/infra/config"
+	cachex2 "my_blog/biz/infra/repository/cachex"
+	mysql2 "my_blog/biz/infra/repository/mysql"
 	"my_blog/biz/repository/mysql"
 )
 
@@ -25,7 +27,7 @@ func GetPostOrderListStorage() *PostOrderListStorage {
 
 func initPostOrderListStorage(ctx context.Context) error {
 	cfg := config.GetStorageSettingByName("post_order_list")
-	cache, err := NewCacheXBuilderByConfig[string, []int64](ctx, cfg).
+	cache, err := cachex2.NewCacheXBuilderByConfig[string, []int64](ctx, cfg).
 		SetGetRealData(postOrderListGetRealData).
 		Build()
 	if err != nil {
@@ -39,7 +41,7 @@ func initPostOrderListStorage(ctx context.Context) error {
 }
 
 func postOrderListGetRealData(ctx context.Context, _ string) ([]int64, error) {
-	db := mysql.GetDB(ctx)
+	db := mysql2.GetDB(ctx)
 	order, err := mysql.SelectPostOrderList(db)
 	if err != nil {
 		return parseSqlError(order, err)

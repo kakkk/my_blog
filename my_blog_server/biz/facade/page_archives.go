@@ -3,8 +3,8 @@ package facade
 import (
 	"context"
 
-	"my_blog/biz/common/consts"
 	"my_blog/biz/common/resp"
+	"my_blog/biz/consts"
 	"my_blog/biz/service"
 
 	"github.com/cloudwego/hertz/pkg/app"

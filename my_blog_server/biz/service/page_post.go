@@ -5,14 +5,15 @@ import (
 
 	"github.com/spf13/cast"
 
-	"my_blog/biz/common/consts"
-	"my_blog/biz/common/errorx"
-	"my_blog/biz/common/log"
 	"my_blog/biz/common/resp"
-	"my_blog/biz/common/session"
 	"my_blog/biz/common/utils"
+	"my_blog/biz/consts"
 	"my_blog/biz/dto"
-	"my_blog/biz/entity"
+	"my_blog/biz/infra/misc"
+	"my_blog/biz/infra/pkg/errorx"
+	"my_blog/biz/infra/pkg/log"
+	"my_blog/biz/infra/repository/model"
+	"my_blog/biz/infra/session"
 	"my_blog/biz/model/blog/page"
 	"my_blog/biz/repository/storage"
 )
@@ -20,7 +21,7 @@ import (
 func PostPage(ctx context.Context, req *page.PostPageRequest) (rsp *page.PostPageResponse, pErr *errorx.PageError) {
 	logger := log.GetLoggerWithCtx(ctx).WithField("post_id", req.GetID())
 	rsp = page.NewPostPageResponse()
-	defer utils.Recover(ctx, func() {
+	defer misc.Recover(ctx, func() {
 		pErr = errorx.NewInternalErrPageError()
 		return
 	})()
@@ -96,7 +97,7 @@ func getPrevNextPostMeta(ctx context.Context, id int64) (*dto.PostMeta, *dto.Pos
 	return prev, next
 }
 
-func packGetPostPageResp(post *entity.Article, prev *dto.PostMeta, next *dto.PostMeta, editor *entity.User, tags []string, categories []*entity.Category) *page.PostPageResponse {
+func packGetPostPageResp(post *model.Article, prev *dto.PostMeta, next *dto.PostMeta, editor *model.User, tags []string, categories []*model.Category) *page.PostPageResponse {
 	var author string
 	prevPage := &page.PostNav{}
 	nextPage := &page.PostNav{}

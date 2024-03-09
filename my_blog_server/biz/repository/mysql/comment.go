@@ -5,24 +5,24 @@ import (
 
 	"gorm.io/gorm"
 
-	"my_blog/biz/common/consts"
-	"my_blog/biz/entity"
+	"my_blog/biz/consts"
+	"my_blog/biz/infra/repository/model"
 	"my_blog/biz/model/blog/common"
 )
 
-func CreateComment(db *gorm.DB, comment *entity.Comment) (*entity.Comment, error) {
+func CreateComment(db *gorm.DB, comment *model.Comment) (*model.Comment, error) {
 	comment.CreateAt = time.Now()
 	comment.UpdateAt = time.Now()
-	err := db.Model(&entity.Comment{}).Create(comment).Error
+	err := db.Model(&model.Comment{}).Create(comment).Error
 	if err != nil {
 		return nil, parseError(err)
 	}
 	return comment, nil
 }
 
-func SelectApprovalCommentByID(db *gorm.DB, id int64) (*entity.Comment, error) {
-	comment := &entity.Comment{}
-	err := db.Model(&entity.Comment{}).
+func SelectApprovalCommentByID(db *gorm.DB, id int64) (*model.Comment, error) {
+	comment := &model.Comment{}
+	err := db.Model(&model.Comment{}).
 		Where("id = ?", id).
 		Where("status = ?", common.CommentStatus_Approved).
 		First(comment).
@@ -33,9 +33,9 @@ func SelectApprovalCommentByID(db *gorm.DB, id int64) (*entity.Comment, error) {
 	return comment, nil
 }
 
-func SelectApprovalCommentsByIDs(db *gorm.DB, ids []int64) ([]*entity.Comment, error) {
-	var comments []*entity.Comment
-	err := db.Model(&entity.Comment{}).
+func SelectApprovalCommentsByIDs(db *gorm.DB, ids []int64) ([]*model.Comment, error) {
+	var comments []*model.Comment
+	err := db.Model(&model.Comment{}).
 		Where("id in ?", ids).
 		Where("status = ?", common.CommentStatus_Approved).
 		Find(&comments).
@@ -51,7 +51,7 @@ func SelectApprovalCommentsByIDs(db *gorm.DB, ids []int64) ([]*entity.Comment, e
 
 func SelectCommentIDsByArticleID(db *gorm.DB, id int64) ([]int64, error) {
 	var ids []int64
-	err := db.Model(&entity.Comment{}).
+	err := db.Model(&model.Comment{}).
 		Select("id").
 		Where("article_id = ?", id).
 		Where("status = ?", common.CommentStatus_Approved).

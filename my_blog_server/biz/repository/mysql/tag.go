@@ -4,24 +4,24 @@ import (
 	"fmt"
 	"time"
 
-	"my_blog/biz/common/utils"
-	"my_blog/biz/entity"
-	"my_blog/biz/model/blog/common"
-
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
+
+	"my_blog/biz/infra/misc"
+	"my_blog/biz/infra/repository/model"
+	"my_blog/biz/model/blog/common"
 )
 
-func CreateTag(db *gorm.DB, tag *entity.Tag) (*entity.Tag, error) {
+func CreateTag(db *gorm.DB, tag *model.Tag) (*model.Tag, error) {
 	tag.UpdateAt = time.Now()
-	err := db.Model(&entity.Tag{}).Create(tag).Error
+	err := db.Model(&model.Tag{}).Create(tag).Error
 	if err != nil {
 		return nil, parseError(err)
 	}
 	return tag, nil
 }
 
-func BatchCreateTags(db *gorm.DB, tags []*entity.Tag) ([]*entity.Tag, error) {
+func BatchCreateTags(db *gorm.DB, tags []*model.Tag) ([]*model.Tag, error) {
 	if len(tags) == 0 {
 		return nil, nil
 	}
@@ -29,15 +29,15 @@ func BatchCreateTags(db *gorm.DB, tags []*entity.Tag) ([]*entity.Tag, error) {
 	for i := range tags {
 		tags[i].UpdateAt = now
 	}
-	err := db.Model(&entity.Tag{}).Create(&tags).Error
+	err := db.Model(&model.Tag{}).Create(&tags).Error
 	if err != nil {
 		return nil, parseError(err)
 	}
 	return tags, nil
 }
 
-func UpdateTagByID(db *gorm.DB, id int64, tag *entity.Tag) error {
-	err := db.Model(&entity.Tag{}).
+func UpdateTagByID(db *gorm.DB, id int64, tag *model.Tag) error {
+	err := db.Model(&model.Tag{}).
 		Where("id = ?", id).
 		Updates(map[string]any{
 			"name":      tag.TagName,
@@ -50,7 +50,7 @@ func UpdateTagByID(db *gorm.DB, id int64, tag *entity.Tag) error {
 }
 
 func DeleteTagByID(db *gorm.DB, id int64) error {
-	err := db.Model(&entity.Tag{}).
+	err := db.Model(&model.Tag{}).
 		Where("id = ?", id).
 		Updates(
 			map[string]any{
@@ -64,10 +64,10 @@ func DeleteTagByID(db *gorm.DB, id int64) error {
 	return nil
 }
 
-func GetAllTag(db *gorm.DB) ([]*entity.Tag, error) {
+func GetAllTag(db *gorm.DB) ([]*model.Tag, error) {
 	// TODO: 数据规模变大的时候使用分批查询
-	var result []*entity.Tag
-	err := db.Model(&entity.Tag{}).
+	var result []*model.Tag
+	err := db.Model(&model.Tag{}).
 		Where("delete_flag = ?", common.DeleteFlag_Exist).
 		Find(&result).Error
 	if err != nil {
@@ -76,9 +76,9 @@ func GetAllTag(db *gorm.DB) ([]*entity.Tag, error) {
 	return result, nil
 }
 
-func GetTagListByPage(db *gorm.DB, keyword *string, page *int32, size *int32) ([]*entity.Tag, error) {
-	var result []*entity.Tag
-	tx := db.Model(&entity.Tag{})
+func GetTagListByPage(db *gorm.DB, keyword *string, page *int32, size *int32) ([]*model.Tag, error) {
+	var result []*model.Tag
+	tx := db.Model(&model.Tag{})
 	if keyword != nil {
 		tx.Where("tag_name like ?", *keyword+"%")
 	}
@@ -109,7 +109,7 @@ func MGetTagArticleCountByTagIDs(db *gorm.DB, tagIDs []int64, withPublish bool) 
 		Count int64 `gorm:"column:count"`
 	}
 	var resultFromDB []result
-	query := db.Model(&entity.ArticleTag{}).
+	query := db.Model(&model.ArticleTag{}).
 		Select("tag_id, count(1) as count").
 		Where("tag_id in (?)", tagIDs).
 		Where("delete_flag = ?", common.DeleteFlag_Exist)
@@ -134,7 +134,7 @@ func MGetTagArticleCountByTagIDs(db *gorm.DB, tagIDs []int64, withPublish bool) 
 
 func GetAllTagCount(db *gorm.DB) (int64, error) {
 	count := int64(0)
-	err := db.Model(&entity.Tag{}).
+	err := db.Model(&model.Tag{}).
 		Where("delete_flag = ?", common.DeleteFlag_Exist).
 		Count(&count).Error
 	if err != nil {
@@ -144,7 +144,7 @@ func GetAllTagCount(db *gorm.DB) (int64, error) {
 }
 
 func DeleteArticleTagRelationByTagID(db *gorm.DB, tagID int64) error {
-	err := db.Model(&entity.ArticleTag{}).
+	err := db.Model(&model.ArticleTag{}).
 		Where("tag_id = ?", tagID).
 		Updates(
 			map[string]any{
@@ -157,15 +157,15 @@ func DeleteArticleTagRelationByTagID(db *gorm.DB, tagID int64) error {
 	return nil
 }
 
-func MSelectTagByName(db *gorm.DB, names []string) (map[string]*entity.Tag, error) {
-	tags := make([]*entity.Tag, 0, len(names))
-	err := db.Model(&entity.Tag{}).
+func MSelectTagByName(db *gorm.DB, names []string) (map[string]*model.Tag, error) {
+	tags := make([]*model.Tag, 0, len(names))
+	err := db.Model(&model.Tag{}).
 		Where("tag_name in (?)", names).
 		Find(&tags).Error
 	if err != nil {
 		return nil, parseError(err)
 	}
-	result := make(map[string]*entity.Tag, len(tags))
+	result := make(map[string]*model.Tag, len(tags))
 	for _, tag := range tags {
 		result[tag.TagName] = tag
 	}
@@ -176,7 +176,7 @@ func RestoreTagByIDs(db *gorm.DB, ids []int64) error {
 	if len(ids) == 0 {
 		return nil
 	}
-	err := db.Model(&entity.Tag{}).
+	err := db.Model(&model.Tag{}).
 		Where("id in (?)", ids).
 		Updates(
 			map[string]any{
@@ -190,7 +190,7 @@ func RestoreTagByIDs(db *gorm.DB, ids []int64) error {
 	return nil
 }
 
-func UpsertArticleTagRelation(db *gorm.DB, articleTags []*entity.ArticleTag) error {
+func UpsertArticleTagRelation(db *gorm.DB, articleTags []*model.ArticleTag) error {
 	if len(articleTags) == 0 {
 		return nil
 	}
@@ -205,7 +205,7 @@ func UpsertArticleTagRelation(db *gorm.DB, articleTags []*entity.ArticleTag) err
 }
 
 func DeleteArticleTagRelationByArticleID(db *gorm.DB, articleID int64) error {
-	err := db.Model(&entity.ArticleTag{}).
+	err := db.Model(&model.ArticleTag{}).
 		Where("article_id = ?", articleID).
 		Updates(
 			map[string]any{
@@ -222,7 +222,7 @@ func RefreshTagUpdateTimeByIDs(db *gorm.DB, ids []int64) error {
 	if len(ids) == 0 {
 		return nil
 	}
-	err := db.Model(&entity.Tag{}).
+	err := db.Model(&model.Tag{}).
 		Where("id in (?)", ids).
 		Updates(
 			map[string]any{
@@ -237,7 +237,7 @@ func RefreshTagUpdateTimeByIDs(db *gorm.DB, ids []int64) error {
 
 func SelectTagIDsByArticleID(db *gorm.DB, articleID int64) ([]int64, error) {
 	var result []int64
-	err := db.Model(&entity.ArticleTag{}).
+	err := db.Model(&model.ArticleTag{}).
 		Select("tag_id").
 		Where("article_id = ?", articleID).
 		Where("delete_flag = ?", common.DeleteFlag_Exist).
@@ -248,15 +248,15 @@ func SelectTagIDsByArticleID(db *gorm.DB, articleID int64) ([]int64, error) {
 	return result, nil
 }
 
-func MSelectTagByID(db *gorm.DB, ids []int64) (map[int64]*entity.Tag, error) {
-	tags := make([]*entity.Tag, 0, len(ids))
-	err := db.Model(&entity.Tag{}).
+func MSelectTagByID(db *gorm.DB, ids []int64) (map[int64]*model.Tag, error) {
+	tags := make([]*model.Tag, 0, len(ids))
+	err := db.Model(&model.Tag{}).
 		Where("id in (?)", ids).
 		Find(&tags).Error
 	if err != nil {
 		return nil, parseError(err)
 	}
-	result := make(map[int64]*entity.Tag, len(tags))
+	result := make(map[int64]*model.Tag, len(tags))
 	for _, tag := range tags {
 		result[tag.ID] = tag
 	}
@@ -268,14 +268,14 @@ func SelectArticleIDsByTagIDs(db *gorm.DB, ids []int64) ([]int64, error) {
 		return []int64{}, nil
 	}
 	var results []int64
-	err := db.Model(&entity.ArticleTag{}).
+	err := db.Model(&model.ArticleTag{}).
 		Select("article_id").
 		Where("tag_id in (?)", ids).
 		Find(&results).Error
 	if err != nil {
 		return nil, parseError(err)
 	}
-	return utils.SliceDeduplicate[int64](results), nil
+	return misc.SliceDeduplicate[int64](results), nil
 }
 
 func SelectTagListByArticleID(db *gorm.DB, articleID int64) ([]string, error) {
@@ -296,7 +296,7 @@ func SelectTagListByArticleID(db *gorm.DB, articleID int64) ([]string, error) {
 }
 
 func UpdateArticleTagUpdateAtByArticleID(db *gorm.DB, id int64, publishAt *time.Time) error {
-	err := db.Model(&entity.ArticleTag{}).
+	err := db.Model(&model.ArticleTag{}).
 		Where("article_id = ?", id).
 		Update("publish_at", publishAt).Error
 	return parseError(err)
@@ -304,7 +304,7 @@ func UpdateArticleTagUpdateAtByArticleID(db *gorm.DB, id int64, publishAt *time.
 
 func SelectTagIDByName(db *gorm.DB, name string) (int64, error) {
 	var id int64
-	err := db.Model(&entity.Tag{}).
+	err := db.Model(&model.Tag{}).
 		Select("id").
 		Where("tag_name = ?", name).
 		First(&id).Error

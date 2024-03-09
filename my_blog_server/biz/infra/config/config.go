@@ -11,3 +11,10 @@ func InitConfig() error {
 	}
 	return nil
 }
+
+func MustInit() {
+	err := InitConfig()
+	if err != nil {
+		panic(err)
+	}
+}

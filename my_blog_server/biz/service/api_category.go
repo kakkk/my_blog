@@ -3,10 +3,11 @@ package service
 import (
 	"context"
 
-	"my_blog/biz/common/consts"
-	"my_blog/biz/common/log"
 	"my_blog/biz/common/resp"
-	"my_blog/biz/entity"
+	"my_blog/biz/consts"
+	"my_blog/biz/infra/pkg/log"
+	"my_blog/biz/infra/repository/model"
+	mysql2 "my_blog/biz/infra/repository/mysql"
 	"my_blog/biz/model/blog/api"
 	"my_blog/biz/model/blog/common"
 	"my_blog/biz/repository/mysql"
@@ -20,10 +21,10 @@ func CreateCategoryAPI(ctx context.Context, req *api.CreateCategoryAPIRequest) *
 		"category_name": req.GetName(),
 		"slug":          req.GetSlug(),
 	})
-	tx := mysql.GetDB(ctx).Begin()
+	tx := mysql2.GetDB(ctx).Begin()
 
 	// 创建分类
-	category, err := mysql.CreateCategory(tx, &entity.Category{
+	category, err := mysql.CreateCategory(tx, &model.Category{
 		CategoryName: req.GetName(),
 		Slug:         req.GetSlug(),
 	})
@@ -80,7 +81,7 @@ func UpdateCategoryAPI(ctx context.Context, req *api.UpdateCategoryAPIRequest) *
 		"category_name": req.GetName(),
 		"slug":          req.GetSlug(),
 	})
-	err := mysql.UpdateCategoryByID(mysql.GetDB(ctx), req.GetID(), &entity.Category{
+	err := mysql.UpdateCategoryByID(mysql2.GetDB(ctx), req.GetID(), &model.Category{
 		CategoryName: req.GetName(),
 		Slug:         req.GetSlug(),
 	})
@@ -100,7 +101,7 @@ func DeleteCategoryAPI(ctx context.Context, req *api.DeleteCategoryAPIRequest) *
 	logger := log.GetLoggerWithCtx(ctx).WithFields(logrus.Fields{
 		"id": req.GetID(),
 	})
-	tx := mysql.GetDB(ctx).Begin()
+	tx := mysql2.GetDB(ctx).Begin()
 
 	// 删除分类
 	err := mysql.DeleteCategoryByID(tx, req.GetID())

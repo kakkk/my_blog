@@ -4,16 +4,16 @@ import (
 	"context"
 	"fmt"
 
-	"my_blog/biz/common/config"
-	"my_blog/biz/common/errorx"
-	"my_blog/biz/common/log"
-	"my_blog/biz/common/utils"
+	"my_blog/biz/infra/config"
+	"my_blog/biz/infra/misc"
+	"my_blog/biz/infra/pkg/errorx"
+	"my_blog/biz/infra/pkg/log"
 	"my_blog/biz/model/blog/page"
 	"my_blog/biz/repository/storage"
 )
 
 func CategoriesPage(ctx context.Context) (rsp *page.TermsPageResp, pErr *errorx.PageError) {
-	defer utils.Recover(ctx, func() {
+	defer misc.Recover(ctx, func() {
 		pErr = errorx.NewInternalErrPageError()
 		return
 	})()

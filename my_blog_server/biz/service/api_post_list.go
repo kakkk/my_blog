@@ -4,11 +4,12 @@ import (
 	"context"
 	"errors"
 
-	"my_blog/biz/common/consts"
-	"my_blog/biz/common/log"
 	"my_blog/biz/common/resp"
-	"my_blog/biz/common/utils"
-	"my_blog/biz/entity"
+	"my_blog/biz/consts"
+	"my_blog/biz/infra/misc"
+	"my_blog/biz/infra/pkg/log"
+	"my_blog/biz/infra/repository/model"
+	mysql2 "my_blog/biz/infra/repository/mysql"
 	"my_blog/biz/model/blog/api"
 	"my_blog/biz/repository/mysql"
 )
@@ -16,8 +17,8 @@ import (
 func GetPostListAPI(ctx context.Context, req *api.GetPostListAPIRequest) (rsp *api.GetPostListAPIResponse) {
 	logger := log.GetLoggerWithCtx(ctx)
 	rsp = &api.GetPostListAPIResponse{}
-	db := mysql.GetDB(ctx)
-	var posts []*entity.Article
+	db := mysql2.GetDB(ctx)
+	var posts []*model.Article
 	total := int64(0)
 	searchByID := false // 是否通过ID搜索
 	var searchIDs []int64
@@ -63,7 +64,7 @@ func GetPostListAPI(ctx context.Context, req *api.GetPostListAPIRequest) (rsp *a
 		}
 		if len(searchIDs) > 0 {
 			// 取交集
-			searchIDs = utils.IntersectInt64Slice(searchIDs, postIDs)
+			searchIDs = misc.IntersectInt64Slice(searchIDs, postIDs)
 		} else {
 			searchIDs = append(searchIDs, postIDs...)
 		}

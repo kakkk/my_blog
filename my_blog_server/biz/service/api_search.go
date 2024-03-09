@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 
-	"my_blog/biz/common/config"
-	"my_blog/biz/common/log"
 	"my_blog/biz/common/resp"
-	"my_blog/biz/common/utils"
+	"my_blog/biz/infra/config"
+	"my_blog/biz/infra/misc"
+	"my_blog/biz/infra/pkg/log"
 	"my_blog/biz/model/blog/api"
 	"my_blog/biz/repository/index"
 )
@@ -15,7 +15,7 @@ import (
 func SearchAPI(ctx context.Context, req *api.SearchAPIRequest) (rsp *api.SearchAPIResponse) {
 	logger := log.GetLoggerWithCtx(ctx).WithField("query", req.GetQuery())
 	rsp = api.NewSearchAPIResponse()
-	defer utils.Recover(ctx, func() {
+	defer misc.Recover(ctx, func() {
 		logger.Errorf("recovered")
 		rsp.BaseResp = resp.NewInternalErrorBaseResp()
 		return

@@ -5,10 +5,10 @@ import (
 
 	"github.com/blevesearch/bleve/v2"
 	"github.com/spf13/cast"
-	gseb "github.com/vcaesar/gse-bleve"
 
 	"my_blog/biz/common/utils"
-	"my_blog/biz/entity"
+	infraBleve "my_blog/biz/infra/repository/bleve"
+	"my_blog/biz/infra/repository/model"
 )
 
 type ArticleIndex struct {
@@ -28,14 +28,8 @@ func GetArticleIndex() *ArticleIndex {
 }
 
 func InitArticleIndex() error {
-	opt := gseb.Option{
-		Index: "article.blv",
-		Dicts: "embed, zh",
-		Opt:   "search-hmm",
-		Trim:  "trim",
-	}
 	// 当前数据量，内存索引即可
-	index, err := gseb.NewMem(opt)
+	index, err := infraBleve.NewMemBleveIndex("article.blv")
 	if err != nil {
 		return fmt.Errorf("new mapping error is: %v", err)
 	}
@@ -45,7 +39,7 @@ func InitArticleIndex() error {
 	return nil
 }
 
-func (i *ArticleIndex) IndexArticle(article *entity.Article) error {
+func (i *ArticleIndex) IndexArticle(article *model.Article) error {
 	data := &ArticleData{
 		ID:      cast.ToString(article.ID),
 		Title:   article.Title,
@@ -58,7 +52,7 @@ func (i *ArticleIndex) IndexArticle(article *entity.Article) error {
 	return nil
 }
 
-func (i *ArticleIndex) MIndexArticle(articles []*entity.Article) error {
+func (i *ArticleIndex) MIndexArticle(articles []*model.Article) error {
 	batch := i.idx.NewBatch()
 	for _, article := range articles {
 		data := &ArticleData{

@@ -7,10 +7,12 @@ import (
 
 	"github.com/kakkk/cachex"
 
-	"my_blog/biz/common/config"
-	"my_blog/biz/common/consts"
-	"my_blog/biz/common/utils"
+	"my_blog/biz/consts"
 	"my_blog/biz/dto"
+	"my_blog/biz/infra/config"
+	"my_blog/biz/infra/misc"
+	cachex2 "my_blog/biz/infra/repository/cachex"
+	mysql2 "my_blog/biz/infra/repository/mysql"
 	"my_blog/biz/repository/mysql"
 )
 
@@ -27,7 +29,7 @@ func GetCommentStorageStorage() *CommentStorage {
 
 func initCommentStorageStorage(ctx context.Context) error {
 	cfg := config.GetStorageSettingByName("comment")
-	cx, err := NewCacheXBuilderByConfig[int64, *dto.Comment](ctx, cfg).
+	cx, err := cachex2.NewCacheXBuilderByConfig[int64, *dto.Comment](ctx, cfg).
 		SetGetRealData(commentStorageGetRealData).
 		SetMGetRealData(commentStorageMGetRealData).
 		Build()
@@ -42,7 +44,7 @@ func initCommentStorageStorage(ctx context.Context) error {
 }
 
 func commentStorageGetRealData(ctx context.Context, id int64) (*dto.Comment, error) {
-	commentEntity, err := mysql.SelectApprovalCommentByID(mysql.GetDB(ctx), id)
+	commentEntity, err := mysql.SelectApprovalCommentByID(mysql2.GetDB(ctx), id)
 	if err != nil {
 		return parseSqlError[*dto.Comment](nil, err)
 	}
@@ -50,7 +52,7 @@ func commentStorageGetRealData(ctx context.Context, id int64) (*dto.Comment, err
 }
 
 func commentStorageMGetRealData(ctx context.Context, ids []int64) (map[int64]*dto.Comment, error) {
-	commentEntities, err := mysql.SelectApprovalCommentsByIDs(mysql.GetDB(ctx), utils.SliceDeduplicate(ids))
+	commentEntities, err := mysql.SelectApprovalCommentsByIDs(mysql2.GetDB(ctx), misc.SliceDeduplicate(ids))
 	if err != nil {
 		return parseSqlError[map[int64]*dto.Comment](nil, err)
 	}

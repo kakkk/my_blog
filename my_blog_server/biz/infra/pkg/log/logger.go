@@ -8,13 +8,23 @@ import (
 	rotatelogs "github.com/lestrrat-go/file-rotatelogs"
 	"github.com/rifflock/lfshook"
 	"github.com/sirupsen/logrus"
+
+	"my_blog/biz/infra/config"
 )
 
 var (
 	logger *logrus.Logger
 )
 
-func InitLogger(path string, level string) (err error) {
+func MustInit() {
+	cfg := config.GetAppConfig()
+	err := initLogger(cfg.LogPath, cfg.LogLevel)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func initLogger(path string, level string) (err error) {
 
 	logLevel, err := logrus.ParseLevel(level)
 	if err != nil {

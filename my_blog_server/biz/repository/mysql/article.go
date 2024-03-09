@@ -4,26 +4,26 @@ import (
 	"fmt"
 	"time"
 
-	"my_blog/biz/common/consts"
-	"my_blog/biz/entity"
+	"my_blog/biz/consts"
+	model2 "my_blog/biz/infra/repository/model"
 	"my_blog/biz/model/blog/common"
 
 	"gorm.io/gorm"
 )
 
-func CreateArticle(db *gorm.DB, article *entity.Article) (*entity.Article, error) {
+func CreateArticle(db *gorm.DB, article *model2.Article) (*model2.Article, error) {
 	article.CreateAt = time.Now()
 	article.UpdateAt = time.Now()
-	err := db.Model(&entity.Article{}).Create(article).Error
+	err := db.Model(&model2.Article{}).Create(article).Error
 	if err != nil {
 		return nil, parseError(err)
 	}
 	return article, nil
 }
 
-func SelectArticleByID(db *gorm.DB, id int64) (*entity.Article, error) {
-	post := &entity.Article{}
-	err := db.Model(&entity.Article{}).
+func SelectArticleByID(db *gorm.DB, id int64) (*model2.Article, error) {
+	post := &model2.Article{}
+	err := db.Model(&model2.Article{}).
 		Where("id = ?", id).
 		Where("delete_flag = ?", common.DeleteFlag_Exist).
 		First(post).Error
@@ -33,8 +33,8 @@ func SelectArticleByID(db *gorm.DB, id int64) (*entity.Article, error) {
 	return post, nil
 }
 
-func UpdateArticleByID(db *gorm.DB, id int64, article *entity.Article) error {
-	err := db.Model(&entity.Article{}).
+func UpdateArticleByID(db *gorm.DB, id int64, article *model2.Article) error {
+	err := db.Model(&model2.Article{}).
 		Where("id = ?", id).
 		Updates(map[string]any{
 			"title":     article.Title,
@@ -48,7 +48,7 @@ func UpdateArticleByID(db *gorm.DB, id int64, article *entity.Article) error {
 }
 
 func UpdateArticleStatusByID(db *gorm.DB, id int64, status common.ArticleStatus) error {
-	err := db.Model(&entity.Article{}).
+	err := db.Model(&model2.Article{}).
 		Where("id = ?", id).
 		Updates(map[string]any{
 			"article_status": status,
@@ -61,7 +61,7 @@ func UpdateArticleStatusByID(db *gorm.DB, id int64, status common.ArticleStatus)
 }
 
 func UpdateArticlePublishAtByID(db *gorm.DB, id int64, publishAt *time.Time) error {
-	err := db.Model(&entity.Article{}).
+	err := db.Model(&model2.Article{}).
 		Where("id = ?", id).
 		Updates(map[string]any{
 			"publish_at": publishAt,
@@ -73,9 +73,9 @@ func UpdateArticlePublishAtByID(db *gorm.DB, id int64, publishAt *time.Time) err
 	return nil
 }
 
-func SearchPostListByLimit(db *gorm.DB, keyword *string, ids []int64, page *int32, size *int32) ([]*entity.Article, error) {
-	var result []*entity.Article
-	tx := db.Model(&entity.Article{})
+func SearchPostListByLimit(db *gorm.DB, keyword *string, ids []int64, page *int32, size *int32) ([]*model2.Article, error) {
+	var result []*model2.Article
+	tx := db.Model(&model2.Article{})
 	if keyword != nil && *keyword != "" {
 		tx.Where("title like ?", *keyword+"%")
 	}
@@ -109,7 +109,7 @@ func SearchPostListByLimit(db *gorm.DB, keyword *string, ids []int64, page *int3
 
 func SelectSearchPostCount(db *gorm.DB, keyword *string, ids []int64) (int64, error) {
 	count := int64(0)
-	tx := db.Model(&entity.Article{})
+	tx := db.Model(&model2.Article{})
 	if keyword != nil && *keyword != "" {
 		tx.Where("title like ?", *keyword+"%")
 	}
@@ -126,7 +126,7 @@ func SelectSearchPostCount(db *gorm.DB, keyword *string, ids []int64) (int64, er
 }
 
 func DeleteArticleByID(db *gorm.DB, id int64) error {
-	err := db.Model(&entity.Article{}).
+	err := db.Model(&model2.Article{}).
 		Where("id = ?", id).
 		Updates(
 			map[string]any{
@@ -141,9 +141,9 @@ func DeleteArticleByID(db *gorm.DB, id int64) error {
 	return nil
 }
 
-func SelectPostWithPublishByID(db *gorm.DB, id int64) (*entity.Article, error) {
-	post := &entity.Article{}
-	err := db.Model(&entity.Article{}).
+func SelectPostWithPublishByID(db *gorm.DB, id int64) (*model2.Article, error) {
+	post := &model2.Article{}
+	err := db.Model(&model2.Article{}).
 		Where("id = ?", id).
 		Where("article_type = ?", common.ArticleType_Post).
 		Where("article_status = ?", common.ArticleStatus_PUBLISH).
@@ -155,17 +155,17 @@ func SelectPostWithPublishByID(db *gorm.DB, id int64) (*entity.Article, error) {
 	return post, nil
 }
 
-func SelectPrevNextPostByPublishAt(db *gorm.DB, publishAt time.Time) (*entity.Article, *entity.Article, error) {
-	prev := &entity.Article{}
-	next := &entity.Article{}
-	prevErr := db.Model(&entity.Article{}).
+func SelectPrevNextPostByPublishAt(db *gorm.DB, publishAt time.Time) (*model2.Article, *model2.Article, error) {
+	prev := &model2.Article{}
+	next := &model2.Article{}
+	prevErr := db.Model(&model2.Article{}).
 		Where("publish_at > ?", publishAt).
 		Where("article_type = ?", common.ArticleType_Post).
 		Where("article_status = ?", common.ArticleStatus_PUBLISH).
 		Where("delete_flag = ?", common.DeleteFlag_Exist).
 		Order("publish_at asc").
 		First(prev).Error
-	nextErr := db.Model(&entity.Article{}).
+	nextErr := db.Model(&model2.Article{}).
 		Where("publish_at < ?", publishAt).
 		Where("article_type = ?", common.ArticleType_Post).
 		Where("article_status = ?", common.ArticleStatus_PUBLISH).
@@ -178,9 +178,9 @@ func SelectPrevNextPostByPublishAt(db *gorm.DB, publishAt time.Time) (*entity.Ar
 	return prev, next, nil
 }
 
-func MSelectPostWithPublishByIDs(db *gorm.DB, ids []int64) (map[int64]*entity.Article, error) {
-	var posts []*entity.Article
-	err := db.Model(&entity.Article{}).
+func MSelectPostWithPublishByIDs(db *gorm.DB, ids []int64) (map[int64]*model2.Article, error) {
+	var posts []*model2.Article
+	err := db.Model(&model2.Article{}).
 		Where("id in ?", ids).
 		Where("article_type = ?", common.ArticleType_Post).
 		Where("article_status = ?", common.ArticleStatus_PUBLISH).
@@ -192,7 +192,7 @@ func MSelectPostWithPublishByIDs(db *gorm.DB, ids []int64) (map[int64]*entity.Ar
 	if len(posts) == 0 {
 		return nil, consts.ErrRecordNotFound
 	}
-	result := make(map[int64]*entity.Article, len(posts))
+	result := make(map[int64]*model2.Article, len(posts))
 	for _, post := range posts {
 		result[post.ID] = post
 	}
@@ -202,7 +202,7 @@ func MSelectPostWithPublishByIDs(db *gorm.DB, ids []int64) (map[int64]*entity.Ar
 func SelectPostOrderList(db *gorm.DB) ([]int64, error) {
 	// 当前数据量直接拉取全量数据，后续可以加上limit分批次查询
 	var order []int64
-	err := db.Model(&entity.Article{}).
+	err := db.Model(&model2.Article{}).
 		Select("id").
 		Where("article_type = ?", common.ArticleType_Post).
 		Where("article_status = ?", common.ArticleStatus_PUBLISH).
@@ -220,7 +220,7 @@ func SelectPostOrderList(db *gorm.DB) ([]int64, error) {
 
 func SelectPostIDsByCategoryID(db *gorm.DB, cID int64) ([]int64, error) {
 	var list []int64
-	err := db.Model(&entity.ArticleCategory{}).
+	err := db.Model(&model2.ArticleCategory{}).
 		Select("article_id").
 		Where("category_id = ?", cID).
 		Where("delete_flag = ?", common.DeleteFlag_Exist).
@@ -238,7 +238,7 @@ func SelectPostIDsByCategoryID(db *gorm.DB, cID int64) ([]int64, error) {
 
 func SelectPostIDsByTagID(db *gorm.DB, cID int64) ([]int64, error) {
 	var list []int64
-	err := db.Model(&entity.ArticleTag{}).
+	err := db.Model(&model2.ArticleTag{}).
 		Select("article_id").
 		Where("tag_id = ?", cID).
 		Where("delete_flag = ?", common.DeleteFlag_Exist).
@@ -254,10 +254,10 @@ func SelectPostIDsByTagID(db *gorm.DB, cID int64) ([]int64, error) {
 	return list, nil
 }
 
-func SelectAllPublishedPostWithBatch(db *gorm.DB) ([]*entity.Article, error) {
-	var list []*entity.Article
-	var results []*entity.Article
-	err := db.Model(&entity.Article{}).
+func SelectAllPublishedPostWithBatch(db *gorm.DB) ([]*model2.Article, error) {
+	var list []*model2.Article
+	var results []*model2.Article
+	err := db.Model(&model2.Article{}).
 		Where("article_type = ?", common.ArticleType_Post).
 		Where("article_status = ?", common.ArticleStatus_PUBLISH).
 		Where("delete_flag = ?", common.DeleteFlag_Exist).

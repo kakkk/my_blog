@@ -7,12 +7,13 @@ import (
 
 	"github.com/sirupsen/logrus"
 
-	"my_blog/biz/common/consts"
-	"my_blog/biz/common/log"
 	"my_blog/biz/common/resp"
-	"my_blog/biz/common/utils"
+	"my_blog/biz/consts"
 	"my_blog/biz/dto"
-	"my_blog/biz/entity"
+	"my_blog/biz/infra/misc"
+	"my_blog/biz/infra/pkg/log"
+	"my_blog/biz/infra/repository/model"
+	mysql2 "my_blog/biz/infra/repository/mysql"
 	"my_blog/biz/model/blog/api"
 	"my_blog/biz/model/blog/common"
 	"my_blog/biz/repository/mysql"
@@ -25,7 +26,7 @@ func CommentArticleAPI(ctx context.Context, req *api.CommentArticleAPIRequest) (
 		"nickname":   req.GetNickname(),
 	})
 	rsp = &api.CommentArticleAPIResponse{}
-	defer utils.Recover(ctx, func() {
+	defer misc.Recover(ctx, func() {
 		logger.Errorf("recovered")
 		rsp.BaseResp = resp.NewInternalErrorBaseResp()
 		return
@@ -37,7 +38,7 @@ func CommentArticleAPI(ctx context.Context, req *api.CommentArticleAPIRequest) (
 		rsp.BaseResp = resp.NewFailBaseResp()
 		return rsp
 	}
-	comment := &entity.Comment{
+	comment := &model.Comment{
 		PostID:   req.GetArticleID(),
 		Nickname: req.GetNickname(),
 		Email:    req.GetEmail(),
@@ -45,7 +46,7 @@ func CommentArticleAPI(ctx context.Context, req *api.CommentArticleAPIRequest) (
 		Content:  req.GetContent(),
 		Status:   common.CommentStatus_Approved,
 	}
-	comment, err = mysql.CreateComment(mysql.GetDB(ctx), comment)
+	comment, err = mysql.CreateComment(mysql2.GetDB(ctx), comment)
 	if err != nil {
 		logger.Error("create comment fail")
 		rsp.BaseResp = resp.NewFailBaseResp()
@@ -67,7 +68,7 @@ func ReplyCommentAPI(ctx context.Context, req *api.ReplyCommentAPIRequest) (rsp 
 		"comment_id": req.GetReplyID(),
 	})
 	rsp = &api.ReplyCommentAPIResponse{}
-	defer utils.Recover(ctx, func() {
+	defer misc.Recover(ctx, func() {
 		logger.Errorf("recovered")
 		rsp.BaseResp = resp.NewInternalErrorBaseResp()
 		return
@@ -99,7 +100,7 @@ func ReplyCommentAPI(ctx context.Context, req *api.ReplyCommentAPIRequest) (rsp 
 		parentID = replyComment.ID
 	}
 
-	comment := &entity.Comment{
+	comment := &model.Comment{
 		PostID:   req.GetArticleID(),
 		Nickname: req.GetNickname(),
 		Email:    req.GetEmail(),
@@ -109,7 +110,7 @@ func ReplyCommentAPI(ctx context.Context, req *api.ReplyCommentAPIRequest) (rsp 
 		ParentID: parentID,
 		Status:   common.CommentStatus_Approved,
 	}
-	comment, err = mysql.CreateComment(mysql.GetDB(ctx), comment)
+	comment, err = mysql.CreateComment(mysql2.GetDB(ctx), comment)
 	if err != nil {
 		logger.Error("create comment fail")
 		rsp.BaseResp = resp.NewFailBaseResp()

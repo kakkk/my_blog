@@ -7,10 +7,12 @@ import (
 
 	"github.com/kakkk/cachex"
 
-	"my_blog/biz/common/config"
-	"my_blog/biz/common/consts"
-	"my_blog/biz/common/log"
+	"my_blog/biz/consts"
 	"my_blog/biz/dto"
+	"my_blog/biz/infra/config"
+	"my_blog/biz/infra/pkg/log"
+	cachex2 "my_blog/biz/infra/repository/cachex"
+	mysql2 "my_blog/biz/infra/repository/mysql"
 	"my_blog/biz/repository/mysql"
 )
 
@@ -23,7 +25,7 @@ var categoryListStorage *CategoryListStorage
 
 func initCategoryListStorage(ctx context.Context) error {
 	cfg := config.GetStorageSettingByName("category_list")
-	cache, err := NewCacheXBuilderByConfig[string, *dto.CategoryList](ctx, cfg).
+	cache, err := cachex2.NewCacheXBuilderByConfig[string, *dto.CategoryList](ctx, cfg).
 		SetGetRealData(categoryListGetRealData).
 		Build()
 	if err != nil {
@@ -37,7 +39,7 @@ func initCategoryListStorage(ctx context.Context) error {
 }
 
 func categoryListGetFromDB(ctx context.Context, withPublish bool) (*dto.CategoryList, error) {
-	db := mysql.GetDB(ctx)
+	db := mysql2.GetDB(ctx)
 	order, err := mysql.SelectCategoryOrder(db)
 	if err != nil {
 		return nil, fmt.Errorf("select category order error:[%v]", err)

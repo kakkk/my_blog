@@ -9,11 +9,12 @@ import (
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 
-	"my_blog/biz/common/consts"
-	"my_blog/biz/common/log"
 	"my_blog/biz/common/resp"
-	"my_blog/biz/common/utils"
-	"my_blog/biz/entity"
+	"my_blog/biz/consts"
+	"my_blog/biz/infra/pkg/log"
+	"my_blog/biz/infra/repository/model"
+	mysql2 "my_blog/biz/infra/repository/mysql"
+	"my_blog/biz/infra/session"
 	"my_blog/biz/model/blog/api"
 	"my_blog/biz/model/blog/common"
 	"my_blog/biz/repository/mysql"
@@ -27,10 +28,10 @@ func CreatePostAPI(ctx context.Context, req *api.CreatePostAPIRequest) (rsp *api
 		},
 	)
 	rsp = &api.CreatePostAPIResponse{}
-	var post *entity.Article
+	var post *model.Article
 
 	// 开启事务
-	err := mysql.GetDB(ctx).Transaction(func(tx *gorm.DB) error {
+	err := mysql2.GetDB(ctx).Transaction(func(tx *gorm.DB) error {
 		// 校验分类是否存在
 		err := checkCategoryIsExist(tx, req.CategoryList)
 		if err != nil {
@@ -43,13 +44,13 @@ func CreatePostAPI(ctx context.Context, req *api.CreatePostAPIRequest) (rsp *api
 		}
 
 		// 创建文章
-		userID, _ := utils.GetUserIDByCtx(ctx)
+		userID, _ := session.GetUserIDByCtx(ctx)
 		var publishAt *time.Time
 		if req.GetStatus() == common.ArticleStatus_PUBLISH {
 			now := time.Now()
 			publishAt = &now
 		}
-		post, err = mysql.CreateArticle(tx, &entity.Article{
+		post, err = mysql.CreateArticle(tx, &model.Article{
 			Title:       req.GetTitle(),
 			Content:     req.GetContent(),
 			ArticleType: common.ArticleType_Post,
@@ -100,7 +101,7 @@ func GetPostAPI(ctx context.Context, req *api.GetPostAPIRequest) *api.GetPostAPI
 	logger := log.GetLoggerWithCtx(ctx).WithFields(logrus.Fields{
 		"post_id": req,
 	})
-	db := mysql.GetDB(ctx)
+	db := mysql2.GetDB(ctx)
 	failResp := &api.GetPostAPIResponse{
 		BaseResp: resp.NewBaseResponse(common.RespCode_NotFound, "not found"),
 	}
@@ -158,7 +159,7 @@ func UpdatePostAPI(ctx context.Context, req *api.UpdatePostAPIRequest) (rsp *api
 		"post_id": req.GetID(),
 		"title":   req.GetTitle(),
 	})
-	err := mysql.GetDB(ctx).Transaction(func(tx *gorm.DB) error {
+	err := mysql2.GetDB(ctx).Transaction(func(tx *gorm.DB) error {
 		// 校验分类是否存在
 		err := checkCategoryIsExist(tx, req.CategoryList)
 		if err != nil {
@@ -182,7 +183,7 @@ func UpdatePostAPI(ctx context.Context, req *api.UpdatePostAPIRequest) (rsp *api
 		}
 
 		// 更新文章
-		err = mysql.UpdateArticleByID(tx, req.GetID(), &entity.Article{
+		err = mysql.UpdateArticleByID(tx, req.GetID(), &model.Article{
 			ID:      0,
 			Title:   req.GetTitle(),
 			Content: req.GetContent(),
@@ -250,13 +251,13 @@ func processTags(tx *gorm.DB, tags []string, postID int64, publishAt *time.Time)
 	if err != nil {
 		return fmt.Errorf("select tags error:[%v]", err)
 	}
-	notExistTag := make([]*entity.Tag, 0)    // 不存在
+	notExistTag := make([]*model.Tag, 0)     // 不存在
 	needRestoreTagIDs := make([]int64, 0)    // 需要恢复
 	tagIDList := make([]int64, 0, len(tags)) // 所有标签ID
 	for _, name := range tags {
 		tag, ok := tagMap[name]
 		if !ok {
-			notExistTag = append(notExistTag, &entity.Tag{TagName: name})
+			notExistTag = append(notExistTag, &model.Tag{TagName: name})
 			continue
 		}
 		if tag.DeleteFlag == common.DeleteFlag_Delete {
@@ -281,9 +282,9 @@ func processTags(tx *gorm.DB, tags []string, postID int64, publishAt *time.Time)
 	}
 
 	// 文章添加标签
-	var tagRelation []*entity.ArticleTag
+	var tagRelation []*model.ArticleTag
 	for _, id := range tagIDList {
-		tagRelation = append(tagRelation, &entity.ArticleTag{
+		tagRelation = append(tagRelation, &model.ArticleTag{
 			PostID:    postID,
 			TagID:     id,
 			PublishAt: publishAt,
@@ -311,9 +312,9 @@ func processCategories(tx *gorm.DB, categoryIDs []int64, postID int64, publishAt
 	}
 
 	// 添加分类
-	var categoryRelation []*entity.ArticleCategory
+	var categoryRelation []*model.ArticleCategory
 	for _, id := range categoryIDs {
-		categoryRelation = append(categoryRelation, &entity.ArticleCategory{
+		categoryRelation = append(categoryRelation, &model.ArticleCategory{
 			PostID:     postID,
 			CategoryID: id,
 			PublishAt:  publishAt,
@@ -325,7 +326,7 @@ func processCategories(tx *gorm.DB, categoryIDs []int64, postID int64, publishAt
 		if err != nil {
 			return fmt.Errorf("select default category_id error:[%v]", err)
 		}
-		categoryRelation = append(categoryRelation, &entity.ArticleCategory{
+		categoryRelation = append(categoryRelation, &model.ArticleCategory{
 			PostID:     postID,
 			CategoryID: defaultID,
 			PublishAt:  publishAt,
@@ -346,7 +347,7 @@ func UpdatePostStatusAPI(ctx context.Context, req *api.UpdatePostStatusAPIReques
 	})
 	rsp = &api.CommonResponse{}
 
-	err := mysql.GetDB(ctx).Transaction(func(tx *gorm.DB) error {
+	err := mysql2.GetDB(ctx).Transaction(func(tx *gorm.DB) error {
 		post, err := mysql.SelectArticleByID(tx, req.GetID())
 		if err != nil {
 			if errors.Is(err, consts.ErrRecordNotFound) {
@@ -406,7 +407,7 @@ func DeletePostAPI(ctx context.Context, req *api.DeletePostAPIRequest) (rsp *api
 		"post_id": req.GetID(),
 	})
 	rsp = &api.CommonResponse{}
-	err := mysql.GetDB(ctx).Transaction(func(tx *gorm.DB) error {
+	err := mysql2.GetDB(ctx).Transaction(func(tx *gorm.DB) error {
 		err := mysql.DeleteArticleByID(tx, req.GetID())
 		if err != nil {
 			return fmt.Errorf("delete article error:[%v]", err)

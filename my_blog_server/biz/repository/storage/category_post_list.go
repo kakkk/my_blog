@@ -7,8 +7,10 @@ import (
 
 	"github.com/kakkk/cachex"
 
-	"my_blog/biz/common/config"
-	"my_blog/biz/common/consts"
+	"my_blog/biz/consts"
+	"my_blog/biz/infra/config"
+	cachex2 "my_blog/biz/infra/repository/cachex"
+	mysql2 "my_blog/biz/infra/repository/mysql"
 	"my_blog/biz/repository/mysql"
 )
 
@@ -25,7 +27,7 @@ func GetCategoryPostListStorage() *CategoryPostListStorage {
 
 func initCategoryPostListStorage(ctx context.Context) error {
 	cfg := config.GetStorageSettingByName("category_post_list")
-	cache, err := NewCacheXBuilderByConfig[int64, []int64](ctx, cfg).
+	cache, err := cachex2.NewCacheXBuilderByConfig[int64, []int64](ctx, cfg).
 		SetGetRealData(categoryPostListGetRealData).
 		Build()
 
@@ -40,7 +42,7 @@ func initCategoryPostListStorage(ctx context.Context) error {
 }
 
 func categoryPostListGetRealData(ctx context.Context, id int64) ([]int64, error) {
-	list, err := mysql.SelectPostIDsByCategoryID(mysql.GetDB(ctx), id)
+	list, err := mysql.SelectPostIDsByCategoryID(mysql2.GetDB(ctx), id)
 	if err != nil {
 		return parseSqlError(list, err)
 	}

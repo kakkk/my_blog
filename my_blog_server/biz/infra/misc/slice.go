@@ -1,4 +1,4 @@
-package utils
+package misc
 
 // 去重
 func SliceDeduplicate[T comparable](arr []T) []T {

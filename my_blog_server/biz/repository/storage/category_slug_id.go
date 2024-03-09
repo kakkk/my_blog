@@ -7,8 +7,10 @@ import (
 
 	"github.com/kakkk/cachex"
 
-	"my_blog/biz/common/config"
-	"my_blog/biz/common/consts"
+	"my_blog/biz/consts"
+	"my_blog/biz/infra/config"
+	cachex2 "my_blog/biz/infra/repository/cachex"
+	mysql2 "my_blog/biz/infra/repository/mysql"
 	"my_blog/biz/repository/mysql"
 )
 
@@ -25,7 +27,7 @@ func GetCategorySlugIDStorage() *CategorySlugIDStorage {
 
 func initCategorySlugIDStorage(ctx context.Context) error {
 	cfg := config.GetStorageSettingByName("category_slug_id")
-	cache, err := NewCacheXBuilderByConfig[string, int64](ctx, cfg).
+	cache, err := cachex2.NewCacheXBuilderByConfig[string, int64](ctx, cfg).
 		SetGetRealData(categorySlugIDGetRealData).
 		Build()
 
@@ -40,7 +42,7 @@ func initCategorySlugIDStorage(ctx context.Context) error {
 }
 
 func categorySlugIDGetRealData(ctx context.Context, slug string) (int64, error) {
-	id, err := mysql.SelectCategoryIDBySlug(mysql.GetDB(ctx), slug)
+	id, err := mysql.SelectCategoryIDBySlug(mysql2.GetDB(ctx), slug)
 	if err != nil {
 		return parseSqlError(id, err)
 	}

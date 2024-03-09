@@ -7,16 +7,18 @@ import (
 
 	"github.com/kakkk/cachex"
 
-	"my_blog/biz/common/config"
-	"my_blog/biz/common/consts"
-	"my_blog/biz/entity"
+	"my_blog/biz/consts"
+	"my_blog/biz/infra/config"
+	cachex2 "my_blog/biz/infra/repository/cachex"
+	"my_blog/biz/infra/repository/model"
+	mysql2 "my_blog/biz/infra/repository/mysql"
 	"my_blog/biz/repository/mysql"
 )
 
 var userEntityStorage *UserEntityStorage
 
 type UserEntityStorage struct {
-	cacheX *cachex.CacheX[int64, *entity.User]
+	cacheX *cachex.CacheX[int64, *model.User]
 	expire time.Duration
 }
 
@@ -26,7 +28,7 @@ func GetUserEntityStorage() *UserEntityStorage {
 
 func initUserEntityStorage(ctx context.Context) error {
 	cfg := config.GetStorageSettingByName("user_entity")
-	cache, err := NewCacheXBuilderByConfig[int64, *entity.User](ctx, cfg).
+	cache, err := cachex2.NewCacheXBuilderByConfig[int64, *model.User](ctx, cfg).
 		SetGetRealData(userEntityStorageGetRealData).
 		SetMGetRealData(userEntityStorageMGetRealData).
 		Build()
@@ -40,8 +42,8 @@ func initUserEntityStorage(ctx context.Context) error {
 	return nil
 }
 
-func userEntityStorageGetRealData(ctx context.Context, id int64) (*entity.User, error) {
-	db := mysql.GetDB(ctx)
+func userEntityStorageGetRealData(ctx context.Context, id int64) (*model.User, error) {
+	db := mysql2.GetDB(ctx)
 	// 获取post
 	user, err := mysql.SelectUserByID(db, id)
 	if err != nil {
@@ -50,8 +52,8 @@ func userEntityStorageGetRealData(ctx context.Context, id int64) (*entity.User, 
 	return user, nil
 }
 
-func userEntityStorageMGetRealData(ctx context.Context, ids []int64) (map[int64]*entity.User, error) {
-	db := mysql.GetDB(ctx)
+func userEntityStorageMGetRealData(ctx context.Context, ids []int64) (map[int64]*model.User, error) {
+	db := mysql2.GetDB(ctx)
 	users, err := mysql.MSelectUserByIDs(db, ids)
 	if err != nil {
 		return parseSqlError(users, err)
@@ -59,11 +61,11 @@ func userEntityStorageMGetRealData(ctx context.Context, ids []int64) (map[int64]
 	return users, nil
 }
 
-func (a *UserEntityStorage) MGet(ctx context.Context, ids []int64) map[int64]*entity.User {
+func (a *UserEntityStorage) MGet(ctx context.Context, ids []int64) map[int64]*model.User {
 	return a.cacheX.MGet(ctx, ids, a.expire)
 }
 
-func (a *UserEntityStorage) Get(ctx context.Context, id int64) (*entity.User, error) {
+func (a *UserEntityStorage) Get(ctx context.Context, id int64) (*model.User, error) {
 	user, ok := a.cacheX.Get(ctx, id, a.expire)
 	if !ok {
 		return nil, consts.ErrRecordNotFound

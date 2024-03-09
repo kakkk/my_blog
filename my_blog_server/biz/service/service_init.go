@@ -4,7 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"my_blog/biz/common/log"
+	"my_blog/biz/infra/pkg/log"
+	mysql2 "my_blog/biz/infra/repository/mysql"
 	"my_blog/biz/repository/index"
 	"my_blog/biz/repository/mysql"
 )
@@ -15,7 +16,7 @@ func InitService() error {
 	logger := log.GetLoggerWithCtx(ctx)
 
 	// 加载全量文章数据
-	postFromDB, err := mysql.SelectAllPublishedPostWithBatch(mysql.GetDB(ctx))
+	postFromDB, err := mysql.SelectAllPublishedPostWithBatch(mysql2.GetDB(ctx))
 	if err != nil {
 		return fmt.Errorf("load all post from db error:[%v]", err)
 	}

@@ -3,9 +3,9 @@ package dto
 import (
 	"time"
 
-	"my_blog/biz/common/config"
-	"my_blog/biz/common/utils"
-	"my_blog/biz/entity"
+	"my_blog/biz/infra/config"
+	"my_blog/biz/infra/misc"
+	"my_blog/biz/infra/repository/model"
 	"my_blog/biz/model/blog/api"
 )
 
@@ -21,14 +21,14 @@ type Comment struct {
 	CreateAt time.Time `json:"create_at"`
 }
 
-func NewCommentWithEntity(comment *entity.Comment) *Comment {
+func NewCommentWithEntity(comment *model.Comment) *Comment {
 	return &Comment{
 		ID:       comment.ID,
 		PostID:   comment.PostID,
 		ReplyID:  comment.ReplyID,
 		ParentID: comment.ParentID,
 		Nickname: comment.Nickname,
-		EmailMD5: utils.SumStrMD5(comment.Email),
+		EmailMD5: misc.SumStrMD5(comment.Email),
 		Website:  comment.Website,
 		Content:  comment.Content,
 		CreateAt: comment.CreateAt,

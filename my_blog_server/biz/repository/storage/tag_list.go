@@ -7,9 +7,11 @@ import (
 
 	"github.com/kakkk/cachex"
 
-	"my_blog/biz/common/config"
-	"my_blog/biz/common/consts"
+	"my_blog/biz/consts"
 	"my_blog/biz/dto"
+	"my_blog/biz/infra/config"
+	cachex2 "my_blog/biz/infra/repository/cachex"
+	mysql2 "my_blog/biz/infra/repository/mysql"
 	"my_blog/biz/repository/mysql"
 )
 
@@ -22,7 +24,7 @@ var tagListStorage *TagListStorage
 
 func initTagListStorage(ctx context.Context) error {
 	cfg := config.GetStorageSettingByName("tag_list")
-	cache, err := NewCacheXBuilderByConfig[string, *dto.TagList](ctx, cfg).
+	cache, err := cachex2.NewCacheXBuilderByConfig[string, *dto.TagList](ctx, cfg).
 		SetGetRealData(tagListGetRealData).
 		Build()
 	if err != nil {
@@ -40,7 +42,7 @@ func GetTagListStorage() *TagListStorage {
 }
 
 func tagListGetRealData(ctx context.Context, _ string) (*dto.TagList, error) {
-	db := mysql.GetDB(ctx)
+	db := mysql2.GetDB(ctx)
 	tagEntityList, err := mysql.GetAllTag(db)
 	if err != nil {
 		return parseSqlError(&dto.TagList{}, err)

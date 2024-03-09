@@ -6,7 +6,7 @@ import (
 
 	"github.com/kakkk/cachex"
 
-	"my_blog/biz/common/consts"
+	"my_blog/biz/consts"
 )
 
 func parseSqlError[T any](val T, err error) (T, error) {

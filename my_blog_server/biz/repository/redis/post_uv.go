@@ -7,7 +7,7 @@ import (
 	"github.com/redis/go-redis/v9"
 	"github.com/spf13/cast"
 
-	"my_blog/biz/common/consts"
+	"my_blog/biz/consts"
 )
 
 func GetPostUV(ctx context.Context, cli *redis.Client, key string) (int64, error) {

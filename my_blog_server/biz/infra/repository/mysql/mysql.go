@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	"my_blog/biz/common/config"
-	"my_blog/biz/common/log"
+	"my_blog/biz/infra/config"
+	"my_blog/biz/infra/pkg/log"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"

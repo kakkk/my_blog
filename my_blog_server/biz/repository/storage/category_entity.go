@@ -8,16 +8,18 @@ import (
 
 	"github.com/kakkk/cachex"
 
-	"my_blog/biz/common/config"
-	"my_blog/biz/common/consts"
-	"my_blog/biz/entity"
+	"my_blog/biz/consts"
+	"my_blog/biz/infra/config"
+	cachex2 "my_blog/biz/infra/repository/cachex"
+	"my_blog/biz/infra/repository/model"
+	mysql2 "my_blog/biz/infra/repository/mysql"
 	"my_blog/biz/repository/mysql"
 )
 
 var categoryEntityStorage *CategoryEntityStorage
 
 type CategoryEntityStorage struct {
-	cacheX *cachex.CacheX[int64, *entity.Category]
+	cacheX *cachex.CacheX[int64, *model.Category]
 	expire time.Duration
 }
 
@@ -27,7 +29,7 @@ func GetCategoryEntityStorage() *CategoryEntityStorage {
 
 func initCategoryEntityStorage(ctx context.Context) error {
 	cfg := config.GetStorageSettingByName("category_entity")
-	cache, err := NewCacheXBuilderByConfig[int64, *entity.Category](ctx, cfg).
+	cache, err := cachex2.NewCacheXBuilderByConfig[int64, *model.Category](ctx, cfg).
 		SetGetRealData(categoryEntityStorageGetRealData).
 		SetMGetRealData(categoryEntityStorageMGetRealData).
 		Build()
@@ -41,8 +43,8 @@ func initCategoryEntityStorage(ctx context.Context) error {
 	return nil
 }
 
-func categoryEntityStorageGetRealData(ctx context.Context, id int64) (*entity.Category, error) {
-	db := mysql.GetDB(ctx)
+func categoryEntityStorageGetRealData(ctx context.Context, id int64) (*model.Category, error) {
+	db := mysql2.GetDB(ctx)
 	// 获取category
 	category, err := mysql.SelectCategoryByID(db, id)
 	if err != nil {
@@ -51,8 +53,8 @@ func categoryEntityStorageGetRealData(ctx context.Context, id int64) (*entity.Ca
 	return category, nil
 }
 
-func categoryEntityStorageMGetRealData(ctx context.Context, ids []int64) (map[int64]*entity.Category, error) {
-	db := mysql.GetDB(ctx)
+func categoryEntityStorageMGetRealData(ctx context.Context, ids []int64) (map[int64]*model.Category, error) {
+	db := mysql2.GetDB(ctx)
 	category, err := mysql.MSelectCategoryByIDs(db, ids)
 	if err != nil {
 		if errors.Is(err, consts.ErrRecordNotFound) {
@@ -63,11 +65,11 @@ func categoryEntityStorageMGetRealData(ctx context.Context, ids []int64) (map[in
 	return category, nil
 }
 
-func (a *CategoryEntityStorage) MGet(ctx context.Context, ids []int64) map[int64]*entity.Category {
+func (a *CategoryEntityStorage) MGet(ctx context.Context, ids []int64) map[int64]*model.Category {
 	return a.cacheX.MGet(ctx, ids, a.expire)
 }
 
-func (a *CategoryEntityStorage) Get(ctx context.Context, id int64) (*entity.Category, error) {
+func (a *CategoryEntityStorage) Get(ctx context.Context, id int64) (*model.Category, error) {
 	article, ok := a.cacheX.Get(ctx, id, a.expire)
 	if !ok {
 		return nil, consts.ErrRecordNotFound

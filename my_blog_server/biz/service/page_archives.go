@@ -8,11 +8,12 @@ import (
 
 	"github.com/spf13/cast"
 
-	"my_blog/biz/common/config"
-	"my_blog/biz/common/errorx"
-	"my_blog/biz/common/log"
-	"my_blog/biz/common/utils"
-	"my_blog/biz/entity"
+	"my_blog/biz/infra/config"
+	"my_blog/biz/infra/misc"
+	"my_blog/biz/infra/pkg/errorx"
+	"my_blog/biz/infra/pkg/log"
+	"my_blog/biz/infra/repository/model"
+	mysql2 "my_blog/biz/infra/repository/mysql"
 	"my_blog/biz/model/blog/page"
 	"my_blog/biz/repository/mysql"
 	"my_blog/biz/repository/storage"
@@ -38,22 +39,22 @@ func ArchivesPage(ctx context.Context) (rsp *page.ArchivesPageResp, pErr *errorx
 }
 
 // 刷新文章归档数据
-func RefreshArchives(ctx context.Context, postFromDB []*entity.Article) {
+func RefreshArchives(ctx context.Context, postFromDB []*model.Article) {
 	logger := log.GetLoggerWithCtx(ctx)
-	defer utils.Recover(ctx, func() {})()
+	defer misc.Recover(ctx, func() {})()
 
 	// 未传参，拉取全量数据
 	// 此处不能使用postMeta，拉取全量数据会破坏LRU
 	if len(postFromDB) == 0 {
 		var err error
-		postFromDB, err = mysql.SelectAllPublishedPostWithBatch(mysql.GetDB(ctx))
+		postFromDB, err = mysql.SelectAllPublishedPostWithBatch(mysql2.GetDB(ctx))
 		if err != nil {
 			logger.Errorf("select all post error:[%v]", err)
 			return
 		}
 	}
 	// map[year][month][]post
-	postMap := map[int]map[time.Month][]*entity.Article{}
+	postMap := map[int]map[time.Month][]*model.Article{}
 	// 最早的年份
 	nowYear := time.Now().Year()
 	minYear := nowYear
@@ -63,10 +64,10 @@ func RefreshArchives(ctx context.Context, postFromDB []*entity.Article) {
 			minYear = pub.Year()
 		}
 		if _, ok := postMap[pub.Year()]; !ok {
-			postMap[pub.Year()] = map[time.Month][]*entity.Article{}
+			postMap[pub.Year()] = map[time.Month][]*model.Article{}
 		}
 		if _, ok := postMap[pub.Year()][pub.Month()]; !ok {
-			postMap[pub.Year()][pub.Month()] = []*entity.Article{}
+			postMap[pub.Year()][pub.Month()] = []*model.Article{}
 		}
 		postMap[pub.Year()][pub.Month()] = append(postMap[pub.Year()][pub.Month()], post)
 	}
@@ -101,7 +102,7 @@ func RefreshArchives(ctx context.Context, postFromDB []*entity.Article) {
 	logger.Info("refresh archives success")
 }
 
-func postListToArchivesPostItem(posts []*entity.Article) []*page.PostItem {
+func postListToArchivesPostItem(posts []*model.Article) []*page.PostItem {
 	sort.Slice(posts, func(i, j int) bool {
 		return posts[i].PublishAt.Unix() >= posts[j].PublishAt.Unix()
 	})

@@ -7,9 +7,10 @@ import (
 
 	"github.com/kakkk/cachex"
 
-	"my_blog/biz/common/config"
-	"my_blog/biz/common/consts"
+	"my_blog/biz/consts"
 	"my_blog/biz/dto"
+	"my_blog/biz/infra/config"
+	cachex2 "my_blog/biz/infra/repository/cachex"
 )
 
 var articleMetaStorage *ArticleMetaStorage
@@ -25,7 +26,7 @@ func GetArticleMetaStorage() *ArticleMetaStorage {
 
 func initArticleMetaStorage(ctx context.Context) error {
 	cfg := config.GetStorageSettingByName("article_meta")
-	cache, err := NewCacheXBuilderByConfig[int64, *dto.PostMeta](ctx, cfg).
+	cache, err := cachex2.NewCacheXBuilderByConfig[int64, *dto.PostMeta](ctx, cfg).
 		SetGetRealData(articleMetaStorageGetRealData).
 		SetMGetRealData(articleMetaStorageMGetRealData).
 		Build()

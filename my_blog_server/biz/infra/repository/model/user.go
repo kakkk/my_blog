@@ -1,4 +1,4 @@
-package entity
+package model
 
 type User struct {
 	ID       int64  `gorm:"column:id"`

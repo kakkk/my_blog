@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"my_blog/biz/common/config"
+	"my_blog/biz/infra/config"
 	"my_blog/biz/model/blog/page"
 
 	"github.com/cloudwego/hertz/pkg/app"

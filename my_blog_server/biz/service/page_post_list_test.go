@@ -3,10 +3,10 @@ package service
 import (
 	"testing"
 
-	"my_blog/biz/common/config"
-
 	"github.com/agiledragon/gomonkey/v2"
 	"github.com/stretchr/testify/assert"
+
+	"my_blog/biz/infra/config"
 )
 
 func Test_getIDsByPage(t *testing.T) {

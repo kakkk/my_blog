@@ -8,16 +8,18 @@ import (
 
 	"github.com/kakkk/cachex"
 
-	"my_blog/biz/common/config"
-	"my_blog/biz/common/consts"
-	"my_blog/biz/entity"
+	"my_blog/biz/consts"
+	"my_blog/biz/infra/config"
+	cachex2 "my_blog/biz/infra/repository/cachex"
+	"my_blog/biz/infra/repository/model"
+	mysql2 "my_blog/biz/infra/repository/mysql"
 	"my_blog/biz/repository/mysql"
 )
 
 var articleEntityStorage *ArticleEntityStorage
 
 type ArticleEntityStorage struct {
-	cacheX *cachex.CacheX[int64, *entity.Article]
+	cacheX *cachex.CacheX[int64, *model.Article]
 	expire time.Duration
 }
 
@@ -27,7 +29,7 @@ func GetArticleEntityStorage() *ArticleEntityStorage {
 
 func initArticleEntityStorage(ctx context.Context) error {
 	cfg := config.GetStorageSettingByName("article_entity")
-	cx, err := NewCacheXBuilderByConfig[int64, *entity.Article](ctx, cfg).
+	cx, err := cachex2.NewCacheXBuilderByConfig[int64, *model.Article](ctx, cfg).
 		SetGetRealData(articleStorageGetRealData).
 		SetMGetRealData(articleStorageMGetRealData).
 		Build()
@@ -41,8 +43,8 @@ func initArticleEntityStorage(ctx context.Context) error {
 	return nil
 }
 
-func articleStorageGetRealData(ctx context.Context, id int64) (*entity.Article, error) {
-	db := mysql.GetDB(ctx)
+func articleStorageGetRealData(ctx context.Context, id int64) (*model.Article, error) {
+	db := mysql2.GetDB(ctx)
 	// 获取post
 	post, err := mysql.SelectArticleByID(db, id)
 	if err != nil {
@@ -51,8 +53,8 @@ func articleStorageGetRealData(ctx context.Context, id int64) (*entity.Article, 
 	return post, nil
 }
 
-func articleStorageMGetRealData(ctx context.Context, ids []int64) (map[int64]*entity.Article, error) {
-	db := mysql.GetDB(ctx)
+func articleStorageMGetRealData(ctx context.Context, ids []int64) (map[int64]*model.Article, error) {
+	db := mysql2.GetDB(ctx)
 	posts, err := mysql.MSelectPostWithPublishByIDs(db, ids)
 	if err != nil {
 		if errors.Is(err, consts.ErrRecordNotFound) {
@@ -63,11 +65,11 @@ func articleStorageMGetRealData(ctx context.Context, ids []int64) (map[int64]*en
 	return posts, nil
 }
 
-func (a *ArticleEntityStorage) MGet(ctx context.Context, ids []int64) map[int64]*entity.Article {
+func (a *ArticleEntityStorage) MGet(ctx context.Context, ids []int64) map[int64]*model.Article {
 	return a.cacheX.MGet(ctx, ids, a.expire)
 }
 
-func (a *ArticleEntityStorage) Get(ctx context.Context, id int64) (*entity.Article, error) {
+func (a *ArticleEntityStorage) Get(ctx context.Context, id int64) (*model.Article, error) {
 	article, ok := a.cacheX.Get(ctx, id, a.expire)
 	if !ok {
 		return nil, consts.ErrRecordNotFound

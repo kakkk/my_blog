@@ -4,10 +4,11 @@ import (
 	"context"
 	"fmt"
 
-	"my_blog/biz/common/consts"
-	"my_blog/biz/common/log"
 	"my_blog/biz/common/resp"
-	"my_blog/biz/entity"
+	"my_blog/biz/consts"
+	"my_blog/biz/infra/pkg/log"
+	"my_blog/biz/infra/repository/model"
+	mysql2 "my_blog/biz/infra/repository/mysql"
 	"my_blog/biz/model/blog/api"
 	"my_blog/biz/model/blog/common"
 	"my_blog/biz/repository/mysql"
@@ -17,7 +18,7 @@ import (
 func CreateTagAPI(ctx context.Context, req *api.CreateTagAPIRequest) (*api.CreateTagAPIResponse, error) {
 	logger := log.GetLoggerWithCtx(ctx)
 
-	tag, err := mysql.CreateTag(mysql.GetDB(ctx), &entity.Tag{
+	tag, err := mysql.CreateTag(mysql2.GetDB(ctx), &model.Tag{
 		TagName: req.Name,
 	})
 	if err != nil {
@@ -44,7 +45,7 @@ func CreateTagAPI(ctx context.Context, req *api.CreateTagAPIRequest) (*api.Creat
 
 func UpdateTagAPI(ctx context.Context, req *api.UpdateTagAPIRequest) (*api.CommonResponse, error) {
 	logger := log.GetLoggerWithCtx(ctx)
-	err := mysql.UpdateTagByID(mysql.GetDB(ctx), req.GetID(), &entity.Tag{
+	err := mysql.UpdateTagByID(mysql2.GetDB(ctx), req.GetID(), &model.Tag{
 		TagName: req.Name,
 	})
 	if err != nil {
@@ -70,7 +71,7 @@ func UpdateTagAPI(ctx context.Context, req *api.UpdateTagAPIRequest) (*api.Commo
 func DeleteTagAPI(ctx context.Context, req *api.DeleteTagAPIRequest) (*api.CommonResponse, error) {
 	logger := log.GetLoggerWithCtx(ctx).WithField("tag_id", req.GetID())
 
-	tx := mysql.GetDB(ctx).Begin()
+	tx := mysql2.GetDB(ctx).Begin()
 
 	err := mysql.DeleteTagByID(tx, req.GetID())
 	if err != nil {
@@ -107,7 +108,7 @@ func DeleteTagAPI(ctx context.Context, req *api.DeleteTagAPIRequest) (*api.Commo
 
 func GetTagListAPI(ctx context.Context, req *api.GetTagListAPIRequest) (*api.GetTagListAPIResponse, error) {
 	logger := log.GetLoggerWithCtx(ctx)
-	result, err := mysql.GetTagListByPage(mysql.GetDB(ctx), req.Keyword, req.Page, req.Limit)
+	result, err := mysql.GetTagListByPage(mysql2.GetDB(ctx), req.Keyword, req.Page, req.Limit)
 	if err != nil {
 		logger.Errorf("get tag list fail, error:[%v]", err)
 		return &api.GetTagListAPIResponse{
@@ -120,7 +121,7 @@ func GetTagListAPI(ctx context.Context, req *api.GetTagListAPIRequest) (*api.Get
 	for _, tag := range result {
 		tagIDs = append(tagIDs, tag.ID)
 	}
-	counts, err := mysql.MGetTagArticleCountByTagIDs(mysql.GetDB(ctx), tagIDs, false)
+	counts, err := mysql.MGetTagArticleCountByTagIDs(mysql2.GetDB(ctx), tagIDs, false)
 	if err != nil {
 		logger.Warnf("mget tag article count error:[%v]", err)
 		return &api.GetTagListAPIResponse{
@@ -135,7 +136,7 @@ func GetTagListAPI(ctx context.Context, req *api.GetTagListAPIRequest) (*api.Get
 			Count: counts[tag.ID],
 		})
 	}
-	allCount, err := mysql.GetAllTagCount(mysql.GetDB(ctx))
+	allCount, err := mysql.GetAllTagCount(mysql2.GetDB(ctx))
 	if err != nil {
 		logger.Warnf("get all tag count error:[%v]", err)
 	}
@@ -154,7 +155,7 @@ func GetTagListAPI(ctx context.Context, req *api.GetTagListAPIRequest) (*api.Get
 }
 
 func getTagListByArticleID(ctx context.Context, articleID int64) ([]string, error) {
-	db := mysql.GetDB(ctx)
+	db := mysql2.GetDB(ctx)
 	// 获取标签
 	tagIDs, err := mysql.SelectTagIDsByArticleID(db, articleID)
 	if err != nil {

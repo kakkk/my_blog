@@ -8,9 +8,9 @@ import (
 	"my_blog/biz/domain/dto"
 	"my_blog/biz/domain/entity"
 	"my_blog/biz/domain/repo"
+	"my_blog/biz/hertz_gen/blog/api"
 	"my_blog/biz/infra/pkg/log"
 	"my_blog/biz/infra/pkg/resp"
-	"my_blog/biz/model/blog/api"
 )
 
 // CommentArticle 评论文章

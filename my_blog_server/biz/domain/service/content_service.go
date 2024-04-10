@@ -12,10 +12,10 @@ import (
 	"my_blog/biz/domain/dto"
 	"my_blog/biz/domain/entity"
 	"my_blog/biz/domain/repo"
+	"my_blog/biz/hertz_gen/blog/common"
 	"my_blog/biz/infra/misc"
 	"my_blog/biz/infra/pkg/log"
 	"my_blog/biz/infra/repository/mysql"
-	"my_blog/biz/model/blog/common"
 )
 
 type ContentService struct{}

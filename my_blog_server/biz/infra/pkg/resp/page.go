@@ -4,9 +4,9 @@ import (
 	"errors"
 	"fmt"
 
+	"my_blog/biz/hertz_gen/blog/page"
 	"my_blog/biz/infra/config"
 	"my_blog/biz/infra/pkg/errorx"
-	"my_blog/biz/model/blog/page"
 )
 
 type IPageResponse interface {

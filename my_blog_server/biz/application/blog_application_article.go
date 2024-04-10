@@ -6,10 +6,10 @@ import (
 	"my_blog/biz/domain/dto"
 	"my_blog/biz/domain/entity"
 	"my_blog/biz/domain/repo"
+	"my_blog/biz/hertz_gen/blog/page"
 	"my_blog/biz/infra/misc"
 	"my_blog/biz/infra/pkg/errorx"
 	"my_blog/biz/infra/pkg/log"
-	"my_blog/biz/model/blog/page"
 )
 
 func (app *BlogApplication) PostPage(ctx context.Context, req *page.PostPageRequest) (rsp *page.PostPageResponse, pErr *errorx.PageError) {

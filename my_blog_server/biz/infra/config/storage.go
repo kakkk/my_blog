@@ -137,7 +137,7 @@ var cachexConfig map[string]*StorageSetting
 
 func InitCachexConfig() error {
 	cachexConfig = make(map[string]*StorageSetting)
-	f, err := os.ReadFile("../conf/cachex.yaml")
+	f, err := os.ReadFile(root + "/conf/cachex.yaml")
 	if err != nil {
 		return err
 	}

@@ -4,12 +4,13 @@ package main
 
 import (
 	"html/template"
+	"os"
 
 	"github.com/cloudwego/hertz/pkg/app/server"
 
-	"my_blog/biz/handler"
-	"my_blog/biz/middleware"
-	"my_blog/biz/middleware/static"
+	"my_blog/biz/interfaces/handler"
+	"my_blog/biz/interfaces/middleware"
+	"my_blog/biz/interfaces/middleware/static"
 )
 
 // customizeRegister registers customize routers.
@@ -19,9 +20,10 @@ func customizedRegister(r *server.Hertz) {
 			return template.HTML(s)
 		},
 	})
-	r.LoadHTMLGlob("../templates/*")
-	r.Static("/assets", "../")
-	r.Use(static.Serve("/admin", static.LocalFile("../admin", false)))
+	root := os.Getenv("ROOT_PATH")
+	r.LoadHTMLGlob(root + "/templates/*")
+	r.Static("/assets", root)
+	r.Use(static.Serve("/admin", static.LocalFile(root+"/admin", false)))
 	r.NoRoute(middleware.GetNoRouteMW()...)
 	r.GET("/ping", middleware.RequestIdMW(), middleware.SessionMW(), middleware.AdminSessionMW(true), handler.Ping)
 

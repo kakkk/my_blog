@@ -11,11 +11,11 @@ import (
 	"my_blog/biz/domain/entity"
 	"my_blog/biz/domain/repo"
 	"my_blog/biz/domain/service"
+	"my_blog/biz/hertz_gen/blog/api"
+	"my_blog/biz/hertz_gen/blog/common"
 	"my_blog/biz/infra/pkg/log"
 	"my_blog/biz/infra/pkg/resp"
 	"my_blog/biz/infra/session"
-	"my_blog/biz/model/blog/api"
-	"my_blog/biz/model/blog/common"
 )
 
 func (a *AdminApplication) CreatePost(ctx context.Context, req *api.CreatePostAPIRequest) (*api.CreatePostAPIResponse, error) {

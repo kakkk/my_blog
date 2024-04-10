@@ -4,7 +4,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"my_blog/biz/model/blog/page"
+	"my_blog/biz/hertz_gen/blog/page"
 )
 
 const ArchivesCacheTTL = 1440 // 过期时间，单位：分钟

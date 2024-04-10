@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"my_blog/biz/consts"
-	"my_blog/biz/model/blog/api"
-	"my_blog/biz/model/blog/common"
+	"my_blog/biz/hertz_gen/blog/api"
+	"my_blog/biz/hertz_gen/blog/common"
 )
 
 type APIResponse struct {

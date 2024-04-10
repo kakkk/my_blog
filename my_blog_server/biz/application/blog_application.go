@@ -6,13 +6,13 @@ import (
 
 	"my_blog/biz/consts"
 	"my_blog/biz/domain/service"
+	"my_blog/biz/hertz_gen/blog/api"
+	"my_blog/biz/hertz_gen/blog/page"
 	"my_blog/biz/infra/config"
 	"my_blog/biz/infra/misc"
 	"my_blog/biz/infra/pkg/errorx"
 	"my_blog/biz/infra/pkg/log"
 	"my_blog/biz/infra/pkg/resp"
-	"my_blog/biz/model/blog/api"
-	"my_blog/biz/model/blog/page"
 )
 
 type BlogApplication struct{}

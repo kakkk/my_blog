@@ -5,9 +5,9 @@ import (
 	"time"
 
 	"my_blog/biz/consts"
+	"my_blog/biz/hertz_gen/blog/common"
 	"my_blog/biz/infra/repository/model"
 	"my_blog/biz/infra/repository/mysql"
-	"my_blog/biz/model/blog/common"
 
 	"gorm.io/gorm"
 )

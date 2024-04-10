@@ -7,8 +7,8 @@ import (
 	"gorm.io/gorm"
 
 	"my_blog/biz/domain/dto"
+	"my_blog/biz/hertz_gen/blog/common"
 	"my_blog/biz/infra/repository/model"
-	"my_blog/biz/model/blog/common"
 )
 
 type ContentRepo interface {

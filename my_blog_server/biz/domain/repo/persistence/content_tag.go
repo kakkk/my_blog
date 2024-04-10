@@ -7,10 +7,10 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 
+	"my_blog/biz/hertz_gen/blog/common"
 	"my_blog/biz/infra/misc"
 	"my_blog/biz/infra/repository/model"
 	"my_blog/biz/infra/repository/mysql"
-	"my_blog/biz/model/blog/common"
 )
 
 func CreateTag(db *gorm.DB, tag *model.Tag) (*model.Tag, error) {

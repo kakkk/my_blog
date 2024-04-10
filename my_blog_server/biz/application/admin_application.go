@@ -13,7 +13,7 @@ import (
 	"my_blog/biz/infra/repository/mysql"
 	"my_blog/biz/infra/session"
 
-	"my_blog/biz/model/blog/api"
+	"my_blog/biz/hertz_gen/blog/api"
 )
 
 type AdminApplication struct{}

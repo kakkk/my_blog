@@ -14,12 +14,12 @@ import (
 	"my_blog/biz/domain/entity"
 	"my_blog/biz/domain/repo/cache"
 	"my_blog/biz/domain/repo/persistence"
+	"my_blog/biz/hertz_gen/blog/page"
 	"my_blog/biz/infra/misc"
 	"my_blog/biz/infra/pkg/log"
 	repoBleve "my_blog/biz/infra/repository/bleve"
 	"my_blog/biz/infra/repository/model"
 	"my_blog/biz/infra/repository/mysql"
-	"my_blog/biz/model/blog/page"
 )
 
 type IndexService interface {

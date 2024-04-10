@@ -8,11 +8,11 @@ import (
 
 	"my_blog/biz/domain/dto"
 	"my_blog/biz/domain/repo"
+	"my_blog/biz/hertz_gen/blog/page"
 	"my_blog/biz/infra/config"
 	"my_blog/biz/infra/misc"
 	"my_blog/biz/infra/pkg/errorx"
 	"my_blog/biz/infra/pkg/log"
-	"my_blog/biz/model/blog/page"
 )
 
 func (app *BlogApplication) TagsPage(ctx context.Context) (rsp *page.TermsPageResp, pErr *errorx.PageError) {

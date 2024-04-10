@@ -6,12 +6,12 @@ import (
 
 	"github.com/spf13/cast"
 
+	"my_blog/biz/hertz_gen/blog/api"
+	"my_blog/biz/hertz_gen/blog/common"
+	"my_blog/biz/hertz_gen/blog/page"
 	"my_blog/biz/infra/config"
 	"my_blog/biz/infra/misc"
 	"my_blog/biz/infra/repository/model"
-	"my_blog/biz/model/blog/api"
-	"my_blog/biz/model/blog/common"
-	"my_blog/biz/model/blog/page"
 )
 
 type Article struct {

@@ -55,7 +55,7 @@ type Redis struct {
 
 func InitApplicationConfig() error {
 	appConf = &ApplicationConfig{}
-	f, err := os.ReadFile("../conf/application.yaml")
+	f, err := os.ReadFile(root + "/conf/application.yaml")
 	if err != nil {
 		return err
 	}

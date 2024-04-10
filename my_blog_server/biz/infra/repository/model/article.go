@@ -3,7 +3,7 @@ package model
 import (
 	"time"
 
-	"my_blog/biz/model/blog/common"
+	"my_blog/biz/hertz_gen/blog/common"
 )
 
 type Article struct {

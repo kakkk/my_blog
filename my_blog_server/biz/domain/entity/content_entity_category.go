@@ -7,9 +7,9 @@ import (
 	"my_blog/biz/domain/dto"
 	"my_blog/biz/domain/repo"
 	"my_blog/biz/domain/repo/persistence"
+	"my_blog/biz/hertz_gen/blog/api"
 	"my_blog/biz/infra/repository/model"
 	"my_blog/biz/infra/repository/mysql"
-	"my_blog/biz/model/blog/api"
 )
 
 type Category struct {

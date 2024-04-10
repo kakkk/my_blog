@@ -7,9 +7,9 @@ import (
 
 	"my_blog/biz/domain/dto"
 	"my_blog/biz/domain/repo/persistence"
+	"my_blog/biz/hertz_gen/blog/common"
 	"my_blog/biz/infra/misc"
 	"my_blog/biz/infra/repository/model"
-	"my_blog/biz/model/blog/common"
 )
 
 func (c ContentRepoImpl) CreateArticle(db *gorm.DB, article *dto.Article) (*dto.Article, error) {

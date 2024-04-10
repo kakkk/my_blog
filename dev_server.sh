@@ -1,4 +1,4 @@
+BUILD_DIR=$(cd $(dirname $0); pwd)
 rm -rf ./output/bin
-mkdir -p output/bin
-cd my_blog_server && go build -o ../output/bin/my_blog
-cd ../output/bin && ./my_blog
+cd $BUILD_DIR/my_blog_server && bash build.sh
+cp -r $BUILD_DIR/my_blog_server/output/* $BUILD_DIR/output/

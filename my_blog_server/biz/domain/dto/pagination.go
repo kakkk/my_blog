@@ -1,6 +1,6 @@
 package dto
 
-import "my_blog/biz/model/blog/api"
+import "my_blog/biz/hertz_gen/blog/api"
 
 type Pagination struct {
 	HasMore bool

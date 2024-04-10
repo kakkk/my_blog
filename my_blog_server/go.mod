@@ -48,6 +48,7 @@ require (
 	github.com/blevesearch/zapx/v14 v14.3.3 // indirect
 	github.com/blevesearch/zapx/v15 v15.3.3 // indirect
 	github.com/boj/redistore v0.0.0-20180917114910-cd5dcc76aeff // indirect
+	github.com/bwmarrin/snowflake v0.3.0 // indirect
 	github.com/bytedance/go-tagexpr/v2 v2.9.2 // indirect
 	github.com/bytedance/gopkg v0.0.0-20220413063733-65bf48ffb3a7 // indirect
 	github.com/bytedance/sonic v1.10.1 // indirect

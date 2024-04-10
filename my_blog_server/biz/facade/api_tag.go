@@ -4,11 +4,11 @@ import (
 	"context"
 	"net/http"
 
-	"my_blog/biz/common/resp"
-	"my_blog/biz/model/blog/api"
-	"my_blog/biz/service"
-
 	"github.com/cloudwego/hertz/pkg/app"
+
+	"my_blog/biz/application"
+	"my_blog/biz/infra/pkg/resp"
+	"my_blog/biz/model/blog/api"
 )
 
 func CreateTagAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIResponse) {
@@ -18,9 +18,9 @@ func CreateTagAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIRes
 		return http.StatusBadRequest, resp.NewParameterErrorResp()
 	}
 
-	rsp, err := service.CreateTagAPI(ctx, req)
+	rsp, err := application.GetAdminApplication().CreateTag(ctx, req)
 	if err != nil {
-		return http.StatusOK, resp.NewInternalErrorResp()
+		return resp.NewErrorAPIResponse(err)
 	}
 	return http.StatusOK, resp.NewAPIResponse(rsp)
 
@@ -33,9 +33,9 @@ func UpdateTagAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIRes
 		return http.StatusBadRequest, resp.NewParameterErrorResp()
 	}
 
-	rsp, err := service.UpdateTagAPI(ctx, req)
+	rsp, err := application.GetAdminApplication().UpdateTag(ctx, req)
 	if err != nil {
-		return http.StatusOK, resp.NewInternalErrorResp()
+		return resp.NewErrorAPIResponse(err)
 	}
 	return http.StatusOK, resp.NewAPIResponse(rsp)
 }
@@ -47,9 +47,9 @@ func DeleteTagAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIRes
 		return http.StatusBadRequest, resp.NewParameterErrorResp()
 	}
 
-	rsp, err := service.DeleteTagAPI(ctx, req)
+	rsp, err := application.GetAdminApplication().DeleteTag(ctx, req)
 	if err != nil {
-		return http.StatusOK, resp.NewInternalErrorResp()
+		return resp.NewErrorAPIResponse(err)
 	}
 	return http.StatusOK, resp.NewAPIResponse(rsp)
 }
@@ -61,9 +61,9 @@ func GetTagListAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIRe
 		return http.StatusBadRequest, resp.NewParameterErrorResp()
 	}
 
-	rsp, err := service.GetTagListAPI(ctx, req)
+	rsp, err := application.GetAdminApplication().GetTagList(ctx, req)
 	if err != nil {
-		return http.StatusOK, resp.NewInternalErrorResp()
+		return resp.NewErrorAPIResponse(err)
 	}
 	return http.StatusOK, resp.NewAPIResponse(rsp)
 }

@@ -5,7 +5,7 @@ func InitConfig() error {
 	if err != nil {
 		return err
 	}
-	err = InitStorageConfig()
+	err = InitCachexConfig()
 	if err != nil {
 		return err
 	}

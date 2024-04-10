@@ -6,9 +6,9 @@ import (
 
 	"github.com/cloudwego/hertz/pkg/app"
 
-	"my_blog/biz/common/resp"
+	"my_blog/biz/application"
+	"my_blog/biz/infra/pkg/resp"
 	"my_blog/biz/model/blog/api"
-	"my_blog/biz/service"
 )
 
 func SearchAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIResponse) {
@@ -19,6 +19,9 @@ func SearchAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIRespon
 		return http.StatusBadRequest, resp.NewParameterErrorResp()
 	}
 
-	rsp := service.SearchAPI(ctx, &req)
+	rsp, err := application.GetBlogApplication().Search(ctx, &req)
+	if err != nil {
+		return resp.NewErrorAPIResponse(err)
+	}
 	return http.StatusOK, resp.NewAPIResponse(rsp)
 }

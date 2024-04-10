@@ -4,11 +4,11 @@ import (
 	"context"
 	"net/http"
 
-	"my_blog/biz/common/resp"
-	"my_blog/biz/model/blog/api"
-	"my_blog/biz/service"
-
 	"github.com/cloudwego/hertz/pkg/app"
+
+	"my_blog/biz/application"
+	"my_blog/biz/infra/pkg/resp"
+	"my_blog/biz/model/blog/api"
 )
 
 func CreatePostAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIResponse) {
@@ -18,7 +18,10 @@ func CreatePostAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIRe
 		return http.StatusBadRequest, resp.NewParameterErrorResp()
 	}
 
-	rsp := service.CreatePostAPI(ctx, req)
+	rsp, err := application.GetAdminApplication().CreatePost(ctx, req)
+	if err != nil {
+		return resp.NewErrorAPIResponse(err)
+	}
 	return http.StatusOK, resp.NewAPIResponse(rsp)
 }
 
@@ -29,7 +32,10 @@ func GetPostAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIRespo
 		return http.StatusBadRequest, resp.NewParameterErrorResp()
 	}
 
-	rsp := service.GetPostAPI(ctx, req)
+	rsp, err := application.GetAdminApplication().GetPostByID(ctx, req)
+	if err != nil {
+		return resp.NewErrorAPIResponse(err)
+	}
 	return http.StatusOK, resp.NewAPIResponse(rsp)
 }
 
@@ -40,7 +46,10 @@ func UpdatePostAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIRe
 		return http.StatusBadRequest, resp.NewParameterErrorResp()
 	}
 
-	rsp := service.UpdatePostAPI(ctx, req)
+	rsp, err := application.GetAdminApplication().UpdatePost(ctx, req)
+	if err != nil {
+		return resp.NewErrorAPIResponse(err)
+	}
 	return http.StatusOK, resp.NewAPIResponse(rsp)
 }
 
@@ -51,7 +60,10 @@ func UpdatePostStatusAPI(ctx context.Context, c *app.RequestContext) (int, *resp
 		return http.StatusBadRequest, resp.NewParameterErrorResp()
 	}
 
-	rsp := service.UpdatePostStatusAPI(ctx, req)
+	rsp, err := application.GetAdminApplication().UpdatePostStatus(ctx, req)
+	if err != nil {
+		return resp.NewErrorAPIResponse(err)
+	}
 	return http.StatusOK, resp.NewAPIResponse(rsp)
 }
 
@@ -62,7 +74,10 @@ func GetPostListAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIR
 		return http.StatusBadRequest, resp.NewParameterErrorResp()
 	}
 
-	rsp := service.GetPostListAPI(ctx, req)
+	rsp, err := application.GetAdminApplication().GetPostList(ctx, req)
+	if err != nil {
+		return resp.NewErrorAPIResponse(err)
+	}
 	return http.StatusOK, resp.NewAPIResponse(rsp)
 }
 
@@ -73,6 +88,9 @@ func DeletePostAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIRe
 		return http.StatusBadRequest, resp.NewParameterErrorResp()
 	}
 
-	rsp := service.DeletePostAPI(ctx, req)
+	rsp, err := application.GetAdminApplication().DeletePost(ctx, req)
+	if err != nil {
+		return resp.NewErrorAPIResponse(err)
+	}
 	return http.StatusOK, resp.NewAPIResponse(rsp)
 }

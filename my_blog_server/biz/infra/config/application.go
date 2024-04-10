@@ -11,7 +11,8 @@ const (
 	DefaultBlogSubTitle    = "小朱的博客"            // 默认子标题
 	DefaultBlogDescription = "这是kakkk（小朱）的技术博客" // 默认博客描述
 	DefaultUserName        = "kakkk"            // 默认显示坐着（兜底）
-	pageListSize           = 5                  // 列表页大小
+	DefaultUserID          = 0
+	pageListSize           = 5 // 列表页大小
 	DefaultGravatarCDN     = "https://dn-qiniu-avatar.qbox.me/avatar/"
 )
 

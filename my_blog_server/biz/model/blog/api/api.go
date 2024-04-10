@@ -13566,7 +13566,7 @@ func (p *APIServiceClient) DeleteTagAPI(ctx context.Context, request *DeleteTagA
 	var _args APIServiceDeleteTagAPIArgs
 	_args.Request = request
 	var _result APIServiceDeleteTagAPIResult
-	if err = p.Client_().Call(ctx, "DeleteTagAPI", &_args, &_result); err != nil {
+	if err = p.Client_().Call(ctx, "DeleteTag", &_args, &_result); err != nil {
 		return
 	}
 	return _result.GetSuccess(), nil
@@ -13783,7 +13783,7 @@ func NewAPIServiceProcessor(handler APIService) *APIServiceProcessor {
 	self.AddToProcessorMap("GetUserInfoAPI", &aPIServiceProcessorGetUserInfoAPI{handler: handler})
 	self.AddToProcessorMap("CreateTagAPI", &aPIServiceProcessorCreateTagAPI{handler: handler})
 	self.AddToProcessorMap("UpdateTagAPI", &aPIServiceProcessorUpdateTagAPI{handler: handler})
-	self.AddToProcessorMap("DeleteTagAPI", &aPIServiceProcessorDeleteTagAPI{handler: handler})
+	self.AddToProcessorMap("DeleteTag", &aPIServiceProcessorDeleteTagAPI{handler: handler})
 	self.AddToProcessorMap("GetTagListAPI", &aPIServiceProcessorGetTagListAPI{handler: handler})
 	self.AddToProcessorMap("CreateCategoryAPI", &aPIServiceProcessorCreateCategoryAPI{handler: handler})
 	self.AddToProcessorMap("UpdateCategoryAPI", &aPIServiceProcessorUpdateCategoryAPI{handler: handler})
@@ -14026,7 +14026,7 @@ func (p *aPIServiceProcessorDeleteTagAPI) Process(ctx context.Context, seqId int
 	if err = args.Read(iprot); err != nil {
 		iprot.ReadMessageEnd()
 		x := thrift.NewTApplicationException(thrift.PROTOCOL_ERROR, err.Error())
-		oprot.WriteMessageBegin("DeleteTagAPI", thrift.EXCEPTION, seqId)
+		oprot.WriteMessageBegin("DeleteTag", thrift.EXCEPTION, seqId)
 		x.Write(oprot)
 		oprot.WriteMessageEnd()
 		oprot.Flush(ctx)
@@ -14038,8 +14038,8 @@ func (p *aPIServiceProcessorDeleteTagAPI) Process(ctx context.Context, seqId int
 	result := APIServiceDeleteTagAPIResult{}
 	var retval *CommonResponse
 	if retval, err2 = p.handler.DeleteTagAPI(ctx, args.Request); err2 != nil {
-		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing DeleteTagAPI: "+err2.Error())
-		oprot.WriteMessageBegin("DeleteTagAPI", thrift.EXCEPTION, seqId)
+		x := thrift.NewTApplicationException(thrift.INTERNAL_ERROR, "Internal error processing DeleteTag: "+err2.Error())
+		oprot.WriteMessageBegin("DeleteTag", thrift.EXCEPTION, seqId)
 		x.Write(oprot)
 		oprot.WriteMessageEnd()
 		oprot.Flush(ctx)
@@ -14047,7 +14047,7 @@ func (p *aPIServiceProcessorDeleteTagAPI) Process(ctx context.Context, seqId int
 	} else {
 		result.Success = retval
 	}
-	if err2 = oprot.WriteMessageBegin("DeleteTagAPI", thrift.REPLY, seqId); err2 != nil {
+	if err2 = oprot.WriteMessageBegin("DeleteTag", thrift.REPLY, seqId); err2 != nil {
 		err = err2
 	}
 	if err2 = result.Write(oprot); err == nil && err2 != nil {

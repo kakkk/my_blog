@@ -3,14 +3,14 @@ package facade
 import (
 	"context"
 
-	"my_blog/biz/common/resp"
-	"my_blog/biz/consts"
-	"my_blog/biz/service"
-
 	"github.com/cloudwego/hertz/pkg/app"
+
+	"my_blog/biz/application"
+	"my_blog/biz/consts"
+	"my_blog/biz/infra/pkg/resp"
 )
 
 func ArchivesPage(ctx context.Context, c *app.RequestContext) (int, string, resp.IPageResponse) {
-	rsp, pErr := service.ArchivesPage(ctx)
+	rsp, pErr := application.GetBlogApplication().GetArchives(ctx)
 	return resp.PackPageResponse(rsp, pErr, consts.IndexTmpl)
 }

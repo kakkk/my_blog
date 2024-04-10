@@ -12,6 +12,10 @@ import (
 	"gorm.io/gorm"
 )
 
+const (
+	DefaultPageLimit = 10
+)
+
 var (
 	db *gorm.DB
 )

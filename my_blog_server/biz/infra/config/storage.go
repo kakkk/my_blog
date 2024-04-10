@@ -133,26 +133,26 @@ func (r *RedisSetting) GetTTL() time.Duration {
 	return time.Duration(ttl) * time.Minute
 }
 
-var storageConfig map[string]*StorageSetting
+var cachexConfig map[string]*StorageSetting
 
-func InitStorageConfig() error {
-	storageConfig = make(map[string]*StorageSetting)
-	f, err := os.ReadFile("../conf/storage.yaml")
+func InitCachexConfig() error {
+	cachexConfig = make(map[string]*StorageSetting)
+	f, err := os.ReadFile("../conf/cachex.yaml")
 	if err != nil {
 		return err
 	}
-	err = yaml.Unmarshal(f, &storageConfig)
+	err = yaml.Unmarshal(f, &cachexConfig)
 	if err != nil {
 		return err
 	}
-	for name, setting := range storageConfig {
+	for name, setting := range cachexConfig {
 		setting.Name = name
 	}
 	return nil
 }
 
-func GetStorageSettingByName(name string) *StorageSetting {
-	cfg, ok := storageConfig[name]
+func GetCachexSettingByName(name string) *StorageSetting {
+	cfg, ok := cachexConfig[name]
 	if !ok {
 		panic(fmt.Sprintf("config: %v not found", name))
 	}

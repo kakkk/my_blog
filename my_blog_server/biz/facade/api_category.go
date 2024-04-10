@@ -4,11 +4,11 @@ import (
 	"context"
 	"net/http"
 
-	"my_blog/biz/common/resp"
-	"my_blog/biz/model/blog/api"
-	"my_blog/biz/service"
-
 	"github.com/cloudwego/hertz/pkg/app"
+
+	"my_blog/biz/application"
+	"my_blog/biz/infra/pkg/resp"
+	"my_blog/biz/model/blog/api"
 )
 
 func CreateCategoryAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIResponse) {
@@ -18,18 +18,21 @@ func CreateCategoryAPI(ctx context.Context, c *app.RequestContext) (int, *resp.A
 		return http.StatusBadRequest, resp.NewParameterErrorResp()
 	}
 
-	rsp := service.CreateCategoryAPI(ctx, req)
+	rsp, err := application.GetAdminApplication().CreateCategory(ctx, req)
+	if err != nil {
+		return resp.NewErrorAPIResponse(err)
+	}
 	return http.StatusOK, resp.NewAPIResponse(rsp)
 }
 
 func UpdateCategoryAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIResponse) {
 	req := &api.UpdateCategoryAPIRequest{}
 	err := c.BindAndValidate(&req)
-	if err != nil {
-		return http.StatusBadRequest, resp.NewParameterErrorResp()
-	}
 
-	rsp := service.UpdateCategoryAPI(ctx, req)
+	rsp, err := application.GetAdminApplication().UpdateCategory(ctx, req)
+	if err != nil {
+		return resp.NewErrorAPIResponse(err)
+	}
 	return http.StatusOK, resp.NewAPIResponse(rsp)
 }
 
@@ -40,7 +43,10 @@ func DeleteCategoryAPI(ctx context.Context, c *app.RequestContext) (int, *resp.A
 		return http.StatusBadRequest, resp.NewParameterErrorResp()
 	}
 
-	rsp := service.DeleteCategoryAPI(ctx, req)
+	rsp, err := application.GetAdminApplication().DeleteCategory(ctx, req)
+	if err != nil {
+		return resp.NewErrorAPIResponse(err)
+	}
 	return http.StatusOK, resp.NewAPIResponse(rsp)
 }
 
@@ -51,11 +57,17 @@ func UpdateCategoryOrderAPI(ctx context.Context, c *app.RequestContext) (int, *r
 		return http.StatusBadRequest, resp.NewParameterErrorResp()
 	}
 
-	rsp := service.UpdateCategoryOrderAPI(ctx, req)
+	// TODO
+	rsp := &api.CommonResponse{
+		BaseResp: resp.NewSuccessBaseResp(),
+	}
 	return http.StatusOK, resp.NewAPIResponse(rsp)
 }
 
 func GetCategoryListAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIResponse) {
-	rsp := service.GetCategoryListAPI(ctx)
+	rsp, err := application.GetAdminApplication().GetCategoryList(ctx)
+	if err != nil {
+		return resp.NewErrorAPIResponse(err)
+	}
 	return http.StatusOK, resp.NewAPIResponse(rsp)
 }

@@ -6,7 +6,7 @@ import (
 
 	"github.com/cloudwego/hertz/pkg/app"
 
-	"my_blog/biz/common/resp"
+	"my_blog/biz/infra/pkg/resp"
 	"my_blog/biz/model/blog/api"
 )
 

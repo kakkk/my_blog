@@ -4,6 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+
+	"my_blog/biz/consts"
 )
 
 var (
@@ -65,4 +67,11 @@ func NewFailErrPageError() *PageError {
 		err:  PageErrFail,
 		code: http.StatusOK,
 	}
+}
+
+func NewPageErrorByErr(err error) *PageError {
+	if errors.Is(err, consts.ErrRecordNotFound) {
+		return NewNotFoundErrPageError()
+	}
+	return NewFailErrPageError()
 }

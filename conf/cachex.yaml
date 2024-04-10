@@ -1,0 +1,169 @@
+article:
+  expire: 20 # Minute
+  key_format: 'my_blog:article:%v'
+  cachex_setting:
+    allow_downgrade: true
+    downgrade_expire: 180 # Minute
+    caches:
+      - redis
+      - freecache
+  freecache_setting:
+    size: 100   # MB
+    ttl: 30     # Minute
+  redis_setting:
+    ttl: 90     # Minute
+
+article_categories:
+  expire: 20 # Minute
+  key_format: 'my_blog:article_categories:%v'
+  cachex_setting:
+    allow_downgrade: true
+    downgrade_expire: 180 # Minute
+    caches:
+      - redis
+      - bigcache
+  bigcache_setting:
+    ttl: 30     # Minute
+  redis_setting:
+    ttl: 90     # Minute
+
+article_comments:
+  expire: 20 # Minute
+  key_format: 'my_blog:article_comments:%v'
+  cachex_setting:
+    allow_downgrade: true
+    downgrade_expire: 180 # Minute
+    caches:
+      - redis
+      - bigcache
+  bigcache_setting:
+    ttl: 30     # Minute
+  redis_setting:
+    ttl: 90     # Minute
+
+article_meta:
+  expire: 20 # Minute
+  key_format: 'my_blog:article_meta:%v'
+  cachex_setting:
+    allow_downgrade: true
+    downgrade_expire: 180 # Minute
+    caches:
+      - redis
+      - freecache
+  freecache_setting:
+    size: 100   # MB
+    ttl: 30     # Minute
+  redis_setting:
+    ttl: 90     # Minute
+
+article_post_ids:
+  expire: 20 # Minute
+  key_format: 'my_blog:article_post_ids:%v'
+  cachex_setting:
+    allow_downgrade: true
+    downgrade_expire: 180 # Minute
+    caches:
+      - redis
+      - bigcache
+  bigcache_setting:
+    ttl: 30     # Minute
+  redis_setting:
+    ttl: 90     # Minute
+
+article_tags:
+  expire: 20 # Minute
+  key_format: 'my_blog:article_tags:%v'
+  cachex_setting:
+    allow_downgrade: true
+    downgrade_expire: 180 # Minute
+    caches:
+      - redis
+      - bigcache
+  bigcache_setting:
+    ttl: 30     # Minute
+  redis_setting:
+    ttl: 90     # Minute
+
+category:
+  expire: 20 # Minute
+  key_format: 'my_blog:category:%v'
+  cachex_setting:
+    allow_downgrade: true
+    downgrade_expire: 180 # Minute
+    caches:
+      - redis
+      - bigcache
+  bigcache_setting:
+    ttl: 30     # Minute
+  redis_setting:
+    ttl: 90     # Minute
+
+category_article_ids:
+  expire: 20 # Minute
+  key_format: 'my_blog:category_article_ids:%v'
+  cachex_setting:
+    allow_downgrade: true
+    downgrade_expire: 180 # Minute
+    caches:
+      - redis
+      - bigcache
+  bigcache_setting:
+    ttl: 30     # Minute
+  redis_setting:
+    ttl: 90     # Minute
+
+category_list:
+  expire: 20 # Minute
+  key_format: 'my_blog:category_list'
+  cachex_setting:
+    allow_downgrade: true
+    downgrade_expire: 180 # Minute
+    caches:
+      - redis
+      - bigcache
+  bigcache_setting:
+    ttl: 30     # Minute
+  redis_setting:
+    ttl: 90     # Minute
+
+comment:
+  expire: 20 # Minute
+  key_format: 'my_blog:comment:%v'
+  cachex_setting:
+    allow_downgrade: true
+    downgrade_expire: 180 # Minute
+    caches:
+      - redis
+      - bigcache
+  bigcache_setting:
+    ttl: 30     # Minute
+  redis_setting:
+    ttl: 90     # Minute
+
+tag_article_ids:
+  expire: 20 # Minute
+  key_format: 'my_blog:tag_article_ids:%v'
+  cachex_setting:
+    allow_downgrade: true
+    downgrade_expire: 180 # Minute
+    caches:
+      - redis
+      - bigcache
+  bigcache_setting:
+    ttl: 30     # Minute
+  redis_setting:
+    ttl: 90     # Minute
+
+tag_list:
+  expire: 20 # Minute
+  key_format: 'my_blog:tag_list'
+  cachex_setting:
+    allow_downgrade: true
+    downgrade_expire: 180 # Minute
+    caches:
+      - redis
+      - bigcache
+  bigcache_setting:
+    ttl: 30     # Minute
+  redis_setting:
+    ttl: 90     # Minute

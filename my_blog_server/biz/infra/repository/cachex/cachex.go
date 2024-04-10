@@ -2,12 +2,14 @@ package cachex
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 
 	"github.com/kakkk/cachex"
 	"github.com/kakkk/cachex/cache"
 
+	"my_blog/biz/consts"
 	"my_blog/biz/infra/config"
 	"my_blog/biz/infra/pkg/log"
 	"my_blog/biz/infra/repository/redis"
@@ -62,4 +64,14 @@ func newGetDataKeyFunc[K comparable](format string) func(k K) string {
 	return func(k K) string {
 		return fmt.Sprintf(format, k)
 	}
+}
+
+func ParseErr(err error) error {
+	if err == nil {
+		return nil
+	}
+	if errors.Is(err, consts.ErrRecordNotFound) {
+		return cachex.ErrNotFound
+	}
+	return fmt.Errorf("sql error: %w", err)
 }

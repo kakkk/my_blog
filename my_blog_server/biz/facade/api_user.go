@@ -4,11 +4,11 @@ import (
 	"context"
 	"net/http"
 
-	"my_blog/biz/common/resp"
-	"my_blog/biz/model/blog/api"
-	"my_blog/biz/service"
-
 	"github.com/cloudwego/hertz/pkg/app"
+
+	"my_blog/biz/application"
+	"my_blog/biz/infra/pkg/resp"
+	"my_blog/biz/model/blog/api"
 )
 
 func LoginAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIResponse) {
@@ -18,18 +18,17 @@ func LoginAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIRespons
 		return http.StatusBadRequest, resp.NewParameterErrorResp()
 	}
 
-	rsp, err := service.LoginAPI(ctx, req)
+	rsp, err := application.GetAdminApplication().Login(ctx, req)
 	if err != nil {
-		return http.StatusOK, resp.NewInternalErrorResp()
+		return resp.NewErrorAPIResponse(err)
 	}
-
 	return http.StatusOK, resp.NewAPIResponse(rsp)
 }
 
 func GetUserInfoAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIResponse) {
-	rsp, err := service.GetUserInfoAPI(ctx)
+	rsp, err := application.GetAdminApplication().GetUserInfo(ctx)
 	if err != nil {
-		return http.StatusOK, resp.NewInternalErrorResp()
+		return resp.NewErrorAPIResponse(err)
 	}
 	return http.StatusOK, resp.NewAPIResponse(rsp)
 }

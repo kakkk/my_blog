@@ -6,10 +6,10 @@ import (
 
 	"github.com/cloudwego/hertz/pkg/app"
 
-	"my_blog/biz/common/resp"
+	"my_blog/biz/application"
 	"my_blog/biz/infra/misc"
+	"my_blog/biz/infra/pkg/resp"
 	"my_blog/biz/model/blog/api"
-	"my_blog/biz/service"
 )
 
 // ========管理员接口=========
@@ -76,7 +76,10 @@ func GetCommentListAPI(ctx context.Context, c *app.RequestContext) (int, *resp.A
 		return http.StatusBadRequest, resp.NewParameterErrorResp()
 	}
 
-	rsp := service.GetCommentListAPI(ctx, &req)
+	rsp, err := application.GetBlogApplication().GetCommentList(ctx, &req)
+	if err != nil {
+		return resp.NewErrorAPIResponse(err)
+	}
 	return http.StatusOK, resp.NewAPIResponse(rsp)
 }
 
@@ -98,7 +101,10 @@ func CommentArticleAPI(ctx context.Context, c *app.RequestContext) (int, *resp.A
 		return http.StatusBadRequest, resp.NewParameterErrorResp()
 	}
 
-	rsp := service.CommentArticleAPI(ctx, &req)
+	rsp, err := application.GetBlogApplication().CommentArticle(ctx, &req)
+	if err != nil {
+		return resp.NewErrorAPIResponse(err)
+	}
 
 	return http.StatusOK, resp.NewAPIResponse(rsp)
 }
@@ -122,6 +128,9 @@ func ReplyCommentAPI(ctx context.Context, c *app.RequestContext) (int, *resp.API
 		return http.StatusBadRequest, resp.NewParameterErrorResp()
 	}
 
-	rsp := service.ReplyCommentAPI(ctx, &req)
+	rsp, err := application.GetBlogApplication().ReplyComment(ctx, &req)
+	if err != nil {
+		return resp.NewErrorAPIResponse(err)
+	}
 	return http.StatusOK, resp.NewAPIResponse(rsp)
 }

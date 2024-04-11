@@ -12,13 +12,17 @@ import (
 	"my_blog/biz/domain"
 	"my_blog/biz/infra/config"
 	"my_blog/biz/infra/idgen"
+	"my_blog/biz/infra/pkg/env"
 	"my_blog/biz/infra/pkg/log"
 	"my_blog/biz/infra/repository"
 	"my_blog/biz/infra/session"
 )
 
 func main() {
-	// 先初始化配置
+	// 初始化环境
+	env.MustInitEnv()
+
+	// 始化配置
 	config.MustInit()
 
 	// 日志

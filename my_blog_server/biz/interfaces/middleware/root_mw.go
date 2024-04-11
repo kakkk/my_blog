@@ -16,11 +16,6 @@ func GetRootMW() []app.HandlerFunc {
 
 func GetNoRouteMW() []app.HandlerFunc {
 	return []app.HandlerFunc{
-		RequestIdMW(),
-		HertzLoggerMW(),
-		CorsMW(),
-		SessionMW(),
-		ServeAdminMW(),
 		NotFoundMW(),
 	}
 }

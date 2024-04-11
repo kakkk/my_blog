@@ -3,13 +3,16 @@
 package main
 
 import (
+	"context"
+	"fmt"
 	"html/template"
 
+	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/app/server"
 
-	"my_blog/biz/handler"
-	"my_blog/biz/middleware"
-	"my_blog/biz/middleware/static"
+	"my_blog/biz/infra/pkg/env"
+	"my_blog/biz/interfaces/handler"
+	"my_blog/biz/interfaces/middleware"
 )
 
 // customizeRegister registers customize routers.
@@ -19,10 +22,17 @@ func customizedRegister(r *server.Hertz) {
 			return template.HTML(s)
 		},
 	})
-	r.LoadHTMLGlob("../templates/*")
-	r.Static("/assets", "../")
-	r.Use(static.Serve("/admin", static.LocalFile("../admin", false)))
+	r.LoadHTMLGlob(fmt.Sprintf("%v/templates/*", env.RootPath()))
+	r.Static("/assets", env.RootPath())
+	r.StaticFS("/admin/", &app.FS{
+		Root:       env.RootPath(),
+		IndexNames: []string{"index.html"},
+		PathNotFound: func(ctx context.Context, c *app.RequestContext) {
+			c.File(fmt.Sprintf("%v/admin/index.html", env.RootPath()))
+			c.Abort()
+		},
+	})
 	r.NoRoute(middleware.GetNoRouteMW()...)
-	r.GET("/ping", middleware.RequestIdMW(), middleware.SessionMW(), middleware.AdminSessionMW(true), handler.Ping)
+	r.GET("/ping", middleware.RequestIdMW(), middleware.SessionMW(), middleware.AdminSessionMW(), handler.Ping)
 
 }

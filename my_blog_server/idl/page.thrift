@@ -118,31 +118,3 @@ struct PostPageResponse {
 
     255: required PageMeta Meta
 }
-
-
-service PageService {
-    // =============文章列表==============
-    // 首页
-    PostListPageResp IndexPage() (api.get="/");
-    PostListPageResp IndexByPaginationPage(1: PostListPageRequest request) (api.get="/page/:page");
-    // 分类
-    PostListPageResp CategoryPostPage(1: PostListPageRequest request) (api.get="/category/:name")
-    PostListPageResp CategoryPostByPaginationPage(1: PostListPageRequest request) (api.get="/category/:name/:page")
-    // 标签
-    PostListPageResp TagPostPage(1: PostListPageRequest request) (api.get="/tag/:name")
-    PostListPageResp TagPostByPaginationPage(1: PostListPageRequest request) (api.get="/tag/:name/:page")
-
-    // =============文章归档==============
-    ArchivesPageResp ArchivesPage() (api.get="/archives")
-
-    // =============标签云================
-    TermsPageResp TagsPage() (api.get="/tags")
-    TermsPageResp CategoriesPage() (api.get="/categories")
-
-    // ==============单页面=================
-    BasicPageResp SearchPage() (api.get="/search")
-
-    // ==============文章页=================
-    PostPageResponse PostPage(1: PostPageRequest request) (api.get="/archives/:post_id")
-
-}

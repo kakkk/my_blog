@@ -5,61 +5,40 @@ package main
 import (
 	"fmt"
 
-	"my_blog/biz/common/config"
-	"my_blog/biz/common/log"
-	"my_blog/biz/middleware"
-	"my_blog/biz/repository/index"
-	"my_blog/biz/repository/mysql"
-	"my_blog/biz/repository/redis"
-	"my_blog/biz/repository/storage"
-	"my_blog/biz/service"
-
 	"github.com/cloudwego/hertz/pkg/app/server"
 	"github.com/cloudwego/hertz/pkg/common/hlog"
 	hertzlogrus "github.com/hertz-contrib/logger/logrus"
+
+	"my_blog/biz/domain"
+	"my_blog/biz/infra/config"
+	"my_blog/biz/infra/idgen"
+	"my_blog/biz/infra/pkg/env"
+	"my_blog/biz/infra/pkg/log"
+	"my_blog/biz/infra/repository"
+	"my_blog/biz/infra/session"
 )
 
 func main() {
-	// config
-	if err := config.InitConfig(); err != nil {
-		panic(err)
-	}
-	conf := config.GetAppConfig()
+	// 初始化环境
+	env.MustInitEnv()
 
-	// logger
-	if err := log.InitLogger(conf.LogPath, conf.LogLevel); err != nil {
-		panic(err)
-	}
+	// 始化配置
+	config.MustInit()
 
-	// mysql
-	if err := mysql.InitMySQL(); err != nil {
-		panic(err)
-	}
+	// 日志
+	log.MustInit()
 
-	// redis
-	if err := redis.InitRedis(); err != nil {
-		panic(err)
-	}
+	// idgen
+	idgen.MustInit()
 
-	// storage
-	if err := storage.InitStorage(); err != nil {
-		panic(err)
-	}
+	// 存储
+	repository.MustInit()
 
 	// session
-	if err := middleware.InitSession(); err != nil {
-		panic(err)
-	}
+	session.MustInit()
 
-	// index
-	if err := index.InitArticleIndex(); err != nil {
-		panic(err)
-	}
-
-	// init service
-	if err := service.InitService(); err != nil {
-		panic(err)
-	}
+	// domain
+	domain.MustInit()
 
 	// hertz
 	h := initHertz()
@@ -68,9 +47,9 @@ func main() {
 }
 
 func initHertz() *server.Hertz {
-	conf := config.GetAppConfig()
+	cfg := config.GetAppConfig()
 	h := server.Default(
-		server.WithHostPorts(fmt.Sprintf("127.0.0.1:%v", conf.Port)),
+		server.WithHostPorts(fmt.Sprintf("127.0.0.1:%v", cfg.Port)),
 	)
 	hlog.SetLogger(hertzlogrus.NewLogger(
 		hertzlogrus.WithLogger(log.GetLogger()),

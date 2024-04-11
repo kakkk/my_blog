@@ -31,7 +31,9 @@ func (svc *ContentService) CreateArticle(ctx context.Context, articleDTO *dto.Ar
 			"title": articleDTO.Title,
 		},
 	)
-	var createdArticle *dto.Article
+
+	var article *entity.Article
+
 	// 开启事务
 	txErr := mysql.GetDB(ctx).Transaction(func(tx *gorm.DB) error {
 		// 先查询一下分类，不存在会返回NotFound
@@ -46,7 +48,7 @@ func (svc *ContentService) CreateArticle(ctx context.Context, articleDTO *dto.Ar
 			return err
 		}
 
-		article := entity.NewArticleByDTO(articleDTO, categoriesDTO, tagsDTO)
+		article = entity.NewArticleByDTO(articleDTO, categoriesDTO, tagsDTO)
 
 		// 创建文章
 		err = article.Create(tx)
@@ -68,8 +70,8 @@ func (svc *ContentService) CreateArticle(ctx context.Context, articleDTO *dto.Ar
 		logger.Errorf("create article with transaction fail:[%v]", txErr)
 		return nil, fmt.Errorf("create article with transaction fail:[%v]", txErr)
 	}
-
-	return createdArticle, nil
+	articleDTO.ID = article.ID
+	return articleDTO, nil
 }
 
 // UpdateArticle 更新文章

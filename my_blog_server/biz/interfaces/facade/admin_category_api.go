@@ -13,7 +13,7 @@ import (
 
 func CreateCategoryAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIResponse) {
 	req := &api.CreateCategoryAPIRequest{}
-	err := c.BindAndValidate(&req)
+	err := c.BindAndValidate(req)
 	if err != nil {
 		return http.StatusBadRequest, resp.NewParameterErrorResp()
 	}
@@ -27,7 +27,7 @@ func CreateCategoryAPI(ctx context.Context, c *app.RequestContext) (int, *resp.A
 
 func UpdateCategoryAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIResponse) {
 	req := &api.UpdateCategoryAPIRequest{}
-	err := c.BindAndValidate(&req)
+	err := c.BindAndValidate(req)
 
 	rsp, err := application.GetAdminApplication().UpdateCategory(ctx, req)
 	if err != nil {
@@ -38,7 +38,7 @@ func UpdateCategoryAPI(ctx context.Context, c *app.RequestContext) (int, *resp.A
 
 func DeleteCategoryAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIResponse) {
 	req := &api.DeleteCategoryAPIRequest{}
-	err := c.BindAndValidate(&req)
+	err := c.BindAndValidate(req)
 	if err != nil {
 		return http.StatusBadRequest, resp.NewParameterErrorResp()
 	}
@@ -52,7 +52,7 @@ func DeleteCategoryAPI(ctx context.Context, c *app.RequestContext) (int, *resp.A
 
 func UpdateCategoryOrderAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIResponse) {
 	req := &api.UpdateCategoryOrderAPIRequest{}
-	err := c.BindAndValidate(&req)
+	err := c.BindAndValidate(req)
 	if err != nil {
 		return http.StatusBadRequest, resp.NewParameterErrorResp()
 	}

@@ -13,7 +13,7 @@ import (
 
 func CreateTagAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIResponse) {
 	req := &api.CreateTagAPIRequest{}
-	err := c.BindAndValidate(&req)
+	err := c.BindAndValidate(req)
 	if err != nil {
 		return http.StatusBadRequest, resp.NewParameterErrorResp()
 	}
@@ -28,7 +28,7 @@ func CreateTagAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIRes
 
 func UpdateTagAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIResponse) {
 	req := &api.UpdateTagAPIRequest{}
-	err := c.BindAndValidate(&req)
+	err := c.BindAndValidate(req)
 	if err != nil {
 		return http.StatusBadRequest, resp.NewParameterErrorResp()
 	}
@@ -42,7 +42,7 @@ func UpdateTagAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIRes
 
 func DeleteTagAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIResponse) {
 	req := &api.DeleteTagAPIRequest{}
-	err := c.BindAndValidate(&req)
+	err := c.BindAndValidate(req)
 	if err != nil {
 		return http.StatusBadRequest, resp.NewParameterErrorResp()
 	}
@@ -56,7 +56,7 @@ func DeleteTagAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIRes
 
 func GetTagListAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIResponse) {
 	req := &api.GetTagListAPIRequest{}
-	err := c.BindAndValidate(&req)
+	err := c.BindAndValidate(req)
 	if err != nil {
 		return http.StatusBadRequest, resp.NewParameterErrorResp()
 	}

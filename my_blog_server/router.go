@@ -25,6 +25,6 @@ func customizedRegister(r *server.Hertz) {
 	r.Static("/assets", root)
 	r.Use(static.Serve("/admin", static.LocalFile(root+"/admin", false)))
 	r.NoRoute(middleware.GetNoRouteMW()...)
-	r.GET("/ping", middleware.RequestIdMW(), middleware.SessionMW(), middleware.AdminSessionMW(true), handler.Ping)
+	r.GET("/ping", middleware.RequestIdMW(), middleware.SessionMW(), middleware.AdminSessionMW(), handler.Ping)
 
 }

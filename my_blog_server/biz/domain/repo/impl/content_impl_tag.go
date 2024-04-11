@@ -52,7 +52,7 @@ func (c ContentRepoImpl) GetOrCreateTagsByNames(db *gorm.DB, names []string) ([]
 }
 
 func (c ContentRepoImpl) DeleteArticleTagRelationByArticleID(db *gorm.DB, articleID int64) error {
-	return persistence.DeleteArticleCategoryRelationByArticleID(db, articleID)
+	return persistence.DeleteArticleTagRelationByArticleID(db, articleID)
 }
 
 func (c ContentRepoImpl) UpsertArticleTagRelation(db *gorm.DB, articleTags []*model.ArticleTag) error {

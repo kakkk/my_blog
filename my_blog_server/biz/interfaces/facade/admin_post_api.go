@@ -8,12 +8,13 @@ import (
 
 	"my_blog/biz/application"
 	"my_blog/biz/hertz_gen/blog/api"
+	"my_blog/biz/infra/pkg/log"
 	"my_blog/biz/infra/pkg/resp"
 )
 
 func CreatePostAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIResponse) {
 	req := &api.CreatePostAPIRequest{}
-	err := c.BindAndValidate(&req)
+	err := c.BindAndValidate(req)
 	if err != nil {
 		return http.StatusBadRequest, resp.NewParameterErrorResp()
 	}
@@ -27,7 +28,7 @@ func CreatePostAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIRe
 
 func GetPostAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIResponse) {
 	req := &api.GetPostAPIRequest{}
-	err := c.BindAndValidate(&req)
+	err := c.BindAndValidate(req)
 	if err != nil {
 		return http.StatusBadRequest, resp.NewParameterErrorResp()
 	}
@@ -41,7 +42,7 @@ func GetPostAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIRespo
 
 func UpdatePostAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIResponse) {
 	req := &api.UpdatePostAPIRequest{}
-	err := c.BindAndValidate(&req)
+	err := c.BindAndValidate(req)
 	if err != nil {
 		return http.StatusBadRequest, resp.NewParameterErrorResp()
 	}
@@ -55,7 +56,7 @@ func UpdatePostAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIRe
 
 func UpdatePostStatusAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIResponse) {
 	req := &api.UpdatePostStatusAPIRequest{}
-	err := c.BindAndValidate(&req)
+	err := c.BindAndValidate(req)
 	if err != nil {
 		return http.StatusBadRequest, resp.NewParameterErrorResp()
 	}
@@ -69,8 +70,9 @@ func UpdatePostStatusAPI(ctx context.Context, c *app.RequestContext) (int, *resp
 
 func GetPostListAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIResponse) {
 	req := &api.GetPostListAPIRequest{}
-	err := c.BindAndValidate(&req)
+	err := c.BindAndValidate(req)
 	if err != nil {
+		log.GetLoggerWithCtx(ctx).Errorf("parameter error: %v", err)
 		return http.StatusBadRequest, resp.NewParameterErrorResp()
 	}
 
@@ -83,7 +85,7 @@ func GetPostListAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIR
 
 func DeletePostAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIResponse) {
 	req := &api.DeletePostAPIRequest{}
-	err := c.BindAndValidate(&req)
+	err := c.BindAndValidate(req)
 	if err != nil {
 		return http.StatusBadRequest, resp.NewParameterErrorResp()
 	}

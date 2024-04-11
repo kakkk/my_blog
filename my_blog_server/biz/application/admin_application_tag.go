@@ -32,6 +32,7 @@ func (a *AdminApplication) CreateTag(ctx context.Context, req *api.CreateTagAPIR
 func (a *AdminApplication) UpdateTag(ctx context.Context, req *api.UpdateTagAPIRequest) (*api.CommonResponse, error) {
 	logger := log.GetLoggerWithCtx(ctx).WithField("tag_id", req.GetID())
 	tag := entity.NewTagByDTO(&dto.Tag{
+		ID:      req.GetID(),
 		TagName: req.GetName(),
 	})
 	err := tag.Update(ctx)

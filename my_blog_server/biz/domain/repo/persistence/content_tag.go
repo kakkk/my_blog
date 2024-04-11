@@ -41,7 +41,7 @@ func UpdateTagByID(db *gorm.DB, id int64, tag *model.Tag) error {
 	err := db.Model(&model.Tag{}).
 		Where("id = ?", id).
 		Updates(map[string]any{
-			"name":      tag.TagName,
+			"tag_name":  tag.TagName,
 			"update_at": time.Now(),
 		}).Error
 	if err != nil {

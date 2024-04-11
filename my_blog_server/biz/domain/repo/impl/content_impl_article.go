@@ -111,14 +111,14 @@ func (c ContentRepoImpl) SearchPostListByLimit(db *gorm.DB, keyword *string, ids
 		articleDTO := dto.NewArticleByModel(article)
 		// 分类
 		categoryIDs := articleIDToCategoryIDs[article.ID]
-		categoriesDTO := make([]*dto.Category, len(categoryIDs))
+		categoriesDTO := make([]*dto.Category, 0, len(categoryIDs))
 		for _, cID := range categoryIDs {
 			categoriesDTO = append(categoriesDTO, dto.NewCategoryByModel(categories[cID]))
 		}
 		articleDTO.Categories = categoriesDTO
 		// 标签
 		tagIDs := articleIDToTagIDs[article.ID]
-		tagsDTO := make([]*dto.Tag, len(tagIDs))
+		tagsDTO := make([]*dto.Tag, 0, len(tagIDs))
 		for _, tID := range tagIDs {
 			tagsDTO = append(tagsDTO, dto.NewTagByModel(tags[tID]))
 		}

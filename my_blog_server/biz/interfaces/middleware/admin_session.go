@@ -12,13 +12,15 @@ import (
 	"github.com/hertz-contrib/sessions"
 )
 
-func AdminSessionMW(auth bool) app.HandlerFunc {
+func AdminSessionMW() app.HandlerFunc {
 	return func(ctx context.Context, c *app.RequestContext) {
 		logger := log.GetLoggerWithCtx(ctx)
 		session := sessions.DefaultMany(c, "admin_session")
 		ctx = context.WithValue(ctx, "admin_session", session)
 		ctx = context.WithValue(ctx, "session_id", session.ID())
-		if !auth {
+		path := string(c.Request.URI().Path())
+		// 登录接口跳过
+		if path == "/api/admin/login" {
 			c.Next(ctx)
 		}
 		userID, ok := session.Get("user_id").(int64)

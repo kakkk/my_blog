@@ -64,15 +64,11 @@ func _searchapiMw() []app.HandlerFunc {
 
 func _adminMw() []app.HandlerFunc {
 	return []app.HandlerFunc{
-		middleware.AdminSessionMW(false),
+		middleware.AdminSessionMW(),
 	}
 }
 
-func _loginapiMw() []app.HandlerFunc {
-	return []app.HandlerFunc{
-		middleware.AdminSessionMW(false),
-	}
-}
+func _loginapiMw() []app.HandlerFunc { return nil }
 
 func _categoryMw() []app.HandlerFunc {
 	// your code...

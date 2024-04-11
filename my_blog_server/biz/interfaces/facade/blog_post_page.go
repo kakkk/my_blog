@@ -15,7 +15,7 @@ import (
 
 func PostPage(ctx context.Context, c *app.RequestContext) (int, string, resp.IPageResponse) {
 	req := &page.PostPageRequest{}
-	err := c.BindAndValidate(&req)
+	err := c.BindAndValidate(req)
 	if err != nil {
 		log.GetLoggerWithCtx(ctx).Warnf("parameter error:[%v]", err)
 		return resp.PackPageResponse(nil, errorx.NewNotFoundErrPageError(), consts.IndexTmpl)

@@ -6,21 +6,16 @@ import {
   Input,
   Message,
   Popconfirm,
-  Select,
   Table,
 } from '@arco-design/web-react';
 import { ColumnProps } from '@arco-design/web-react/es/Table/interface';
 import { IconLink } from '@arco-design/web-react/icon';
 import styles from './style/index.module.less';
 import history from '../../../history';
-import { deletePage, editPage, getPage, getPageList } from '../../../api/page';
+import { deletePage, getPageList } from '../../../api/page';
 
 export default function PageList() {
-  const options = ['是', '否'];
   const [colData, setColData] = React.useState([] as any[]);
-  useEffect(() => {
-    fetchData();
-  }, []);
   const fetchData = async () => {
     try {
       const res: any = await getPageList();
@@ -28,7 +23,7 @@ export default function PageList() {
         if (res.data === null) {
           setColData([] as any[]);
         } else {
-          setColData(res.data);
+          setColData(res.data.page_list);
         }
       } else {
         Message.error(res.msg);
@@ -36,6 +31,11 @@ export default function PageList() {
     } finally {
     }
   };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   const onDelete = async (id: number) => {
     try {
       const res: any = await deletePage(id);
@@ -45,30 +45,6 @@ export default function PageList() {
       } else {
         Message.error(res.msg);
       }
-    } finally {
-    }
-  };
-  const onUpdateIsShow = async (id: number, isShow: boolean) => {
-    try {
-      const before: any = await getPage(id);
-      if (before.code === 0) {
-        const res: any = await editPage(
-          id,
-          before.data.title,
-          before.data.content,
-          isShow,
-          before.data.slug
-        );
-        if (res.code === 0) {
-          Message.success('修改成功');
-          return true;
-        }
-        await fetchData();
-        Message.error(res.msg);
-      }
-      await fetchData();
-      Message.error(before.msg);
-      return false;
     } finally {
     }
   };
@@ -86,7 +62,7 @@ export default function PageList() {
               type="text"
               icon={<IconLink />}
               onClick={() => {
-                window.open(`http://localhost:8080/api/v1/page/${record.id}`);
+                window.open(`http://localhost:8888/pages/${record.slug}`);
               }}
             />
           </div>
@@ -97,23 +73,6 @@ export default function PageList() {
       title: '缩略名',
       dataIndex: 'slug',
       align: 'center',
-    },
-    {
-      title: '首页显示',
-      dataIndex: 'is_show',
-      align: 'center',
-      render: (_, record) => {
-        return (
-          <Select
-            options={options}
-            defaultValue={record.is_show ? '是' : '否'}
-            style={{ width: 70 }}
-            onChange={(value) => {
-              onUpdateIsShow(record.id, value === '是');
-            }}
-          />
-        );
-      },
     },
     {
       title: '操作',
@@ -168,11 +127,11 @@ export default function PageList() {
               history.push('/page/edit');
             }}
           >
-            添加文章
+            添加页面
           </Button>
           <Input.Search style={{ width: 300 }} searchButton placeholder="搜索" />
         </div>
-        <Table rowKey="id" columns={columns} border={false} data={colData} />
+        <Table rowKey="id" columns={columns} border={false} data={colData} pagination={false} />
       </Card>
     </div>
   );

@@ -3,7 +3,6 @@ import {
   Breadcrumb,
   Button,
   Card,
-  Checkbox,
   Form,
   Input,
   Message,
@@ -23,7 +22,6 @@ import { ReducerState } from '../../../redux';
 export default function PageEdit(props) {
   const [text, setText] = useState('');
   const [visible, setVisible] = React.useState(false);
-  const [isShow, setIsShow] = React.useState(false);
   const [slug, setSlug] = useState('');
   const [title, setTitle] = useState('');
   const theme = useSelector((state: ReducerState) => state.global.theme);
@@ -36,12 +34,10 @@ export default function PageEdit(props) {
           setTitle(res.data.title);
           setSlug(res.data.slug);
           setText(res.data.content);
-          setIsShow(res.data.is_show);
         } else {
           setTitle('');
           setSlug('');
           setText('');
-          setIsShow(false);
         }
       } else {
         Message.error(res.msg);
@@ -54,9 +50,9 @@ export default function PageEdit(props) {
       fetchData(getUrlParams().id);
     }
   }, [props.location]);
-  const createPage = async (title: string, content: string, isShow: boolean, slug: string) => {
+  const createPage = async (title: string, content: string, slug: string) => {
     try {
-      const res: any = await addPage(title, content, isShow, slug);
+      const res: any = await addPage(title, content, slug);
       if (res.code === 0) {
         Message.success('发布成功');
         history.push(`/page/edit?id=${res.data.id}`);
@@ -68,12 +64,12 @@ export default function PageEdit(props) {
   };
 
   const onCreate = async () => {
-    await createPage(title, text, isShow, slug);
+    await createPage(title, text, slug);
   };
 
   const onUpdate = async () => {
     try {
-      const res: any = await editPage(getUrlParams().id, title, text, isShow, slug);
+      const res: any = await editPage(getUrlParams().id, title, text, slug);
       if (res.code === 0) {
         Message.success('发布成功');
       } else {
@@ -149,11 +145,6 @@ export default function PageEdit(props) {
               content={
                 <div>
                   <Form labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>
-                    <FormItem label="显示">
-                      <Checkbox checked={isShow} onChange={setIsShow}>
-                        首页显示
-                      </Checkbox>
-                    </FormItem>
                     <FormItem label="缩略名">
                       <Input value={slug} onChange={setSlug} />
                     </FormItem>

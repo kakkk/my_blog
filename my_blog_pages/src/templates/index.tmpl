@@ -12,6 +12,8 @@
         {{- template "post_list" . }}
     {{else if (eq .Meta.PageType "PAGE_POST")}}
         {{- template "post" .}}
+    {{else if (eq .Meta.PageType "PAGE_PAGE")}}
+        {{- template "page" .}}
     {{else if (eq .Meta.PageType "PAGE_TAG_LIST" "PAGE_CATEGORY_LIST")}}
         {{- template "terms" .}}
     {{- else if (eq .Meta.PageType "PAGE_ARCHIVES")}}

@@ -18,9 +18,6 @@ func Register(r *server.Hertz) {
 
 	root := r.Group("/", rootMw()...)
 	root.GET("/", append(_indexpageMw(), blog.IndexPage)...)
-	root.GET("/archives", append(_archivespageMw(), blog.ArchivesPage)...)
-	_archives := root.Group("/archives", _archivesMw()...)
-	_archives.GET("/:post_id", append(_postpageMw(), blog.PostPage)...)
 	root.GET("/categories", append(_categoriespageMw(), blog.CategoriesPage)...)
 	root.GET("/search", append(_searchpageMw(), blog.SearchPage)...)
 	root.GET("/tags", append(_tagspageMw(), blog.TagsPage)...)
@@ -47,6 +44,12 @@ func Register(r *server.Hertz) {
 					_comment_id.PUT("/status", append(_updatecommentstatusadminapiMw(), blog.UpdateCommentStatusAdminAPI)...)
 				}
 			}
+			_admin.POST("/page", append(_createpageapiMw(), blog.CreatePageAPI)...)
+			_page := _admin.Group("/page", _pageMw()...)
+			_page.GET("/:page_id", append(_getpageapiMw(), blog.GetPageAPI)...)
+			_page.PUT("/:page_id", append(_updatepageapiMw(), blog.UpdatePageAPI)...)
+			_page.DELETE("/:page_id", append(_deletepageapiMw(), blog.DeletePageAPI)...)
+			_page.GET("/list", append(_getpagelistapiMw(), blog.GetPageListAPI)...)
 			_admin.POST("/post", append(_createpostapiMw(), blog.CreatePostAPI)...)
 			_post := _admin.Group("/post", _postMw()...)
 			_post.PUT("/:post_id", append(_updatepostapiMw(), blog.UpdatePostAPI)...)
@@ -72,6 +75,9 @@ func Register(r *server.Hertz) {
 			_comment0.POST("/reply", append(_replycommentapiMw(), blog.ReplyCommentAPI)...)
 		}
 	}
+	root.GET("/archives", append(_archivespageMw(), blog.ArchivesPage)...)
+	_archives := root.Group("/archives", _archivesMw()...)
+	_archives.GET("/:post_id", append(_postpageMw(), blog.PostPage)...)
 	{
 		_category0 := root.Group("/category", _category0Mw()...)
 		_category0.GET("/:name", append(_categorypostpageMw(), blog.CategoryPostPage)...)
@@ -79,8 +85,12 @@ func Register(r *server.Hertz) {
 		_name.GET("/:page", append(_categorypostbypaginationpageMw(), blog.CategoryPostByPaginationPage)...)
 	}
 	{
-		_page := root.Group("/page", _pageMw()...)
-		_page.GET("/:page", append(_indexbypaginationpageMw(), blog.IndexByPaginationPage)...)
+		_page0 := root.Group("/page", _page0Mw()...)
+		_page0.GET("/:page", append(_indexbypaginationpageMw(), blog.IndexByPaginationPage)...)
+	}
+	{
+		_pages := root.Group("/pages", _pagesMw()...)
+		_pages.GET("/:page_slug", append(_pagepageMw(), blog.PagePage)...)
 	}
 	{
 		_tag0 := root.Group("/tag", _tag0Mw()...)

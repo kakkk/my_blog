@@ -20,6 +20,7 @@ type Article struct {
 	Content      string               `json:"content"`
 	ArticleType  common.ArticleType   `json:"article_type"`
 	Status       common.ArticleStatus `json:"status"`
+	Slug         string               `json:"slug"`
 	CreateUserID int64                `json:"create_user_id"`
 	UV           int64                `json:"uv"`
 	UpdateAt     time.Time            `json:"update_at"`
@@ -112,6 +113,7 @@ func NewArticleByModel(a *model.Article) *Article {
 		Content:      a.Content,
 		ArticleType:  a.ArticleType,
 		Status:       a.Status,
+		Slug:         a.Slug,
 		CreateUserID: a.CreateUser,
 		UV:           a.UV,
 		UpdateAt:     a.UpdateAt,
@@ -138,7 +140,7 @@ func (a *Article) ToArticleMeta() *ArticleMeta {
 
 type Articles []*Article
 
-func (a Articles) ToRespList() []*api.PostListItem {
+func (a Articles) ToPostRespList() []*api.PostListItem {
 	result := make([]*api.PostListItem, 0, len(a))
 	for _, article := range a {
 		publishAt := int64(0)
@@ -154,6 +156,18 @@ func (a Articles) ToRespList() []*api.PostListItem {
 			UV:           article.UV,
 			UpdateAt:     article.UpdateAt.Unix(),
 			PublishAt:    publishAt,
+		})
+	}
+	return result
+}
+
+func (a Articles) ToPageRespList() []*api.PageListItem {
+	result := make([]*api.PageListItem, 0, len(a))
+	for _, article := range a {
+		result = append(result, &api.PageListItem{
+			ID:    article.ID,
+			Title: article.Title,
+			Slug:  article.Slug,
 		})
 	}
 	return result

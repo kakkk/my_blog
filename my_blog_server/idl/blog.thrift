@@ -53,6 +53,19 @@ service BlogService {
     // 删除文章
     api.CommonResponse DeletePostAPI(1:api.DeletePostAPIRequest request) (api.delete="/api/admin/post/:post_id")
 
+    // ==========页面相关=============
+
+    // 创建页面
+    api.CreatePageAPIResponse CreatePageAPI(1:api.CreatePageAPIRequest request) (api.post="/api/admin/page")
+    // 获取页面
+    api.GetPageAPIResponse GetPageAPI(1:api.GetPageAPIRequest request) (api.get="/api/admin/page/:page_id")
+    // 更新页面
+    api.CommonResponse UpdatePageAPI(1:api.UpdatePageAPIRequest request) (api.put="/api/admin/page/:page_id")
+    // 获取页面列表
+    api.GetPageListAPIResponse GetPageListAPI() (api.get="/api/admin/page/list")
+    // 删除页面
+    api.CommonResponse DeletePageAPI(1:api.DeletePageAPIRequest request) (api.delete="/api/admin/page/:page_id")
+
     // ==========评论相关=============
 
     // 获取评论列表
@@ -107,4 +120,5 @@ service BlogService {
     // ==============文章页=================
 
     page.PostPageResponse PostPage(1: page.PostPageRequest request) (api.get="/archives/:post_id")
+    page.PagePageResponse PagePage(1: page.PagePageRequest request) (api.get="/pages/:page_slug")
 }

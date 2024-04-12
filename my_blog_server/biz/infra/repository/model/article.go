@@ -12,6 +12,7 @@ type Article struct {
 	Content     string               `gorm:"column:content"`
 	ArticleType common.ArticleType   `gorm:"column:article_type"`
 	Status      common.ArticleStatus `gorm:"column:article_status"`
+	Slug        string               `gorm:"column:slug"`
 	Extra       string               `gorm:"column:extra"`
 	CreateUser  int64                `gorm:"column:create_user"`
 	UV          int64                `gorm:"column:uv"`

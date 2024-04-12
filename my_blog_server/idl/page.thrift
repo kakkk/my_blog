@@ -4,6 +4,7 @@ const string PageTypeTagList = "PAGE_TAG_LIST"
 const string PageTypeCategoryList = "PAGE_CATEGORY_LIST"
 const string PageTypeArchives = "PAGE_ARCHIVES"
 const string PageTypePost = "PAGE_POST"
+const string PageTypePage = "PAGE_PAGE"
 const string PageTypeSearch = "PAGE_SEARCH"
 const string PageTypeIndex = "PAGE_HOME"
 const string PageTypePostList = "PAGE_POST_LIST"
@@ -115,6 +116,26 @@ struct PostPageResponse {
     4: optional list<string> Tags
     5: optional PostNav PrevPage
     6: optional PostNav NextPage
+
+    255: required PageMeta Meta
+}
+
+// ===============页面页================
+
+struct PagePageRequest {
+    1: required string Slug (api.path="page_slug")
+}
+
+struct PageInfo {
+    1: required string Author
+    2: required string PublishAt
+    3: required string WordCount
+}
+
+struct PagePageResponse {
+    1: required string Title
+    2: required PageInfo Info
+    3: required string Content
 
     255: required PageMeta Meta
 }

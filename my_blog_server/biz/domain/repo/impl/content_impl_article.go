@@ -18,6 +18,7 @@ func (c ContentRepoImpl) CreateArticle(db *gorm.DB, article *dto.Article) (*dto.
 		Content:     article.Content,
 		ArticleType: article.ArticleType,
 		Status:      article.Status,
+		Slug:        article.Slug,
 		CreateUser:  article.CreateUserID,
 		PublishAt:   article.PublishAt,
 	})
@@ -31,6 +32,7 @@ func (c ContentRepoImpl) UpdateArticleByID(db *gorm.DB, id int64, article *dto.A
 	return persistence.UpdateArticleByID(db, id, &model.Article{
 		Title:   article.Title,
 		Content: article.Content,
+		Slug:    article.Slug,
 	})
 }
 
@@ -125,6 +127,18 @@ func (c ContentRepoImpl) SearchPostListByLimit(db *gorm.DB, keyword *string, ids
 		articleDTO.Tags = tagsDTO
 		articleDTO.CreateUser = dto.NewUserByModel(users[article.CreateUser])
 		result = append(result, articleDTO)
+	}
+	return result, nil
+}
+
+func (c ContentRepoImpl) SelectAllPages(db *gorm.DB) ([]*dto.Article, error) {
+	articles, err := persistence.SelectAllPages(db)
+	if err != nil {
+		return nil, err
+	}
+	result := make([]*dto.Article, 0, len(articles))
+	for _, article := range articles {
+		result = append(result, dto.NewArticleByModel(article))
 	}
 	return result, nil
 }

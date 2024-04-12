@@ -369,3 +369,64 @@ struct GetCaptchaAPIResponse {
 
     255: required BaseResp BaseResp (go.tag="json:\"-\"")
 }
+
+// ========= 独立页面 =========
+
+// 创建独立页面
+struct CreatePageAPIRequest {
+    1: required string Title
+    2: required string Content
+    3: required string Slug
+
+}
+
+// 创建独立页面
+struct CreatePageAPIResponse {
+    1: required i64 ID
+
+    255: required BaseResp BaseResp (go.tag="json:\"-\"")
+}
+
+// 获取独立页面
+struct GetPageAPIRequest {
+    1: required i64 ID (api.path="page_id")
+}
+
+// 获取独立页面
+struct GetPageAPIResponse {
+    1: required i64 ID
+    2: required string Title
+    3: required string Content
+    4: required string Slug
+
+    255: required BaseResp BaseResp (go.tag="json:\"-\"")
+}
+
+struct PageListItem {
+    1: required i64 ID
+    2: required string Title
+    3: required string Slug
+
+}
+
+// 更新页面
+struct UpdatePageAPIRequest {
+    1: required i64 ID (api.path="page_id")
+    2: required string Title
+    3: required string Content
+    4: required string Slug
+
+}
+
+// 删除页面
+struct DeletePageAPIRequest {
+    1: required i64 ID (api.path="page_id")
+
+}
+
+// 获取独立页面列表
+struct GetPageListAPIResponse {
+    1: optional list<PageListItem> PageList
+
+    255: required BaseResp BaseResp (go.tag="json:\"-\"")
+}

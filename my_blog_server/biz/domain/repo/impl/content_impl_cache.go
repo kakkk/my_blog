@@ -33,6 +33,10 @@ func (c ContentCacheImpl) GetArticle(ctx context.Context, id int64) (*dto.Articl
 	return articleCachex.Get(ctx, id)
 }
 
+func (c ContentCacheImpl) GetArticleBySlug(ctx context.Context, slug string) (*dto.Article, error) {
+	return articleSlugCachex.Get(ctx, slug)
+}
+
 func (c ContentCacheImpl) GetArticleMeta(ctx context.Context, id int64) (*dto.ArticleMeta, error) {
 	return articleMetaCachex.Get(ctx, id)
 }

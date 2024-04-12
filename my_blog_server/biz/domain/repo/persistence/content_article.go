@@ -1,7 +1,6 @@
 package persistence
 
 import (
-	"fmt"
 	"time"
 
 	"my_blog/biz/consts"
@@ -34,12 +33,25 @@ func SelectArticleByID(db *gorm.DB, id int64) (*model.Article, error) {
 	return post, nil
 }
 
+func SelectArticleBySlug(db *gorm.DB, slug string) (*model.Article, error) {
+	article := &model.Article{}
+	err := db.Model(&model.Article{}).
+		Where("slug = ?", slug).
+		Where("delete_flag = ?", common.DeleteFlag_Exist).
+		First(article).Error
+	if err != nil {
+		return nil, mysql.ParseError(err)
+	}
+	return article, nil
+}
+
 func UpdateArticleByID(db *gorm.DB, id int64, article *model.Article) error {
 	err := db.Model(&model.Article{}).
 		Where("id = ?", id).
 		Updates(map[string]any{
 			"title":     article.Title,
 			"content":   article.Content,
+			"slug":      article.Slug,
 			"update_at": time.Now(),
 		}).Error
 	if err != nil {
@@ -142,45 +154,6 @@ func DeleteArticleByID(db *gorm.DB, id int64) error {
 	return nil
 }
 
-func SelectPostWithPublishByID(db *gorm.DB, id int64) (*model.Article, error) {
-	post := &model.Article{}
-	err := db.Model(&model.Article{}).
-		Where("id = ?", id).
-		Where("article_type = ?", common.ArticleType_Post).
-		Where("article_status = ?", common.ArticleStatus_PUBLISH).
-		Where("delete_flag = ?", common.DeleteFlag_Exist).
-		First(post).Error
-	if err != nil {
-		return nil, mysql.ParseError(err)
-	}
-	return post, nil
-}
-
-func SelectPrevNextPostByPublishAt(db *gorm.DB, publishAt time.Time) (*model.Article, *model.Article, error) {
-	prev := &model.Article{}
-	next := &model.Article{}
-	prevErr := db.Model(&model.Article{}).
-		Select("id").
-		Where("publish_at > ?", publishAt).
-		Where("article_type = ?", common.ArticleType_Post).
-		Where("article_status = ?", common.ArticleStatus_PUBLISH).
-		Where("delete_flag = ?", common.DeleteFlag_Exist).
-		Order("publish_at asc").
-		First(prev).Error
-	nextErr := db.Model(&model.Article{}).
-		Select("id").
-		Where("publish_at < ?", publishAt).
-		Where("article_type = ?", common.ArticleType_Post).
-		Where("article_status = ?", common.ArticleStatus_PUBLISH).
-		Where("delete_flag = ?", common.DeleteFlag_Exist).
-		Order("publish_at desc").
-		First(next).Error
-	if prevErr != nil || nextErr != nil {
-		return prev, next, fmt.Errorf("db err: prev:[%v], next:[%v]", mysql.ParseError(prevErr), mysql.ParseError(nextErr))
-	}
-	return prev, next, nil
-}
-
 func MSelectPostWithPublishByIDs(db *gorm.DB, ids []int64) (map[int64]*model.Article, error) {
 	var posts []*model.Article
 	err := db.Model(&model.Article{}).
@@ -239,20 +212,14 @@ func SelectPostIDsByCategoryID(db *gorm.DB, cID int64) ([]int64, error) {
 	return list, nil
 }
 
-func SelectPostIDsByTagID(db *gorm.DB, cID int64) ([]int64, error) {
-	var list []int64
-	err := db.Model(&model.ArticleTag{}).
-		Select("article_id").
-		Where("tag_id = ?", cID).
+func SelectAllPages(db *gorm.DB) ([]*model.Article, error) {
+	var articles []*model.Article
+	err := db.Model(&model.Article{}).
+		Where("article_type = ?", common.ArticleType_Page).
 		Where("delete_flag = ?", common.DeleteFlag_Exist).
-		Where("publish_at is not null").
-		Order("publish_at desc").
-		Find(&list).Error
+		Find(&articles).Error
 	if err != nil {
 		return nil, mysql.ParseError(err)
 	}
-	if len(list) == 0 {
-		return nil, consts.ErrRecordNotFound
-	}
-	return list, nil
+	return articles, nil
 }

@@ -70,6 +70,20 @@ article_post_ids:
   redis_setting:
     ttl: 90     # Minute
 
+article_slug:
+  expire: 20 # Minute
+  key_format: 'my_blog:article_slug:%v'
+  cachex_setting:
+    allow_downgrade: true
+    downgrade_expire: 180 # Minute
+    caches:
+      - redis
+      - bigcache
+  bigcache_setting:
+    ttl: 30     # Minute
+  redis_setting:
+    ttl: 90     # Minute
+
 article_tags:
   expire: 20 # Minute
   key_format: 'my_blog:article_tags:%v'

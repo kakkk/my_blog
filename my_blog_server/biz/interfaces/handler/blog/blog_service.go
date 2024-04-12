@@ -234,3 +234,39 @@ func SearchPage(ctx context.Context, c *app.RequestContext) {
 func PostPage(ctx context.Context, c *app.RequestContext) {
 	c.HTML(facade.PostPage(ctx, c))
 }
+
+// CreatePageAPI .
+// @router /api/admin/page [POST]
+func CreatePageAPI(ctx context.Context, c *app.RequestContext) {
+	c.JSON(facade.CreatePageAPI(ctx, c))
+}
+
+// GetPageAPI .
+// @router /api/admin/page/:page_id [GET]
+func GetPageAPI(ctx context.Context, c *app.RequestContext) {
+	c.JSON(facade.GetPageAPI(ctx, c))
+}
+
+// UpdatePageAPI .
+// @router /api/admin/page/:page_id [PUT]
+func UpdatePageAPI(ctx context.Context, c *app.RequestContext) {
+	c.JSON(facade.UpdatePageAPI(ctx, c))
+}
+
+// GetPageListAPI .
+// @router /api/admin/page/list [GET]
+func GetPageListAPI(ctx context.Context, c *app.RequestContext) {
+	c.JSON(facade.GetPageListAPI(ctx, c))
+}
+
+// DeletePageAPI .
+// @router /api/admin/page/:page_id [DELETE]
+func DeletePageAPI(ctx context.Context, c *app.RequestContext) {
+	c.JSON(facade.DeletePageAPI(ctx, c))
+}
+
+// PagePage .
+// @router /pages/:page_slug [GET]
+func PagePage(ctx context.Context, c *app.RequestContext) {
+	c.HTML(facade.PagePage(ctx, c))
+}

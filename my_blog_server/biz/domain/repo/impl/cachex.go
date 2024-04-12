@@ -2,6 +2,7 @@ package impl
 
 func MustInitCachex() {
 	initArticleCachex()
+	initArticleSlugCachex()
 	initArticleMetaCachex()
 	initArticlePostIDsCachex()
 	initArticleCategoriesCachex()

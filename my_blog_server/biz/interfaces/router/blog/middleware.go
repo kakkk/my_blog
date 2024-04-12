@@ -274,3 +274,33 @@ func _tagpostbypaginationpageMw() []app.HandlerFunc {
 	// your code...
 	return nil
 }
+
+func _createpageapiMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _getpageapiMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _updatepageapiMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _deletepageapiMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _getpagelistapiMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _page0Mw() []app.HandlerFunc {
+	// your code...
+	return nil
+}

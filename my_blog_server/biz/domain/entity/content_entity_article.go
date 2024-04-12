@@ -22,6 +22,7 @@ type Article struct {
 	Content     string
 	ArticleType common.ArticleType
 	Status      common.ArticleStatus
+	Slug        string
 	CreateUser  int64
 	UV          int64
 	PublishAt   *time.Time
@@ -35,6 +36,7 @@ func (a *Article) Create(tx *gorm.DB) error {
 		Content:      a.Content,
 		ArticleType:  a.ArticleType,
 		Status:       a.Status,
+		Slug:         a.Slug,
 		CreateUserID: a.CreateUser,
 		PublishAt:    a.PublishAt,
 	})
@@ -49,11 +51,36 @@ func (a *Article) Update(tx *gorm.DB) error {
 	err := repo.GetContentRepo().UpdateArticleByID(tx, a.ID, &dto.Article{
 		Title:   a.Title,
 		Content: a.Content,
+		Slug:    a.Slug,
 	})
 	if err != nil {
 		return fmt.Errorf("create article error:[%v]", err)
 	}
 	return nil
+}
+
+func (a *Article) Get(db *gorm.DB) error {
+	// 获取post
+	article, err := repo.GetContentRepo().SelectArticleByID(db, a.ID)
+	if err != nil {
+		return err
+	}
+	a.FillByDTO(article, nil, nil)
+	return nil
+}
+
+func (a *Article) FillByDTO(article *dto.Article, categories []*dto.Category, tags []*dto.Tag) {
+	if article != nil {
+		a.ID = article.ID
+		a.Title = article.Title
+		a.Content = article.Content
+		a.ArticleType = article.ArticleType
+		a.Status = article.Status
+		a.Slug = article.Slug
+		a.CreateUser = article.CreateUserID
+		a.UV = article.UV
+		a.PublishAt = article.PublishAt
+	}
 }
 
 func (a *Article) LinkCategoriesAndTags(tx *gorm.DB) error {
@@ -197,6 +224,7 @@ func NewArticleByDTO(article *dto.Article, categories []*dto.Category, tags []*d
 		Content:     article.Content,
 		ArticleType: article.ArticleType,
 		Status:      article.Status,
+		Slug:        article.Slug,
 		CreateUser:  article.CreateUserID,
 		UV:          article.UV,
 		PublishAt:   article.PublishAt,

@@ -31,6 +31,7 @@ type ContentRepo interface {
 	DeleteArticleByID(db *gorm.DB, id int64) error
 	GetSearchPostTotal(db *gorm.DB, keyword *string, ids []int64) (int64, error)
 	SearchPostListByLimit(db *gorm.DB, keyword *string, ids []int64, page *int32, size *int32) ([]*dto.Article, error)
+	SelectAllPages(db *gorm.DB) ([]*dto.Article, error)
 
 	GetOrCreateTagsByNames(db *gorm.DB, names []string) ([]*dto.Tag, error)
 	DeleteArticleTagRelationByArticleID(db *gorm.DB, articleID int64) error

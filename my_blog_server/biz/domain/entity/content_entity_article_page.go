@@ -17,18 +17,16 @@ import (
 type ArticlePage struct {
 	ID      int64
 	Author  string
+	Slug    string
 	Article *Article
 	Prev    *ArticleMeta
 	Next    *ArticleMeta
 }
 
-func NewArticlePageByID(id int64) *ArticlePage {
-	return &ArticlePage{
-		ID: id,
-	}
-}
-
 func (a *ArticlePage) FetchContent(ctx context.Context) error {
+	if a.Slug != "" {
+		return a.fetchBySlug(ctx)
+	}
 	logger := log.GetLoggerWithCtx(ctx).WithField("article_id", a.ID)
 	articleDTO, err := repo.GetContentRepo().Cache().GetArticle(ctx, a.ID)
 	if err != nil {
@@ -55,6 +53,19 @@ func (a *ArticlePage) FetchContent(ctx context.Context) error {
 		}
 		a.Next = NewArticleMetaByDTO(next)
 	}
+	a.Author = articleDTO.CreateUser.Nickname
+	return nil
+}
+
+func (a *ArticlePage) fetchBySlug(ctx context.Context) error {
+	articleDTO, err := repo.GetContentRepo().Cache().GetArticleBySlug(ctx, a.Slug)
+	if err != nil {
+		// 拿不到会返回 not found
+		return err
+	}
+	article := &Article{}
+	article.FillByDTO(articleDTO, nil, nil)
+	a.Article = article
 	a.Author = articleDTO.CreateUser.Nickname
 	return nil
 }
@@ -98,6 +109,23 @@ func (a *ArticlePage) PackPostPageResponse() *page.PostPageResponse {
 			misc.GetPostPageTitle(a.Article.Title),
 			misc.GetPostPageDescription(a.Article.Content),
 			page.PageTypePost,
+		),
+	}
+}
+
+func (a *ArticlePage) PackPagePageResponse() *page.PagePageResponse {
+	return &page.PagePageResponse{
+		Title: a.Article.Title,
+		Info: &page.PageInfo{
+			Author:    a.Author,
+			PublishAt: misc.GetPublishAtStr(a.Article.PublishAt),
+			WordCount: misc.GetWordCount(a.Article.Content),
+		},
+		Content: render.RenderContent(a.Article.Content),
+		Meta: resp.NewSuccessPageMeta(
+			misc.GetPostPageTitle(a.Article.Title),
+			misc.GetPostPageDescription(a.Article.Content),
+			page.PageTypePage,
 		),
 	}
 }

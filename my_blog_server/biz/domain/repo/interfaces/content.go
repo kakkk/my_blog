@@ -55,6 +55,7 @@ type ContentCache interface {
 	GetCategoriesByArticleID(ctx context.Context, id int64) ([]*dto.Category, error)
 
 	GetArticle(ctx context.Context, id int64) (*dto.Article, error)
+	GetArticleBySlug(ctx context.Context, slug string) (*dto.Article, error)
 	GetArticleMeta(ctx context.Context, id int64) (*dto.ArticleMeta, error)
 	GetArticlePostIDs(ctx context.Context) ([]int64, error)
 	MGetArticleMeta(ctx context.Context, ids []int64) map[int64]*dto.ArticleMeta

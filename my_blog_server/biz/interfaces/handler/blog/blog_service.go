@@ -264,3 +264,9 @@ func GetPageListAPI(ctx context.Context, c *app.RequestContext) {
 func DeletePageAPI(ctx context.Context, c *app.RequestContext) {
 	c.JSON(facade.DeletePageAPI(ctx, c))
 }
+
+// PagePage .
+// @router /pages/:page_slug [GET]
+func PagePage(ctx context.Context, c *app.RequestContext) {
+	c.HTML(facade.PagePage(ctx, c))
+}

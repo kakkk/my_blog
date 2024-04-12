@@ -304,3 +304,13 @@ func _page0Mw() []app.HandlerFunc {
 	// your code...
 	return nil
 }
+
+func _pagesMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}
+
+func _pagepageMw() []app.HandlerFunc {
+	// your code...
+	return nil
+}

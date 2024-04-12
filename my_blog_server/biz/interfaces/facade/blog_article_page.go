@@ -23,3 +23,14 @@ func PostPage(ctx context.Context, c *app.RequestContext) (int, string, resp.IPa
 	rsp, pErr := application.GetBlogApplication().PostPage(ctx, req)
 	return resp.PackPageResponse(rsp, pErr, consts.IndexTmpl)
 }
+
+func PagePage(ctx context.Context, c *app.RequestContext) (int, string, resp.IPageResponse) {
+	req := &page.PagePageRequest{}
+	err := c.BindAndValidate(req)
+	if err != nil {
+		log.GetLoggerWithCtx(ctx).Warnf("parameter error:[%v]", err)
+		return resp.PackPageResponse(nil, errorx.NewNotFoundErrPageError(), consts.IndexTmpl)
+	}
+	rsp, pErr := application.GetBlogApplication().PagePage(ctx, req)
+	return resp.PackPageResponse(rsp, pErr, consts.IndexTmpl)
+}

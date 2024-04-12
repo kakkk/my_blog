@@ -33,6 +33,18 @@ func SelectArticleByID(db *gorm.DB, id int64) (*model.Article, error) {
 	return post, nil
 }
 
+func SelectArticleBySlug(db *gorm.DB, slug string) (*model.Article, error) {
+	article := &model.Article{}
+	err := db.Model(&model.Article{}).
+		Where("slug = ?", slug).
+		Where("delete_flag = ?", common.DeleteFlag_Exist).
+		First(article).Error
+	if err != nil {
+		return nil, mysql.ParseError(err)
+	}
+	return article, nil
+}
+
 func UpdateArticleByID(db *gorm.DB, id int64, article *model.Article) error {
 	err := db.Model(&model.Article{}).
 		Where("id = ?", id).

@@ -120,4 +120,5 @@ service BlogService {
     // ==============文章页=================
 
     page.PostPageResponse PostPage(1: page.PostPageRequest request) (api.get="/archives/:post_id")
+    page.PagePageResponse PagePage(1: page.PagePageRequest request) (api.get="/pages/:page_slug")
 }

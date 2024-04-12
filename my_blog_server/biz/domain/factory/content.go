@@ -32,3 +32,15 @@ func (ContentFactory) NewArticleByDTO(article *dto.Article) *entity.Article {
 		PublishAt:   article.PublishAt,
 	}
 }
+
+func (ContentFactory) NewArticlePageByID(id int64) *entity.ArticlePage {
+	return &entity.ArticlePage{
+		ID: id,
+	}
+}
+
+func (ContentFactory) NewArticlePageBySlug(slug string) *entity.ArticlePage {
+	return &entity.ArticlePage{
+		Slug: slug,
+	}
+}

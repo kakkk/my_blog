@@ -1,0 +1,18 @@
+{{- define "page"}}
+    {{- $domain:=.Meta.SiteDomain}}
+    <article class="post-single">
+        <header class="post-header">
+            <h1 class="post-title">
+                {{- .Title }}
+            </h1>
+            <div class="post-meta">
+                {{template "page_meta" .}}
+            </div>
+        </header>
+        <div class="post-content">
+            {{- .Content | unescape }}
+        </div>
+        <footer class="post-footer">
+        </footer>
+    </article>
+{{- end}}

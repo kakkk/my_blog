@@ -67,4 +67,7 @@ type ContentCache interface {
 	GetArticleIDsByTagName(ctx context.Context, name string) ([]int64, error)
 	GetCategoryBySlug(ctx context.Context, slug string) (*dto.Category, error)
 	GetArticleIDsByCategoryID(ctx context.Context, id int64) ([]int64, error)
+
+	RefreshByPostID(ctx context.Context, id int64)
+	RefreshByPageSlug(ctx context.Context, slug string)
 }

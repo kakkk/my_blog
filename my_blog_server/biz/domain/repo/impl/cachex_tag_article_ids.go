@@ -60,3 +60,10 @@ func (c *TagArticleIDsCachex) Get(ctx context.Context, name string) ([]int64, er
 	}
 	return order, nil
 }
+
+func (c *TagArticleIDsCachex) MRefresh(ctx context.Context, names []string) {
+	for _, name := range names {
+		_ = c.cacheX.Delete(ctx, name)
+		_, _ = c.Get(ctx, name)
+	}
+}

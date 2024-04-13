@@ -26,7 +26,7 @@ type ArticleSlugCachex struct {
 func initArticleSlugCachex() {
 	cfg := config.GetCachexSettingByName("article_slug")
 	cx, err := infraCachex.NewCacheXBuilderByConfig[string, *dto.Article](context.Background(), cfg).
-		SetGetRealData((&ArticleSlugCachex{}).GetRealData).
+		SetGetRealData((&ArticleSlugCachex{}).GetRealDataFn()).
 		Build()
 	if err != nil {
 		panic(fmt.Errorf("init cachex error: %w", err))
@@ -37,20 +37,22 @@ func initArticleSlugCachex() {
 	}
 }
 
-func (a *ArticleSlugCachex) GetRealData(ctx context.Context, slug string) (*dto.Article, error) {
-	db := mysql.GetDB(ctx)
-	// 获取post
-	article, err := persistence.SelectArticleBySlug(db, slug)
-	if err != nil {
-		return nil, infraCachex.ParseErr(err)
+func (a *ArticleSlugCachex) GetRealDataFn() func(ctx context.Context, slug string) (*dto.Article, error) {
+	return func(ctx context.Context, slug string) (*dto.Article, error) {
+		db := mysql.GetDB(ctx)
+		// 获取post
+		article, err := persistence.SelectArticleBySlug(db, slug)
+		if err != nil {
+			return nil, infraCachex.ParseErr(err)
+		}
+		articleDTO := dto.NewArticleByModel(article)
+		// 获取作者
+		user, _ := persistence.SelectUserByID(db, article.CreateUser)
+		if user != nil {
+			articleDTO.CreateUser = dto.NewUserByModel(user)
+		}
+		return articleDTO, nil
 	}
-	articleDTO := dto.NewArticleByModel(article)
-	// 获取作者
-	user, _ := persistence.SelectUserByID(db, article.CreateUser)
-	if user != nil {
-		articleDTO.CreateUser = dto.NewUserByModel(user)
-	}
-	return articleDTO, nil
 }
 
 func (a *ArticleSlugCachex) Get(ctx context.Context, slug string) (*dto.Article, error) {
@@ -59,4 +61,9 @@ func (a *ArticleSlugCachex) Get(ctx context.Context, slug string) (*dto.Article,
 		return nil, consts.ErrRecordNotFound
 	}
 	return article, nil
+}
+
+func (a *ArticleSlugCachex) Refresh(ctx context.Context, slug string) {
+	_ = a.cacheX.Delete(ctx, slug)
+	_, _ = a.Get(ctx, slug)
 }

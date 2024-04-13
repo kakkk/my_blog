@@ -51,6 +51,8 @@ func (a *AdminApplication) CreatePost(ctx context.Context, req *api.CreatePostAP
 		logger.Errorf("create article fail: %v", err)
 		return nil, fmt.Errorf("create article fail: %w", err)
 	}
+	// 更新缓存
+	repo.GetContentRepo().Cache().RefreshByPostID(ctx, post.ID)
 	// 更新搜索索引
 	err = service.GetIndexService().IndexArticle(&entity.ArticleData{
 		ID:      post.ID,
@@ -108,6 +110,8 @@ func (a *AdminApplication) UpdatePost(ctx context.Context, req *api.UpdatePostAP
 		logger.Errorf("create article fail: %v", err)
 		return nil, fmt.Errorf("create article fail: %w", err)
 	}
+	// 更新缓存
+	repo.GetContentRepo().Cache().RefreshByPostID(ctx, req.GetID())
 	logger.Infof("update post success")
 	return &api.CommonResponse{
 		BaseResp: resp.NewSuccessBaseResp(),
@@ -124,6 +128,8 @@ func (a *AdminApplication) UpdatePostStatus(ctx context.Context, req *api.Update
 	if err != nil {
 		return nil, fmt.Errorf("update article status fail:[%w]", err)
 	}
+	// 更新缓存
+	repo.GetContentRepo().Cache().RefreshByPostID(ctx, req.GetID())
 	logger.Infof("update post status success")
 	return &api.CommonResponse{
 		BaseResp: resp.NewSuccessBaseResp(),
@@ -182,6 +188,7 @@ func (a *AdminApplication) CreatePage(ctx context.Context, req *api.CreatePageAP
 		logger.Errorf("create article fail: %v", err)
 		return nil, err
 	}
+	repo.GetContentRepo().Cache().RefreshByPageSlug(ctx, req.GetSlug())
 	logger.Infof("create page success")
 	// TODO: 更新索引
 	return &api.CreatePageAPIResponse{
@@ -229,6 +236,7 @@ func (a *AdminApplication) UpdatePage(ctx context.Context, req *api.UpdatePageAP
 		logger.Errorf("create article fail: %v", err)
 		return nil, fmt.Errorf("create article fail: %w", err)
 	}
+	repo.GetContentRepo().Cache().RefreshByPageSlug(ctx, req.GetSlug())
 	logger.Infof("update post success")
 	return &api.CommonResponse{
 		BaseResp: resp.NewSuccessBaseResp(),

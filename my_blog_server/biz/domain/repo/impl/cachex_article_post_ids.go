@@ -53,3 +53,8 @@ func (p *ArticlePostIDsCachex) Get(ctx context.Context) ([]int64, error) {
 	}
 	return order, nil
 }
+
+func (a *ArticlePostIDsCachex) Refresh(ctx context.Context) {
+	_ = a.cacheX.Delete(ctx, "")
+	_, _ = a.Get(ctx)
+}

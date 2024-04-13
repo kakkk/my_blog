@@ -7,6 +7,7 @@ import (
 	"my_blog/biz/domain/dto"
 	"my_blog/biz/domain/repo/cache"
 	"my_blog/biz/domain/repo/persistence"
+	"my_blog/biz/infra/pkg/log"
 	"my_blog/biz/infra/repository/mysql"
 	"my_blog/biz/infra/repository/redis"
 )
@@ -71,6 +72,45 @@ func (c ContentCacheImpl) GetArticleIDsByCategoryID(ctx context.Context, id int6
 
 func (c ContentCacheImpl) GetArticleIDsByTagName(ctx context.Context, name string) ([]int64, error) {
 	return tagArticleIDsCachex.Get(ctx, name)
+}
+
+func (c ContentCacheImpl) RefreshByPostID(ctx context.Context, id int64) {
+	// 刷新article
+	articleCachex.Refresh(ctx, id)
+	// 刷新article meta
+	articleMetaCachex.Refresh(ctx, id)
+	// 刷新分类
+	articleCategories.Refresh(ctx, id)
+	// 刷新标签
+	articleTagsCachex.Refresh(ctx, id)
+	// 刷新分类下文章列表
+	categories, err := articleCategories.Get(ctx, id)
+	if err != nil {
+		log.GetLoggerWithCtx(ctx).Warnf("refresh cache get categories fail: %v", err)
+	}
+	categoryIDs := make([]int64, 0, len(categories))
+	for _, category := range categories {
+		categoryIDs = append(categoryIDs, category.ID)
+	}
+	categoryArticleIDsCachex.MRefresh(ctx, categoryIDs)
+	// 刷新标签下文章列表
+	tags, err := articleTagsCachex.Get(ctx, id)
+	if err != nil {
+		log.GetLoggerWithCtx(ctx).Warnf("refresh cache get tags fail: %v", err)
+	}
+	tagNames := make([]string, 0, len(tags))
+	for _, tag := range tags {
+		tagNames = append(tagNames, tag.TagName)
+	}
+	tagArticleIDsCachex.MRefresh(ctx, tagNames)
+	// 刷新文章列表
+	articlePostIDsCachex.Refresh(ctx)
+	// 设置UV
+	_ = cache.GetPostUVCache().SetPostUVNX(ctx, redis.GetClient(), id, 0)
+}
+
+func (c ContentCacheImpl) RefreshByPageSlug(ctx context.Context, slug string) {
+	articleSlugCachex.Refresh(ctx, slug)
 }
 
 func InitContentCache(ctx context.Context) {

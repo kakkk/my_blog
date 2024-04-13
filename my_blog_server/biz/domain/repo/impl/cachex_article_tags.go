@@ -59,7 +59,7 @@ func (a *ArticleTagsCachex) Get(ctx context.Context, id int64) ([]*dto.Tag, erro
 	return tags, nil
 }
 
-func (a *ArticleTagsCachex) Rebuild(ctx context.Context, id int64) {
+func (a *ArticleTagsCachex) Refresh(ctx context.Context, id int64) {
 	_ = a.cacheX.Delete(ctx, id)
 	_, _ = a.cacheX.Get(ctx, id, a.expire)
 }

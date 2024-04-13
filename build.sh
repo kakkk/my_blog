@@ -11,16 +11,16 @@ rm -rf $BUILD_DIR/my_blog_server/output
 # 评论构建
 start_time=$(date +%s)
 echo -e "🔨\033[32m Build comment... \033[0m"
-cd $BUILD_DIR/my_blog_comment && yarn build >> /dev/null 2>&1
+cd $BUILD_DIR/my_blog_comment && yarn install >> /dev/null 2>&1 && yarn build >> /dev/null 2>&1
 
 # 页面构建
 start_time=$(date +%s)
 echo -e "🔨\033[32m Build pages... \033[0m"
-cd $BUILD_DIR/my_blog_pages && yarn build >> /dev/null 2>&1
+cd $BUILD_DIR/my_blog_pages && yarn install >> /dev/null 2>&1 && yarn build >> /dev/null 2>&1
 
 # 后台构建
 echo -e "🔨\033[32m Build admin... \033[0m"
-cd $BUILD_DIR/my_blog_admin && yarn build >> /dev/null 2>&1
+cd $BUILD_DIR/my_blog_admin && yarn install >> /dev/null 2>&1 && yarn build >> /dev/null 2>&1
 
 # 后端服务构建
 echo -e "🔨\033[32m Build server... \033[0m"

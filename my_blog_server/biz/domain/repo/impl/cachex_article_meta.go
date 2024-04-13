@@ -87,3 +87,8 @@ func (a *ArticleMetaCachex) Get(ctx context.Context, id int64) (*dto.ArticleMeta
 	}
 	return article, nil
 }
+
+func (a *ArticleMetaCachex) Refresh(ctx context.Context, id int64) {
+	_ = a.cacheX.Delete(ctx, id)
+	_, _ = a.Get(ctx, id)
+}

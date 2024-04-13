@@ -58,7 +58,7 @@ func (a *ArticleCachex) GetRealData(ctx context.Context, id int64) (*dto.Article
 }
 
 func (a *ArticleCachex) getPrevNext(ctx context.Context, id int64) (*int64, *int64) {
-	list, err := articlePostIDsCachex.Get(ctx)
+	list, err := articlePostIDsCachex.GetRealDataFn()(ctx, "")
 	if err != nil {
 		return nil, nil
 	}
@@ -111,4 +111,9 @@ func (a *ArticleCachex) Get(ctx context.Context, id int64) (*dto.Article, error)
 		return nil, consts.ErrRecordNotFound
 	}
 	return article, nil
+}
+
+func (a *ArticleCachex) Refresh(ctx context.Context, id int64) {
+	_ = a.cacheX.Delete(ctx, id)
+	_, _ = a.Get(ctx, id)
 }

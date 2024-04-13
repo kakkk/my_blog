@@ -55,3 +55,10 @@ func (c *CategoryArticleIDsCachex) Get(ctx context.Context, id int64) ([]int64, 
 	}
 	return order, nil
 }
+
+func (c *CategoryArticleIDsCachex) MRefresh(ctx context.Context, ids []int64) {
+	for _, id := range ids {
+		_ = c.cacheX.Delete(ctx, id)
+		_, _ = c.Get(ctx, id)
+	}
+}

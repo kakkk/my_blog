@@ -59,7 +59,7 @@ func (a *ArticleCategoriesCachex) Get(ctx context.Context, id int64) ([]*dto.Cat
 	return categories, nil
 }
 
-func (a *ArticleCategoriesCachex) Rebuild(ctx context.Context, id int64) {
+func (a *ArticleCategoriesCachex) Refresh(ctx context.Context, id int64) {
 	_ = a.cacheX.Delete(ctx, id)
 	_, _ = a.cacheX.Get(ctx, id, a.expire)
 }

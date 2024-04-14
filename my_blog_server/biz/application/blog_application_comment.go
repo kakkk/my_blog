@@ -28,21 +28,26 @@ func (app *BlogApplication) CommentArticle(ctx context.Context, req *api.Comment
 	}
 	// 创建评论
 	comment := entity.NewCommentByDTO(&dto.Comment{
-		PostID:   req.GetArticleID(),
-		Nickname: req.GetNickname(),
-		Email:    req.GetEmail(),
-		Website:  req.GetWebsite(),
-		Content:  req.GetContent(),
+		ArticleID: req.GetArticleID(),
+		Nickname:  req.GetNickname(),
+		Email:     req.GetEmail(),
+		Website:   req.GetWebsite(),
+		Content:   req.GetContent(),
 	})
 	err = comment.Create(ctx)
 	if err != nil {
 		logger.Errorf("create comment fail: %v", err)
 		return nil, err
 	}
+	// 刷新缓存
+	repo.GetCommentRepo().Cache().RefreshArticleComments(ctx, req.GetArticleID())
+	// 获取评论列表
+	comments := repo.GetCommentRepo().Cache().GetArticleComments(ctx, req.GetArticleID())
 	logger.Infof("create comment success")
 	return &api.CommentArticleAPIResponse{
 		ID:            comment.ID,
 		CommentStatus: comment.Status,
+		Comments:      dto.Comments(comments).ToResponseCommentList(),
 		BaseResp:      resp.NewSuccessBaseResp(),
 	}, nil
 }
@@ -63,21 +68,26 @@ func (app *BlogApplication) ReplyComment(ctx context.Context, req *api.ReplyComm
 	}
 	// 回复评论
 	comment := entity.NewCommentByDTO(&dto.Comment{
-		PostID:   req.GetArticleID(),
-		Nickname: req.GetNickname(),
-		Email:    req.GetEmail(),
-		Website:  req.GetWebsite(),
-		Content:  req.GetContent(),
+		ArticleID: req.GetArticleID(),
+		Nickname:  req.GetNickname(),
+		Email:     req.GetEmail(),
+		Website:   req.GetWebsite(),
+		Content:   req.GetContent(),
 	})
 	err = comment.ReplyTo(ctx, req.GetReplyID())
 	if err != nil {
 		logger.Errorf("reply comment fail: %v", err)
 		return nil, err
 	}
+	// 刷新缓存
+	repo.GetCommentRepo().Cache().RefreshArticleComments(ctx, req.GetArticleID())
+	// 获取评论列表
+	comments := repo.GetCommentRepo().Cache().GetArticleComments(ctx, req.GetArticleID())
 	logger.Infof("reply comment success")
 	return &api.CommentArticleAPIResponse{
 		ID:            comment.ID,
 		CommentStatus: comment.Status,
+		Comments:      dto.Comments(comments).ToResponseCommentList(),
 		BaseResp:      resp.NewSuccessBaseResp(),
 	}, nil
 }
@@ -98,7 +108,6 @@ func (app *BlogApplication) GetCommentList(ctx context.Context, req *api.GetComm
 	comments := repo.GetCommentRepo().Cache().GetArticleComments(ctx, req.GetArticleID())
 	return &api.GetCommentListAPIResponse{
 		Comments: dto.Comments(comments).ToResponseCommentList(),
-		HasMore:  false,
 		BaseResp: resp.NewSuccessBaseResp(),
 	}, nil
 

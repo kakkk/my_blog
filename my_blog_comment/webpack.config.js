@@ -35,9 +35,16 @@ module.exports = {
         static: {
             directory: path.resolve(__dirname, 'dist'),
         },
+        historyApiFallback: {
+            rewrites: [
+                // 所有的访问"/archives/*"的请求都会看到public/index.html
+                { from: /^\/archives\/.*/, to: '/index.html' },
+            ],
+        },
         compress: true,
         port: 3000,
     },
+
     plugins: [
         new CopyWebpackPlugin({
             patterns: [
@@ -45,6 +52,6 @@ module.exports = {
                 { from: 'public/assets', to: 'assets' },
             ],
         }),
-        new ArcoWebpackPlugin({}),
+        new ArcoWebpackPlugin({removeFontFace:true,style:'css'}),
     ],
 };

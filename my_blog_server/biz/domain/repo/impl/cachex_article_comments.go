@@ -55,3 +55,8 @@ func (a *ArticleCommentsCachex) Get(ctx context.Context, id int64) []*dto.Commen
 	}
 	return comments
 }
+
+func (a *ArticleCommentsCachex) Refresh(ctx context.Context, id int64) {
+	_ = a.cacheX.Delete(ctx, id)
+	_ = a.Get(ctx, id)
+}

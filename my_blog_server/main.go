@@ -4,9 +4,11 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/cloudwego/hertz/pkg/app/server"
 	"github.com/cloudwego/hertz/pkg/common/hlog"
+	"github.com/hertz-contrib/cors"
 	hertzlogrus "github.com/hertz-contrib/logger/logrus"
 
 	"my_blog/biz/domain"
@@ -51,6 +53,14 @@ func initHertz() *server.Hertz {
 	h := server.Default(
 		server.WithHostPorts(fmt.Sprintf("127.0.0.1:%v", cfg.Port)),
 	)
+	h.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:3000"},
+		AllowMethods:     []string{"PUT", "PATCH", "POST", "GET", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With"},
+		ExposeHeaders:    []string{"Content-Length", "Access-Control-Allow-Origin", "Access-Control-Allow-Headers", "Cache-Control", "Content-Language", "Content-Type"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
 	hlog.SetLogger(hertzlogrus.NewLogger(
 		hertzlogrus.WithLogger(log.GetLogger()),
 	))

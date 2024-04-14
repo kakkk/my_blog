@@ -303,25 +303,24 @@ struct SearchAPIResponse {
 
 // 评论
 struct Comment {
-    1: required i64 ID
-    2: required string Nickname
-    3: required string Avatar
-    4: required string Website
-    5: required string Content
-    6: required string CommentAt
-    7: required string ReplyUser
+    1: required i64 ID (api.body="id,string")               // ID
+    2: required string Nickname (api.body="nickname")       // 昵称
+    3: required string Avatar (api.body="avatar")           // 头像
+    4: optional string Website (api.body="website")         // 网站
+    5: required string Content (api.body="content")         // 内容
+    6: required string CommentAt (api.body="comment_at")    // 回复时间
+    7: optional string ReplyUser (api.body="reply_user")    // 回复的用户昵称
 }
 
 struct CommentListItem {
-    1: required Comment Comment
-    2: optional list<Comment> Replies
+    1: required Comment Comment (api.body="comment")
+    2: optional list<Comment> Replies (api.body="replies")
 }
 
 struct GetCommentListAPIResponse {
-    1: required list<CommentListItem> Comments
-    2: required bool HasMore
+    1: required list<CommentListItem> Comments (api.body="comments")
 
-    255: required BaseResp BaseResp (go.tag="json:\"-\"")
+    255: required BaseResp BaseResp (api.none="true")
 }
 
 struct GetCommentListAPIRequest {
@@ -329,38 +328,36 @@ struct GetCommentListAPIRequest {
 }
 
 struct CommentArticleAPIRequest {
-    1: required i64 ArticleID           // 文章ID
-    2: required string Nickname         // 昵称
-    3: required string Email            // 邮箱
-    4: optional string Website          // 网址
-    5: required string Content          // 评论内容
-    6: required string VerifyID         // 验证码ID
-    7: required string VerifyCode       // 验证码
+    1: required i64 ArticleID (api.body="article_id,string")   // 文章ID
+    2: required string Nickname (api.body="nickname")           // 昵称
+    3: required string Email (api.body="email")                 // 邮箱
+    4: optional string Website (api.body="website")             // 网址
+    5: required string Content (api.body="content")             // 评论内容
 }
 
 struct CommentArticleAPIResponse {
-    1: required i64 ID
-    2: required common.CommentStatus CommentStatus
+    1: required i64 ID (api.body="id,string")                                   // ID
+    2: required common.CommentStatus CommentStatus (api.body="comment_status")  // 评论状态
+    3: required list<CommentListItem> Comments (api.body="comments")            // 当前文章评论
 
-    255: required BaseResp BaseResp (go.tag="json:\"-\"")
+    255: required BaseResp BaseResp (api.none="true")
 }
 
 struct ReplyCommentAPIRequest {
-    1: required i64 ArticleID           // 文章ID
-    2: optional i64 ReplyID             // 回复的评论ID
-    3: required string Nickname         // 昵称
-    4: required string Email            // 邮箱
-    5: optional string Website          // 网址
-    6: required string Content          // 评论内容
-    7: required string VerifyID         // 验证码ID
-    8: required string VerifyCode       // 验证码
+    1: required i64 ArticleID (api.body="article_id,string")    // 文章ID
+    2: required i64 ReplyID (api.body="reply_id,string")        // 回复的评论ID
+    3: required string Nickname (api.body="nickname")           // 昵称
+    4: required string Email (api.body="email")                 // 邮箱
+    5: optional string Website (api.body="website")             // 网址
+    6: required string Content (api.body="content")             // 评论内容
 }
 
 struct ReplyCommentAPIResponse {
-    1: required i64 ID
-    2: required common.CommentStatus CommentStatus
+    1: required i64 ID (api.body="id,string")                                   // ID
+    2: required common.CommentStatus CommentStatus (api.body="comment_status")  // 评论状态
+    3: required list<CommentListItem> Comments (api.body="comments")            // 当前文章评论
 
-    255: required BaseResp BaseResp (go.tag="json:\"-\"")
+    255: required BaseResp BaseResp (api.none="true")
 }
 
 // 验证码

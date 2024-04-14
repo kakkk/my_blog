@@ -50,8 +50,10 @@ func (c *Comment) ReplyTo(ctx context.Context, replyID int64) error {
 		// 若回复的评论是父评论，父评论为该评论
 		c.ParentID = replyComment.ID
 	}
+	c.ReplyID = replyID
 
 	c.ID = idgen.GenID()
+	c.Status = c.Review(ctx)
 	err = repo.GetCommentRepo().Create(mysql.GetDB(ctx), c.GetDTO())
 	if err != nil {
 		return fmt.Errorf("repo create fail: %w", err)
@@ -67,22 +69,23 @@ func (c *Comment) Review(ctx context.Context) common.CommentStatus {
 
 func (c *Comment) GetDTO() *dto.Comment {
 	return &dto.Comment{
-		ID:       c.ID,
-		PostID:   c.PostID,
-		ReplyID:  c.ReplyID,
-		ParentID: c.ParentID,
-		Nickname: c.Nickname,
-		Email:    c.Email,
-		Website:  c.Website,
-		Content:  c.Content,
-		CreateAt: c.CreateAt,
+		ID:        c.ID,
+		ArticleID: c.PostID,
+		ReplyID:   c.ReplyID,
+		ParentID:  c.ParentID,
+		Nickname:  c.Nickname,
+		Email:     c.Email,
+		Website:   c.Website,
+		Content:   c.Content,
+		CreateAt:  c.CreateAt,
+		Status:    c.Status,
 	}
 }
 
 func NewCommentByDTO(c *dto.Comment) *Comment {
 	return &Comment{
 		ID:       c.ID,
-		PostID:   c.PostID,
+		PostID:   c.ArticleID,
 		ReplyID:  c.ReplyID,
 		ParentID: c.ParentID,
 		Nickname: c.Nickname,

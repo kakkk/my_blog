@@ -10,7 +10,9 @@ import (
 	"my_blog/biz/domain/repo/persistence"
 )
 
-type CommentRepoImpl struct{}
+type CommentRepoImpl struct {
+	cache CommentCacheImpl
+}
 
 func (c CommentRepoImpl) Create(db *gorm.DB, comment *dto.Comment) error {
 	_, err := persistence.CreateComment(db, comment.ToModel())
@@ -18,8 +20,7 @@ func (c CommentRepoImpl) Create(db *gorm.DB, comment *dto.Comment) error {
 }
 
 func (c CommentRepoImpl) Cache() interfaces.CommentCache {
-	//TODO implement me
-	panic("implement me")
+	return c.cache
 }
 
 type CommentCacheImpl struct{}
@@ -34,4 +35,8 @@ func (c CommentCacheImpl) MGet(ctx context.Context, ids []int64) map[int64]*dto.
 
 func (c CommentCacheImpl) GetArticleComments(ctx context.Context, id int64) []*dto.Comment {
 	return articleCommentsCachex.Get(ctx, id)
+}
+
+func (c CommentCacheImpl) RefreshArticleComments(ctx context.Context, id int64) {
+	articleCommentsCachex.Refresh(ctx, id)
 }

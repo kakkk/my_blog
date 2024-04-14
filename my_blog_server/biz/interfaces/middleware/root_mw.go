@@ -8,7 +8,6 @@ func GetRootMW() []app.HandlerFunc {
 	return []app.HandlerFunc{
 		RequestIdMW(),
 		HertzLoggerMW(),
-		CorsMW(),
 		SessionMW(),
 		VisitorSessionMW(),
 	}

@@ -1,6 +1,7 @@
 package dto
 
 import (
+	"fmt"
 	"sort"
 	"time"
 
@@ -12,57 +13,75 @@ import (
 )
 
 type Comment struct {
-	ID       int64                `json:"id"`
-	PostID   int64                `json:"post_id"`
-	ReplyID  int64                `json:"reply_id"`
-	ParentID int64                `json:"parent_id"`
-	Nickname string               `json:"nickname"`
-	Email    string               `json:"email"`
-	EmailMD5 string               `json:"email_md5"`
-	Website  string               `json:"website"`
-	Content  string               `json:"content"`
-	CreateAt time.Time            `json:"create_at"`
-	Status   common.CommentStatus `json:"status"`
+	ID        int64                `json:"id"`
+	ArticleID int64                `json:"post_id"`
+	ReplyID   int64                `json:"reply_id"`
+	ParentID  int64                `json:"parent_id"`
+	Nickname  string               `json:"nickname"`
+	Email     string               `json:"email"`
+	EmailMD5  string               `json:"email_md5"`
+	Website   string               `json:"website"`
+	Content   string               `json:"content"`
+	CreateAt  time.Time            `json:"create_at"`
+	Status    common.CommentStatus `json:"status"`
 }
 
 func (c *Comment) ToModel() *model.Comment {
 	return &model.Comment{
-		ID:       c.ID,
-		PostID:   c.PostID,
-		ReplyID:  c.ReplyID,
-		ParentID: c.ParentID,
-		Nickname: c.Nickname,
-		Email:    c.Email,
-		Website:  c.Website,
-		Content:  c.Content,
-		CreateAt: c.CreateAt,
-		Status:   c.Status,
+		ID:        c.ID,
+		ArticleID: c.ArticleID,
+		ReplyID:   c.ReplyID,
+		ParentID:  c.ParentID,
+		Nickname:  c.Nickname,
+		Email:     c.Email,
+		Website:   c.Website,
+		Content:   c.Content,
+		CreateAt:  c.CreateAt,
+		Status:    c.Status,
 	}
 }
 
 func NewCommentByModel(comment *model.Comment) *Comment {
 	return &Comment{
-		ID:       comment.ID,
-		PostID:   comment.PostID,
-		ReplyID:  comment.ReplyID,
-		ParentID: comment.ParentID,
-		Nickname: comment.Nickname,
-		Email:    comment.Email,
-		EmailMD5: misc.SumStrMD5(comment.Email),
-		Website:  comment.Website,
-		Content:  comment.Content,
-		CreateAt: comment.CreateAt,
-		Status:   comment.Status,
+		ID:        comment.ID,
+		ArticleID: comment.ArticleID,
+		ReplyID:   comment.ReplyID,
+		ParentID:  comment.ParentID,
+		Nickname:  comment.Nickname,
+		Email:     comment.Email,
+		EmailMD5:  misc.SumStrMD5(comment.Email),
+		Website:   comment.Website,
+		Content:   comment.Content,
+		CreateAt:  comment.CreateAt,
+		Status:    comment.Status,
 	}
+}
+
+func (c *Comment) getCommentAt() string {
+	now := time.Now()
+	diff := now.Sub(c.CreateAt)
+	days := int(diff.Hours() / 24)
+	if days >= 1 {
+		return fmt.Sprintf("%d days", days)
+	}
+
+	hours := int(diff.Hours())
+	if hours >= 1 {
+		return fmt.Sprintf("%d hours", hours)
+	}
+
+	minutes := int(diff.Minutes())
+	return fmt.Sprintf("%d minutes", minutes)
 }
 
 func (c *Comment) ToResponseEntity() *api.Comment {
 	return &api.Comment{
+		ID:        c.ID,
 		Nickname:  c.Nickname,
 		Avatar:    config.GetGravatarCDN() + c.EmailMD5,
-		Website:   c.Website,
+		Website:   &c.Website,
 		Content:   c.Content,
-		CommentAt: "",
+		CommentAt: c.getCommentAt(),
 	}
 }
 
@@ -71,10 +90,10 @@ func (c *Comment) ToResponseEntityWithAtUser(at string) *api.Comment {
 		ID:        c.ID,
 		Nickname:  c.Nickname,
 		Avatar:    config.GetGravatarCDN() + c.EmailMD5,
-		Website:   c.Website,
+		Website:   &c.Website,
 		Content:   c.Content,
-		ReplyUser: at,
-		CommentAt: "",
+		ReplyUser: &at,
+		CommentAt: c.getCommentAt(),
 	}
 }
 
@@ -86,8 +105,11 @@ func (comments Comments) ToResponseCommentList() []*api.CommentListItem {
 	}
 	var commentList []*api.CommentListItem
 	pIDToComments := make(map[int64][]*Comment)
+	commentID2Comment := make(map[int64]*Comment)
 	// 第一次遍历，找到所有父评论和子评论
-	for _, comment := range comments {
+	for i := 0; i < len(comments); i++ {
+		comment := comments[i]
+		commentID2Comment[comment.ID] = comment
 		if comment.ParentID == 0 {
 			item := comment.ToResponseEntity()
 			commentList = append(commentList, &api.CommentListItem{Comment: item})
@@ -103,21 +125,24 @@ func (comments Comments) ToResponseCommentList() []*api.CommentListItem {
 	// 子评论排序
 	for pID, c := range pIDToComments {
 		sort.Slice(c, func(i, j int) bool {
-			return c[i].ID > c[j].ID
+			return c[i].ID < c[j].ID
 		})
 		pIDToComments[pID] = c
 	}
 	// 父评论排序
 	sort.Slice(commentList, func(i, j int) bool {
-		return commentList[i].Comment.ID > commentList[j].Comment.ID
+		return commentList[i].Comment.ID < commentList[j].Comment.ID
 	})
 	// 组装
 	for _, item := range commentList {
 		list := pIDToComments[item.Comment.ID]
 		replies := make([]*api.Comment, 0, len(list))
 		for _, comment := range list {
-			replyName := comments[comment.ReplyID].Nickname
-			replies = append(replies, comment.ToResponseEntityWithAtUser(replyName))
+			c, ok := commentID2Comment[comment.ReplyID]
+			if !ok {
+				continue
+			}
+			replies = append(replies, comment.ToResponseEntityWithAtUser(c.Nickname))
 		}
 		item.Replies = replies
 	}

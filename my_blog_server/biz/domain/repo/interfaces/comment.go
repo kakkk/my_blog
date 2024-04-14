@@ -17,4 +17,5 @@ type CommentCache interface {
 	Get(ctx context.Context, id int64) (*dto.Comment, error)
 	MGet(ctx context.Context, ids []int64) map[int64]*dto.Comment
 	GetArticleComments(ctx context.Context, id int64) []*dto.Comment
+	RefreshArticleComments(ctx context.Context, id int64)
 }

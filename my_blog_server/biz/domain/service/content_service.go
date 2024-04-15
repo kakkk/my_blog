@@ -95,10 +95,6 @@ func (svc *ContentService) UpdateArticle(ctx context.Context, articleDTO *dto.Ar
 			return err
 		}
 
-		articleDTO, err := repo.GetContentRepo().SelectArticleByID(tx, articleDTO.ID)
-		if err != nil {
-			return err
-		}
 		article := entity.NewArticleByDTO(articleDTO, categoriesDTO, tagsDTO)
 
 		// 更新文章

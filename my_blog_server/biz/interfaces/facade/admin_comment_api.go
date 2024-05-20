@@ -6,6 +6,7 @@ import (
 
 	"github.com/cloudwego/hertz/pkg/app"
 
+	"my_blog/biz/application"
 	"my_blog/biz/hertz_gen/blog/api"
 	"my_blog/biz/infra/pkg/resp"
 )
@@ -17,10 +18,12 @@ func GetCommentListAdminAPI(ctx context.Context, c *app.RequestContext) (int, *r
 	if err != nil {
 		return http.StatusBadRequest, resp.NewParameterErrorResp()
 	}
-	var rsp api.GetCommentListAdminAPIResponse
 
-	//rsp := service.GetCommentListAdminAPI(ctx, &req)
-	return http.StatusOK, resp.NewAPIResponse(&rsp)
+	rsp, err := application.GetAdminApplication().GetCommentList(ctx, &req)
+	if err != nil {
+		return resp.NewErrorAPIResponse(err)
+	}
+	return http.StatusOK, resp.NewAPIResponse(rsp)
 }
 
 func ReplyCommentAdminAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIResponse) {

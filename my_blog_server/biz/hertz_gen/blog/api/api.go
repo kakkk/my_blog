@@ -9150,9 +9150,9 @@ func (p *GetCommentListAdminItem) String() string {
 
 // 获取评论列表
 type GetCommentListAdminAPIResponse struct {
-	Pagination *Pagination     `thrift:"Pagination,1,required" form:"pagination,required" json:"pagination,required" query:"pagination,required"`
-	PostList   []*PostListItem `thrift:"PostList,2,optional" form:"post_list" json:"post_list,omitempty" query:"post_list"`
-	BaseResp   *BaseResp       `thrift:"BaseResp,255,required" json:"-" form:"base_resp,required" query:"base_resp,required"`
+	Pagination *Pagination                `thrift:"Pagination,1,required" form:"pagination,required" json:"pagination,required" query:"pagination,required"`
+	Comments   []*GetCommentListAdminItem `thrift:"Comments,2,optional" form:"comments" json:"comments,omitempty" query:"comments"`
+	BaseResp   *BaseResp                  `thrift:"BaseResp,255,required" json:"-" form:"base_resp,required" query:"base_resp,required"`
 }
 
 func NewGetCommentListAdminAPIResponse() *GetCommentListAdminAPIResponse {
@@ -9168,13 +9168,13 @@ func (p *GetCommentListAdminAPIResponse) GetPagination() (v *Pagination) {
 	return p.Pagination
 }
 
-var GetCommentListAdminAPIResponse_PostList_DEFAULT []*PostListItem
+var GetCommentListAdminAPIResponse_Comments_DEFAULT []*GetCommentListAdminItem
 
-func (p *GetCommentListAdminAPIResponse) GetPostList() (v []*PostListItem) {
-	if !p.IsSetPostList() {
-		return GetCommentListAdminAPIResponse_PostList_DEFAULT
+func (p *GetCommentListAdminAPIResponse) GetComments() (v []*GetCommentListAdminItem) {
+	if !p.IsSetComments() {
+		return GetCommentListAdminAPIResponse_Comments_DEFAULT
 	}
-	return p.PostList
+	return p.Comments
 }
 
 var GetCommentListAdminAPIResponse_BaseResp_DEFAULT *BaseResp
@@ -9188,7 +9188,7 @@ func (p *GetCommentListAdminAPIResponse) GetBaseResp() (v *BaseResp) {
 
 var fieldIDToName_GetCommentListAdminAPIResponse = map[int16]string{
 	1:   "Pagination",
-	2:   "PostList",
+	2:   "Comments",
 	255: "BaseResp",
 }
 
@@ -9196,8 +9196,8 @@ func (p *GetCommentListAdminAPIResponse) IsSetPagination() bool {
 	return p.Pagination != nil
 }
 
-func (p *GetCommentListAdminAPIResponse) IsSetPostList() bool {
-	return p.PostList != nil
+func (p *GetCommentListAdminAPIResponse) IsSetComments() bool {
+	return p.Comments != nil
 }
 
 func (p *GetCommentListAdminAPIResponse) IsSetBaseResp() bool {
@@ -9311,14 +9311,14 @@ func (p *GetCommentListAdminAPIResponse) ReadField2(iprot thrift.TProtocol) erro
 	if err != nil {
 		return err
 	}
-	p.PostList = make([]*PostListItem, 0, size)
+	p.Comments = make([]*GetCommentListAdminItem, 0, size)
 	for i := 0; i < size; i++ {
-		_elem := NewPostListItem()
+		_elem := NewGetCommentListAdminItem()
 		if err := _elem.Read(iprot); err != nil {
 			return err
 		}
 
-		p.PostList = append(p.PostList, _elem)
+		p.Comments = append(p.Comments, _elem)
 	}
 	if err := iprot.ReadListEnd(); err != nil {
 		return err
@@ -9389,14 +9389,14 @@ WriteFieldEndError:
 }
 
 func (p *GetCommentListAdminAPIResponse) writeField2(oprot thrift.TProtocol) (err error) {
-	if p.IsSetPostList() {
-		if err = oprot.WriteFieldBegin("PostList", thrift.LIST, 2); err != nil {
+	if p.IsSetComments() {
+		if err = oprot.WriteFieldBegin("Comments", thrift.LIST, 2); err != nil {
 			goto WriteFieldBeginError
 		}
-		if err := oprot.WriteListBegin(thrift.STRUCT, len(p.PostList)); err != nil {
+		if err := oprot.WriteListBegin(thrift.STRUCT, len(p.Comments)); err != nil {
 			return err
 		}
-		for _, v := range p.PostList {
+		for _, v := range p.Comments {
 			if err := v.Write(oprot); err != nil {
 				return err
 			}

@@ -24,6 +24,7 @@ type ContentRepo interface {
 	SelectArticleIDsByCategoryNames(db *gorm.DB, categoryNames []string) ([]int64, error)
 
 	SelectArticleByID(db *gorm.DB, id int64) (*dto.Article, error)
+	SelectArticleByIDs(db *gorm.DB, ids []int64) ([]*dto.Article, error)
 	CreateArticle(db *gorm.DB, article *dto.Article) (*dto.Article, error)
 	UpdateArticleByID(db *gorm.DB, id int64, article *dto.Article) error
 	UpdateArticlePublishAtByID(db *gorm.DB, id int64, publishAt *time.Time) error

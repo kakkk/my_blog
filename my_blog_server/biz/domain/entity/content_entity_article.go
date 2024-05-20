@@ -241,7 +241,7 @@ type ArticleMeta struct {
 	Abstract    string
 }
 
-func NewArticleMetaByDTO(am *dto.ArticleMeta) *ArticleMeta {
+func newArticleMetaByDTO(am *dto.ArticleMeta) *ArticleMeta {
 	return &ArticleMeta{
 		ID:          am.ID,
 		Title:       am.Title,
@@ -249,4 +249,27 @@ func NewArticleMetaByDTO(am *dto.ArticleMeta) *ArticleMeta {
 		Description: am.Description,
 		Abstract:    am.Abstract,
 	}
+}
+
+type Articles struct {
+	Articles []*Article
+}
+
+func (a *Articles) MGetMyIDs(ctx context.Context, ids []int64) error {
+	articles, err := repo.GetContentRepo().SelectArticleByIDs(mysql.GetDB(ctx), ids)
+	if err != nil {
+		return err
+	}
+	for _, article := range articles {
+		a.Articles = append(a.Articles, NewArticleByDTO(article, nil, nil))
+	}
+	return nil
+}
+
+func (a *Articles) GetID2Title() map[int64]string {
+	result := make(map[int64]string)
+	for _, article := range a.Articles {
+		result[article.ID] = article.Title
+	}
+	return result
 }

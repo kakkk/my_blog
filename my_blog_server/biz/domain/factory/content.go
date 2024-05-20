@@ -44,3 +44,9 @@ func (ContentFactory) NewArticlePageBySlug(slug string) *entity.ArticlePage {
 		Slug: slug,
 	}
 }
+
+func (c ContentFactory) NewArticles() *entity.Articles {
+	return &entity.Articles{
+		Articles: make([]*entity.Article, 0),
+	}
+}

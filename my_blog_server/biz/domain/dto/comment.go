@@ -13,17 +13,19 @@ import (
 )
 
 type Comment struct {
-	ID        int64                `json:"id"`
-	ArticleID int64                `json:"post_id"`
-	ReplyID   int64                `json:"reply_id"`
-	ParentID  int64                `json:"parent_id"`
-	Nickname  string               `json:"nickname"`
-	Email     string               `json:"email"`
-	EmailMD5  string               `json:"email_md5"`
-	Website   string               `json:"website"`
-	Content   string               `json:"content"`
-	CreateAt  time.Time            `json:"create_at"`
-	Status    common.CommentStatus `json:"status"`
+	ID            int64                `json:"id"`
+	ArticleID     int64                `json:"post_id"`
+	ReplyID       int64                `json:"reply_id"`
+	ParentID      int64                `json:"parent_id"`
+	ParentContent string               `json:"parent_content"`
+	ArticleTitle  string               `json:"post_title"`
+	Nickname      string               `json:"nickname"`
+	Email         string               `json:"email"`
+	EmailMD5      string               `json:"email_md5"`
+	Website       string               `json:"website"`
+	Content       string               `json:"content"`
+	CreateAt      time.Time            `json:"create_at"`
+	Status        common.CommentStatus `json:"status"`
 }
 
 func (c *Comment) ToModel() *model.Comment {
@@ -57,6 +59,14 @@ func NewCommentByModel(comment *model.Comment) *Comment {
 	}
 }
 
+func NewCommentListByModel(comments []*model.Comment) []*Comment {
+	result := make([]*Comment, 0, len(comments))
+	for _, comment := range comments {
+		result = append(result, NewCommentByModel(comment))
+	}
+	return result
+}
+
 func (c *Comment) getCommentAt() string {
 	now := time.Now()
 	diff := now.Sub(c.CreateAt)
@@ -82,6 +92,23 @@ func (c *Comment) ToResponseEntity() *api.Comment {
 		Website:   &c.Website,
 		Content:   c.Content,
 		CommentAt: c.getCommentAt(),
+	}
+}
+
+func (c *Comment) ToResponseAdminEntity() *api.GetCommentListAdminItem {
+	return &api.GetCommentListAdminItem{
+		ID:       c.ID,
+		Nickname: c.Nickname,
+		Avatar:   config.GetGravatarCDN() + c.EmailMD5,
+		Website:  c.Website,
+		Article: &api.ArticleMeta{
+			ID:    c.ArticleID,
+			Title: c.ArticleTitle,
+		},
+		Content:        c.Content,
+		ReplyToID:      &c.ReplyID,
+		ReplyToContent: &c.ParentContent,
+		Status:         c.Status,
 	}
 }
 
@@ -147,4 +174,12 @@ func (comments Comments) ToResponseCommentList() []*api.CommentListItem {
 		item.Replies = replies
 	}
 	return commentList
+}
+
+func (comments Comments) ToResponseAdminCommentList() []*api.GetCommentListAdminItem {
+	result := make([]*api.GetCommentListAdminItem, 0, len(comments))
+	for _, comment := range comments {
+		result = append(result, comment.ToResponseAdminEntity())
+	}
+	return result
 }

@@ -19,6 +19,31 @@ func (c CommentRepoImpl) Create(db *gorm.DB, comment *dto.Comment) error {
 	return err
 }
 
+func (c CommentRepoImpl) GetListByPage(db *gorm.DB, page *int32, size *int32) ([]*dto.Comment, error) {
+	comments, err := persistence.SelectCommentByPage(db, page, size)
+	if err != nil {
+		return nil, err
+	}
+	result := dto.NewCommentListByModel(comments)
+	return result, nil
+}
+
+func (c CommentRepoImpl) GetCount(db *gorm.DB) (int64, error) {
+	return persistence.SelectCommentCount(db)
+}
+
+func (c CommentRepoImpl) MGetCommentsByID(db *gorm.DB, ids []int64) (map[int64]*dto.Comment, error) {
+	comments, err := persistence.SelectCommentsByIDs(db, ids)
+	if err != nil {
+		return nil, err
+	}
+	result := make(map[int64]*dto.Comment)
+	for _, comment := range comments {
+		result[comment.ID] = dto.NewCommentByModel(comment)
+	}
+	return result, nil
+}
+
 func (c CommentRepoImpl) Cache() interfaces.CommentCache {
 	return c.cache
 }

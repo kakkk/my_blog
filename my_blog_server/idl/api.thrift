@@ -263,7 +263,7 @@ struct GetCommentListAdminItem {
 // 获取评论列表
 struct GetCommentListAdminAPIResponse {
     1: required Pagination Pagination
-    2: optional list<PostListItem> PostList
+    2: optional list<GetCommentListAdminItem> Comments
 
     255: required BaseResp BaseResp (go.tag="json:\"-\"")
 }

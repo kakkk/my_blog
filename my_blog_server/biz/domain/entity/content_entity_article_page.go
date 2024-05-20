@@ -44,14 +44,14 @@ func (a *ArticlePage) FetchContent(ctx context.Context) error {
 		if err != nil {
 			logger.Warnf("get prev article fail")
 		}
-		a.Prev = NewArticleMetaByDTO(prev)
+		a.Prev = newArticleMetaByDTO(prev)
 	}
 	if articleDTO.NextID != nil {
 		next, err := repo.GetContentRepo().Cache().GetArticleMeta(ctx, *articleDTO.NextID)
 		if err != nil {
 			logger.Warnf("get prev article fail")
 		}
-		a.Next = NewArticleMetaByDTO(next)
+		a.Next = newArticleMetaByDTO(next)
 	}
 	a.Author = articleDTO.CreateUser.Nickname
 	return nil

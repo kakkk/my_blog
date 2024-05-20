@@ -66,3 +66,49 @@ func SelectCommentIDsByArticleID(db *gorm.DB, id int64) ([]int64, error) {
 	}
 	return ids, nil
 }
+
+func SelectCommentByPage(db *gorm.DB, page *int32, size *int32) ([]*model.Comment, error) {
+	var result []*model.Comment
+	offset, limit := 0, mysql.DefaultPageLimit
+	if size != nil {
+		limit = int(*size)
+	}
+	if page != nil {
+		if *page != 0 {
+			offset = (int(*page) - 1) * limit
+		}
+	}
+	err := db.Model(&model.Comment{}).
+		Limit(limit).
+		Offset(offset).
+		Order("id desc").
+		Find(&result).Error
+	if err != nil {
+		return nil, mysql.ParseError(err)
+	}
+	return result, nil
+}
+
+func SelectCommentsByIDs(db *gorm.DB, ids []int64) ([]*model.Comment, error) {
+	var comments []*model.Comment
+	err := db.Model(&model.Comment{}).
+		Where("id in ?", ids).
+		Find(&comments).
+		Error
+	if err != nil {
+		return nil, mysql.ParseError(err)
+	}
+	if len(comments) == 0 {
+		return nil, consts.ErrRecordNotFound
+	}
+	return comments, nil
+}
+
+func SelectCommentCount(db *gorm.DB) (int64, error) {
+	var count int64
+	err := db.Model(&model.Comment{}).Count(&count).Error
+	if err != nil {
+		return 0, mysql.ParseError(err)
+	}
+	return count, nil
+}

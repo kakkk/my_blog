@@ -59,8 +59,10 @@ func DeleteCommentAdminAPI(ctx context.Context, c *app.RequestContext) (int, *re
 	if err != nil {
 		return http.StatusBadRequest, resp.NewParameterErrorResp()
 	}
-	var rsp api.CommonResponse
 
-	//rsp := service.DeleteCommentAdminAPI(ctx, &req)
-	return http.StatusOK, resp.NewAPIResponse(&rsp)
+	rsp, err := application.GetAdminApplication().DeleteComment(ctx, &req)
+	if err != nil {
+		return resp.NewErrorAPIResponse(err)
+	}
+	return http.StatusOK, resp.NewAPIResponse(rsp)
 }

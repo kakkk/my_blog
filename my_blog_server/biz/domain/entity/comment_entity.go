@@ -70,6 +70,21 @@ func (c *Comment) Review(ctx context.Context) common.CommentStatus {
 	return common.CommentStatus_Approved
 }
 
+func (c *Comment) fillByDTO(comment *dto.Comment) {
+	c.ID = comment.ID
+	c.PostID = comment.ArticleID
+	c.ReplyID = comment.ReplyID
+	c.ParentID = comment.ParentID
+	c.ParentContent = comment.ParentContent
+	c.ArticleTitle = comment.ArticleTitle
+	c.Nickname = comment.Nickname
+	c.Email = comment.Email
+	c.Website = comment.Website
+	c.Content = comment.Content
+	c.CreateAt = comment.CreateAt
+	c.Status = comment.Status
+}
+
 func (c *Comment) ToDTO() *dto.Comment {
 	return &dto.Comment{
 		ID:            c.ID,
@@ -85,6 +100,29 @@ func (c *Comment) ToDTO() *dto.Comment {
 		CreateAt:      c.CreateAt,
 		Status:        c.Status,
 	}
+}
+
+func (c *Comment) Get(ctx context.Context) error {
+	comment, err := repo.GetCommentRepo().GetCommentByID(mysql.GetDB(ctx), c.ID)
+	if err != nil {
+		return err
+	}
+	c.fillByDTO(comment)
+	return nil
+}
+
+func (c *Comment) Delete(ctx context.Context) error {
+	err := c.Get(ctx)
+	if err != nil {
+		return fmt.Errorf("get comment fail: %w", err)
+	}
+	err = repo.GetCommentRepo().DeleteByID(mysql.GetDB(ctx), c.ID)
+	if err != nil {
+		return fmt.Errorf("delete comment fail: %w", err)
+	}
+	// 更新缓存
+	repo.GetCommentRepo().Cache().RefreshArticleComments(ctx, c.PostID)
+	return nil
 }
 
 type Comments struct {

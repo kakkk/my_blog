@@ -53,3 +53,19 @@ func (a *AdminApplication) GetCommentList(ctx context.Context, req *api.GetComme
 		BaseResp: api.NewBaseResp(),
 	}, nil
 }
+
+func (a *AdminApplication) DeleteComment(ctx context.Context, req *api.DeleteCommentAdminAPIRequest) (*api.CommonResponse, error) {
+	logger := log.GetLoggerWithCtx(ctx).WithFields(logrus.Fields{
+		"id": req.GetCommentID(),
+	})
+	comment := factory.NewCommentByID(req.GetCommentID())
+	err := comment.Delete(ctx)
+	if err != nil {
+		logger.Errorf("delete comment err:%v", err)
+		return nil, err
+	}
+	logger.Infof("delete comment success")
+	return &api.CommonResponse{
+		BaseResp: api.NewBaseResp(),
+	}, nil
+}

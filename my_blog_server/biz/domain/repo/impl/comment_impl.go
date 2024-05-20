@@ -32,6 +32,14 @@ func (c CommentRepoImpl) GetCount(db *gorm.DB) (int64, error) {
 	return persistence.SelectCommentCount(db)
 }
 
+func (c CommentRepoImpl) GetCommentByID(db *gorm.DB, id int64) (*dto.Comment, error) {
+	comment, err := persistence.SelectCommentByID(db, id)
+	if err != nil {
+		return nil, err
+	}
+	return dto.NewCommentByModel(comment), nil
+}
+
 func (c CommentRepoImpl) MGetCommentsByID(db *gorm.DB, ids []int64) (map[int64]*dto.Comment, error) {
 	comments, err := persistence.SelectCommentsByIDs(db, ids)
 	if err != nil {
@@ -42,6 +50,10 @@ func (c CommentRepoImpl) MGetCommentsByID(db *gorm.DB, ids []int64) (map[int64]*
 		result[comment.ID] = dto.NewCommentByModel(comment)
 	}
 	return result, nil
+}
+
+func (c CommentRepoImpl) DeleteByID(db *gorm.DB, id int64) error {
+	return persistence.DeleteCommentByID(db, id)
 }
 
 func (c CommentRepoImpl) Cache() interfaces.CommentCache {

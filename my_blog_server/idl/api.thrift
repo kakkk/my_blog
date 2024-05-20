@@ -244,26 +244,26 @@ struct GetCommentListAdminAPIRequest {
 }
 
 struct ArticleMeta {
-    1: required i64 ID
-    2: required string Title
+    1: required i64 ID (api.body="id,string")
+    2: required string Title (api.body="title")
 }
 
 struct GetCommentListAdminItem {
-    1: required i64 ID
-    2: required string Nickname
-    3: required string Avatar
-    4: required string Website
-    5: required ArticleMeta Article
-    6: required string Content
-    7: optional i64 ReplyToID
-    8: optional string ReplyToContent
-    9: required common.CommentStatus Status
+    1: required i64 ID (api.body="id,string")
+    2: required string Nickname (api.body="nickname")
+    3: required string Avatar (api.body="avatar")
+    4: required string Website (api.body="website")
+    5: required ArticleMeta Article (api.body="article")
+    6: required string Content (api.body="content")
+    7: optional i64 ReplyToID (api.body="reply_to_id,string")
+    8: optional string ReplyToContent (api.body="reply_to_content")
+    9: required common.CommentStatus Status (api.body="status")
 }
 
 // 获取评论列表
 struct GetCommentListAdminAPIResponse {
     1: required Pagination Pagination
-    2: optional list<GetCommentListAdminItem> Comments
+    2: optional list<GetCommentListAdminItem> Comments (api.body="comment")
 
     255: required BaseResp BaseResp (go.tag="json:\"-\"")
 }

@@ -36,7 +36,7 @@ func Register(r *server.Hertz) {
 			_category.PUT("/order", append(_updatecategoryorderapiMw(), blog.UpdateCategoryOrderAPI)...)
 			{
 				_comment := _admin.Group("/comment", _commentMw()...)
-				_comment.PUT("/:comment_id", append(_deletecommentadminapiMw(), blog.DeleteCommentAdminAPI)...)
+				_comment.DELETE("/:comment_id", append(_deletecommentadminapiMw(), blog.DeleteCommentAdminAPI)...)
 				_comment.GET("/list", append(_getcommentlistadminapiMw(), blog.GetCommentListAdminAPI)...)
 				{
 					_comment_id := _comment.Group("/:comment_id", _comment_idMw()...)

@@ -8366,8 +8366,8 @@ func (p *GetCommentListAdminAPIRequest) String() string {
 }
 
 type ArticleMeta struct {
-	ID    int64  `thrift:"ID,1,required" form:"id,required" json:"id,required" query:"id,required"`
-	Title string `thrift:"Title,2,required" form:"title,required" json:"title,required" query:"title,required"`
+	ID    int64  `thrift:"ID,1,required" form:"id,string,required" json:"id,string,required"`
+	Title string `thrift:"Title,2,required" form:"title,required" json:"title,required"`
 }
 
 func NewArticleMeta() *ArticleMeta {
@@ -8564,15 +8564,15 @@ func (p *ArticleMeta) String() string {
 }
 
 type GetCommentListAdminItem struct {
-	ID             int64                `thrift:"ID,1,required" form:"id,required" json:"id,required" query:"id,required"`
-	Nickname       string               `thrift:"Nickname,2,required" form:"nickname,required" json:"nickname,required" query:"nickname,required"`
-	Avatar         string               `thrift:"Avatar,3,required" form:"avatar,required" json:"avatar,required" query:"avatar,required"`
-	Website        string               `thrift:"Website,4,required" form:"website,required" json:"website,required" query:"website,required"`
-	Article        *ArticleMeta         `thrift:"Article,5,required" form:"article,required" json:"article,required" query:"article,required"`
-	Content        string               `thrift:"Content,6,required" form:"content,required" json:"content,required" query:"content,required"`
-	ReplyToID      *int64               `thrift:"ReplyToID,7,optional" form:"reply_to_id" json:"reply_to_id,omitempty" query:"reply_to_id"`
-	ReplyToContent *string              `thrift:"ReplyToContent,8,optional" form:"reply_to_content" json:"reply_to_content,omitempty" query:"reply_to_content"`
-	Status         common.CommentStatus `thrift:"Status,9,required" form:"status,required" json:"status,required" query:"status,required"`
+	ID             int64                `thrift:"ID,1,required" form:"id,string,required" json:"id,string,required"`
+	Nickname       string               `thrift:"Nickname,2,required" form:"nickname,required" json:"nickname,required"`
+	Avatar         string               `thrift:"Avatar,3,required" form:"avatar,required" json:"avatar,required"`
+	Website        string               `thrift:"Website,4,required" form:"website,required" json:"website,required"`
+	Article        *ArticleMeta         `thrift:"Article,5,required" form:"article,required" json:"article,required"`
+	Content        string               `thrift:"Content,6,required" form:"content,required" json:"content,required"`
+	ReplyToID      *int64               `thrift:"ReplyToID,7,optional" form:"reply_to_id,string" json:"reply_to_id,string,omitempty"`
+	ReplyToContent *string              `thrift:"ReplyToContent,8,optional" form:"reply_to_content" json:"reply_to_content,omitempty"`
+	Status         common.CommentStatus `thrift:"Status,9,required" form:"status,required" json:"status,required"`
 }
 
 func NewGetCommentListAdminItem() *GetCommentListAdminItem {
@@ -9151,7 +9151,7 @@ func (p *GetCommentListAdminItem) String() string {
 // 获取评论列表
 type GetCommentListAdminAPIResponse struct {
 	Pagination *Pagination                `thrift:"Pagination,1,required" form:"pagination,required" json:"pagination,required" query:"pagination,required"`
-	Comments   []*GetCommentListAdminItem `thrift:"Comments,2,optional" form:"comments" json:"comments,omitempty" query:"comments"`
+	Comments   []*GetCommentListAdminItem `thrift:"Comments,2,optional" form:"comment" json:"comment,omitempty"`
 	BaseResp   *BaseResp                  `thrift:"BaseResp,255,required" json:"-" form:"base_resp,required" query:"base_resp,required"`
 }
 

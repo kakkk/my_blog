@@ -24,3 +24,9 @@ func NewComments() *entity.Comments {
 		Comments: make([]*entity.Comment, 0),
 	}
 }
+
+func NewCommentByID(id int64) *entity.Comment {
+	return &entity.Comment{
+		ID: id,
+	}
+}

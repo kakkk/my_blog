@@ -20,4 +20,4 @@ WORKDIR /app
 COPY --from=builder /build/output .
 
 EXPOSE 8888
-CMD ["bash bootstrap.sh"]
+CMD ["bash","bootstrap.sh"]

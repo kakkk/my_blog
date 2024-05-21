@@ -163,6 +163,7 @@ func (c *Comments) GetByPage(ctx context.Context, page *int32, size *int32) (int
 			Website:  comment.Website,
 			Content:  comment.Content,
 			CreateAt: comment.CreateAt,
+			Status:   comment.Status,
 		})
 	}
 	return total, nil

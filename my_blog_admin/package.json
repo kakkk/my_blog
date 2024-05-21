@@ -4,7 +4,7 @@
   "description": "",
   "scripts": {
     "prepublishOnly": "npm run build",
-    "dev": "export NODE_ENV=development && arco-scripts dev:site --port 9091",
+    "dev": "export NODE_ENV=development && arco-scripts dev:site --port 3000",
     "build": "export NODE_ENV=production && arco-scripts build:site",
     "eslint": "eslint src/ --fix --cache --quiet --ext .js,.jsx,.ts,.tsx",
     "stylelint": "stylelint 'components/**/*.less' --fix --cache"

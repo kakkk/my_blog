@@ -44,6 +44,18 @@ func (c ContentRepoImpl) SelectArticleByID(db *gorm.DB, id int64) (*dto.Article,
 	return dto.NewArticleByModel(article), nil
 }
 
+func (c ContentRepoImpl) SelectArticleByIDs(db *gorm.DB, ids []int64) ([]*dto.Article, error) {
+	articles, err := persistence.SelectArticleByIDs(db, ids)
+	if err != nil {
+		return nil, err
+	}
+	result := make([]*dto.Article, len(articles))
+	for i, article := range articles {
+		result[i] = dto.NewArticleByModel(article)
+	}
+	return result, nil
+}
+
 func (c ContentRepoImpl) UpdateArticlePublishAtByID(db *gorm.DB, id int64, publishAt *time.Time) error {
 	return persistence.UpdateArticlePublishAtByID(db, id, publishAt)
 }

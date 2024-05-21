@@ -8,6 +8,7 @@ import (
 	"my_blog/biz/domain/dto"
 	"my_blog/biz/domain/repo/interfaces"
 	"my_blog/biz/domain/repo/persistence"
+	"my_blog/biz/hertz_gen/blog/common"
 )
 
 type CommentRepoImpl struct {
@@ -17,6 +18,47 @@ type CommentRepoImpl struct {
 func (c CommentRepoImpl) Create(db *gorm.DB, comment *dto.Comment) error {
 	_, err := persistence.CreateComment(db, comment.ToModel())
 	return err
+}
+
+func (c CommentRepoImpl) GetListByPage(db *gorm.DB, page *int32, size *int32) ([]*dto.Comment, error) {
+	comments, err := persistence.SelectCommentByPage(db, page, size)
+	if err != nil {
+		return nil, err
+	}
+	result := dto.NewCommentListByModel(comments)
+	return result, nil
+}
+
+func (c CommentRepoImpl) GetCount(db *gorm.DB) (int64, error) {
+	return persistence.SelectCommentCount(db)
+}
+
+func (c CommentRepoImpl) GetCommentByID(db *gorm.DB, id int64) (*dto.Comment, error) {
+	comment, err := persistence.SelectCommentByID(db, id)
+	if err != nil {
+		return nil, err
+	}
+	return dto.NewCommentByModel(comment), nil
+}
+
+func (c CommentRepoImpl) MGetCommentsByID(db *gorm.DB, ids []int64) (map[int64]*dto.Comment, error) {
+	comments, err := persistence.SelectCommentsByIDs(db, ids)
+	if err != nil {
+		return nil, err
+	}
+	result := make(map[int64]*dto.Comment)
+	for _, comment := range comments {
+		result[comment.ID] = dto.NewCommentByModel(comment)
+	}
+	return result, nil
+}
+
+func (c CommentRepoImpl) DeleteByID(db *gorm.DB, id int64) error {
+	return persistence.DeleteCommentByID(db, id)
+}
+
+func (c CommentRepoImpl) UpdateCommentStatusByID(db *gorm.DB, id int64, status common.CommentStatus) error {
+	return persistence.UpdateCommentStatusByID(db, id, status)
 }
 
 func (c CommentRepoImpl) Cache() interfaces.CommentCache {

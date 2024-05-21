@@ -75,7 +75,7 @@ service BlogService {
     // 修改评论状态
     api.CommonResponse UpdateCommentStatusAdminAPI(1:api.UpdateCommentStatusAdminAPIRequest request) (api.put="/api/admin/comment/:comment_id/status")
     // 删除评论
-    api.CommonResponse DeleteCommentAdminAPI(1:api.DeleteCommentAdminAPIRequest request) (api.put="/api/admin/comment/:comment_id")
+    api.CommonResponse DeleteCommentAdminAPI(1:api.DeleteCommentAdminAPIRequest request) (api.delete="/api/admin/comment/:comment_id")
 
     // ==========用户侧接口============
 

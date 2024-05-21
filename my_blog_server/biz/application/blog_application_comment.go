@@ -6,7 +6,7 @@ import (
 	"github.com/sirupsen/logrus"
 
 	"my_blog/biz/domain/dto"
-	"my_blog/biz/domain/entity"
+	"my_blog/biz/domain/factory"
 	"my_blog/biz/domain/repo"
 	"my_blog/biz/hertz_gen/blog/api"
 	"my_blog/biz/infra/pkg/log"
@@ -27,7 +27,7 @@ func (app *BlogApplication) CommentArticle(ctx context.Context, req *api.Comment
 		return nil, err
 	}
 	// 创建评论
-	comment := entity.NewCommentByDTO(&dto.Comment{
+	comment := factory.NewCommentByDTO(&dto.Comment{
 		ArticleID: req.GetArticleID(),
 		Nickname:  req.GetNickname(),
 		Email:     req.GetEmail(),
@@ -67,7 +67,7 @@ func (app *BlogApplication) ReplyComment(ctx context.Context, req *api.ReplyComm
 		return nil, err
 	}
 	// 回复评论
-	comment := entity.NewCommentByDTO(&dto.Comment{
+	comment := factory.NewCommentByDTO(&dto.Comment{
 		ArticleID: req.GetArticleID(),
 		Nickname:  req.GetNickname(),
 		Email:     req.GetEmail(),

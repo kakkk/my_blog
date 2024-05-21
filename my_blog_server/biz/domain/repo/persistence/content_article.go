@@ -33,6 +33,17 @@ func SelectArticleByID(db *gorm.DB, id int64) (*model.Article, error) {
 	return post, nil
 }
 
+func SelectArticleByIDs(db *gorm.DB, ids []int64) ([]*model.Article, error) {
+	var articles []*model.Article
+	err := db.Model(&model.Article{}).
+		Where("id in (?)", ids).
+		Find(&articles).Error
+	if err != nil {
+		return nil, mysql.ParseError(err)
+	}
+	return articles, nil
+}
+
 func SelectArticleBySlug(db *gorm.DB, slug string) (*model.Article, error) {
 	article := &model.Article{}
 	err := db.Model(&model.Article{}).

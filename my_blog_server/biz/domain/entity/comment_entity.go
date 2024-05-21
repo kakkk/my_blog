@@ -9,26 +9,29 @@ import (
 	"my_blog/biz/domain/repo"
 	"my_blog/biz/hertz_gen/blog/common"
 	"my_blog/biz/infra/idgen"
+	"my_blog/biz/infra/misc"
 	"my_blog/biz/infra/repository/mysql"
 )
 
 type Comment struct {
-	ID       int64
-	PostID   int64
-	ReplyID  int64
-	ParentID int64
-	Nickname string
-	Email    string
-	Website  string
-	Content  string
-	Status   common.CommentStatus
-	CreateAt time.Time
+	ID            int64
+	PostID        int64
+	ReplyID       int64
+	ParentID      int64
+	Nickname      string
+	Email         string
+	Website       string
+	Content       string
+	ParentContent string
+	ArticleTitle  string
+	Status        common.CommentStatus
+	CreateAt      time.Time
 }
 
 func (c *Comment) Create(ctx context.Context) error {
 	c.ID = idgen.GenID()
 	c.Status = c.Review(ctx)
-	err := repo.GetCommentRepo().Create(mysql.GetDB(ctx), c.GetDTO())
+	err := repo.GetCommentRepo().Create(mysql.GetDB(ctx), c.ToDTO())
 	if err != nil {
 		return fmt.Errorf("repo create fail: %w", err)
 	}
@@ -54,7 +57,7 @@ func (c *Comment) ReplyTo(ctx context.Context, replyID int64) error {
 
 	c.ID = idgen.GenID()
 	c.Status = c.Review(ctx)
-	err = repo.GetCommentRepo().Create(mysql.GetDB(ctx), c.GetDTO())
+	err = repo.GetCommentRepo().Create(mysql.GetDB(ctx), c.ToDTO())
 	if err != nil {
 		return fmt.Errorf("repo create fail: %w", err)
 	}
@@ -67,31 +70,148 @@ func (c *Comment) Review(ctx context.Context) common.CommentStatus {
 	return common.CommentStatus_Approved
 }
 
-func (c *Comment) GetDTO() *dto.Comment {
+func (c *Comment) fillByDTO(comment *dto.Comment) {
+	c.ID = comment.ID
+	c.PostID = comment.ArticleID
+	c.ReplyID = comment.ReplyID
+	c.ParentID = comment.ParentID
+	c.ParentContent = comment.ParentContent
+	c.ArticleTitle = comment.ArticleTitle
+	c.Nickname = comment.Nickname
+	c.Email = comment.Email
+	c.Website = comment.Website
+	c.Content = comment.Content
+	c.CreateAt = comment.CreateAt
+	c.Status = comment.Status
+}
+
+func (c *Comment) ToDTO() *dto.Comment {
 	return &dto.Comment{
-		ID:        c.ID,
-		ArticleID: c.PostID,
-		ReplyID:   c.ReplyID,
-		ParentID:  c.ParentID,
-		Nickname:  c.Nickname,
-		Email:     c.Email,
-		Website:   c.Website,
-		Content:   c.Content,
-		CreateAt:  c.CreateAt,
-		Status:    c.Status,
+		ID:            c.ID,
+		ArticleID:     c.PostID,
+		ReplyID:       c.ReplyID,
+		ParentID:      c.ParentID,
+		ParentContent: c.ParentContent,
+		ArticleTitle:  c.ArticleTitle,
+		Nickname:      c.Nickname,
+		Email:         c.Email,
+		Website:       c.Website,
+		Content:       c.Content,
+		CreateAt:      c.CreateAt,
+		Status:        c.Status,
 	}
 }
 
-func NewCommentByDTO(c *dto.Comment) *Comment {
-	return &Comment{
-		ID:       c.ID,
-		PostID:   c.ArticleID,
-		ReplyID:  c.ReplyID,
-		ParentID: c.ParentID,
-		Nickname: c.Nickname,
-		Email:    c.Email,
-		Website:  c.Website,
-		Content:  c.Content,
-		CreateAt: c.CreateAt,
+func (c *Comment) Get(ctx context.Context) error {
+	comment, err := repo.GetCommentRepo().GetCommentByID(mysql.GetDB(ctx), c.ID)
+	if err != nil {
+		return err
 	}
+	c.fillByDTO(comment)
+	return nil
+}
+
+func (c *Comment) Delete(ctx context.Context) error {
+	err := c.Get(ctx)
+	if err != nil {
+		return fmt.Errorf("get comment fail: %w", err)
+	}
+	err = repo.GetCommentRepo().DeleteByID(mysql.GetDB(ctx), c.ID)
+	if err != nil {
+		return fmt.Errorf("delete comment fail: %w", err)
+	}
+	// 更新缓存
+	repo.GetCommentRepo().Cache().RefreshArticleComments(ctx, c.PostID)
+	return nil
+}
+
+func (c *Comment) UpdateStatus(ctx context.Context, status common.CommentStatus) error {
+	err := c.Get(ctx)
+	if err != nil {
+		return fmt.Errorf("get comment fail: %w", err)
+	}
+	err = repo.GetCommentRepo().UpdateCommentStatusByID(mysql.GetDB(ctx), c.ID, status)
+	if err != nil {
+		return fmt.Errorf("delete comment fail: %w", err)
+	}
+	// 更新缓存
+	repo.GetCommentRepo().Cache().RefreshArticleComments(ctx, c.PostID)
+	return nil
+}
+
+type Comments struct {
+	Comments []*Comment
+}
+
+func (c *Comments) GetByPage(ctx context.Context, page *int32, size *int32) (int64, error) {
+	comments, err := repo.GetCommentRepo().GetListByPage(mysql.GetDB(ctx), page, size)
+	if err != nil {
+		return 0, fmt.Errorf("get comments fail: %w", err)
+	}
+	total, err := repo.GetCommentRepo().GetCount(mysql.GetDB(ctx))
+	if err != nil {
+		return 0, fmt.Errorf("get total comments fail: %w", err)
+	}
+	for _, comment := range comments {
+		c.Comments = append(c.Comments, &Comment{
+			ID:       comment.ID,
+			PostID:   comment.ArticleID,
+			ReplyID:  comment.ReplyID,
+			ParentID: comment.ParentID,
+			Nickname: comment.Nickname,
+			Email:    comment.Email,
+			Website:  comment.Website,
+			Content:  comment.Content,
+			CreateAt: comment.CreateAt,
+		})
+	}
+	return total, nil
+}
+
+func (c *Comments) GetParentsContent(ctx context.Context) error {
+	parentIDSet := make(map[int64]struct{})
+	for _, comment := range c.Comments {
+		if comment.ParentID != 0 {
+			parentIDSet[comment.ParentID] = struct{}{}
+		}
+	}
+	parents, err := repo.GetCommentRepo().MGetCommentsByID(mysql.GetDB(ctx), misc.MapKeys(parentIDSet))
+	if err != nil {
+		return err
+	}
+	for _, comment := range c.Comments {
+		parent, ok := parents[comment.ParentID]
+		if !ok {
+			continue
+		}
+		comment.ParentContent = parent.Content
+	}
+	return nil
+}
+
+func (c *Comments) GetPostIDs() []int64 {
+	postIDSet := make(map[int64]struct{})
+	for _, comment := range c.Comments {
+		postIDSet[comment.PostID] = struct{}{}
+	}
+	return misc.MapKeys(postIDSet)
+}
+
+func (c *Comments) SetArticleTitle(titles map[int64]string) {
+	for _, comment := range c.Comments {
+		title, ok := titles[comment.PostID]
+		if ok {
+			comment.ArticleTitle = title
+			continue
+		}
+		title = "-"
+	}
+}
+
+func (c *Comments) ToDTOs() dto.Comments {
+	result := make([]*dto.Comment, 0, len(c.Comments))
+	for _, comment := range c.Comments {
+		result = append(result, comment.ToDTO())
+	}
+	return result
 }

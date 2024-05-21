@@ -133,6 +133,17 @@ func DeleteCommentByID(db *gorm.DB, id int64) error {
 	return nil
 }
 
+func UpdateCommentStatusByID(db *gorm.DB, id int64, status common.CommentStatus) error {
+	err := db.Model(&model.Comment{}).
+		Where("id = ?", id).
+		Update("status", status).
+		Error
+	if err != nil {
+		return mysql.ParseError(err)
+	}
+	return nil
+}
+
 func SelectCommentCount(db *gorm.DB) (int64, error) {
 	var count int64
 	err := db.Model(&model.Comment{}).

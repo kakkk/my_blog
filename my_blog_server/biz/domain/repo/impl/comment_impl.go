@@ -8,6 +8,7 @@ import (
 	"my_blog/biz/domain/dto"
 	"my_blog/biz/domain/repo/interfaces"
 	"my_blog/biz/domain/repo/persistence"
+	"my_blog/biz/hertz_gen/blog/common"
 )
 
 type CommentRepoImpl struct {
@@ -54,6 +55,10 @@ func (c CommentRepoImpl) MGetCommentsByID(db *gorm.DB, ids []int64) (map[int64]*
 
 func (c CommentRepoImpl) DeleteByID(db *gorm.DB, id int64) error {
 	return persistence.DeleteCommentByID(db, id)
+}
+
+func (c CommentRepoImpl) UpdateCommentStatusByID(db *gorm.DB, id int64, status common.CommentStatus) error {
+	return persistence.UpdateCommentStatusByID(db, id, status)
 }
 
 func (c CommentRepoImpl) Cache() interfaces.CommentCache {

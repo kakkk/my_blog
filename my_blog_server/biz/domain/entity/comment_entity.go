@@ -125,6 +125,20 @@ func (c *Comment) Delete(ctx context.Context) error {
 	return nil
 }
 
+func (c *Comment) UpdateStatus(ctx context.Context, status common.CommentStatus) error {
+	err := c.Get(ctx)
+	if err != nil {
+		return fmt.Errorf("get comment fail: %w", err)
+	}
+	err = repo.GetCommentRepo().UpdateCommentStatusByID(mysql.GetDB(ctx), c.ID, status)
+	if err != nil {
+		return fmt.Errorf("delete comment fail: %w", err)
+	}
+	// 更新缓存
+	repo.GetCommentRepo().Cache().RefreshArticleComments(ctx, c.PostID)
+	return nil
+}
+
 type Comments struct {
 	Comments []*Comment
 }

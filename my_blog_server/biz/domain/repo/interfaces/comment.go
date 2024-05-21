@@ -6,6 +6,7 @@ import (
 	"gorm.io/gorm"
 
 	"my_blog/biz/domain/dto"
+	"my_blog/biz/hertz_gen/blog/common"
 )
 
 type CommentRepo interface {
@@ -15,6 +16,7 @@ type CommentRepo interface {
 	GetCommentByID(db *gorm.DB, id int64) (*dto.Comment, error)
 	MGetCommentsByID(db *gorm.DB, ids []int64) (map[int64]*dto.Comment, error)
 	DeleteByID(db *gorm.DB, id int64) error
+	UpdateCommentStatusByID(db *gorm.DB, id int64, status common.CommentStatus) error
 	Cache() CommentCache
 }
 

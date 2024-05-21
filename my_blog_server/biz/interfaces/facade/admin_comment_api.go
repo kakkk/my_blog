@@ -46,10 +46,11 @@ func UpdateCommentStatusAdminAPI(ctx context.Context, c *app.RequestContext) (in
 	if err != nil {
 		return http.StatusBadRequest, resp.NewParameterErrorResp()
 	}
-	var rsp api.CommonResponse
-
-	//rsp := service.UpdateCommentStatusAdminAPI(ctx, &req)
-	return http.StatusOK, resp.NewAPIResponse(&rsp)
+	rsp, err := application.GetAdminApplication().UpdateCommentStatus(ctx, &req)
+	if err != nil {
+		return resp.NewErrorAPIResponse(err)
+	}
+	return http.StatusOK, resp.NewAPIResponse(rsp)
 }
 
 func DeleteCommentAdminAPI(ctx context.Context, c *app.RequestContext) (int, *resp.APIResponse) {

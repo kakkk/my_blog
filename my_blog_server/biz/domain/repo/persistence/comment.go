@@ -107,7 +107,7 @@ func SelectCommentByPage(db *gorm.DB, page *int32, size *int32) ([]*model.Commen
 }
 
 func SelectCommentsByIDs(db *gorm.DB, ids []int64) ([]*model.Comment, error) {
-	var comments []*model.Comment
+	comments := make([]*model.Comment, 0)
 	err := db.Model(&model.Comment{}).
 		Where("id in ?", ids).
 		Where("delete_flag = ?", common.DeleteFlag_Exist).
@@ -115,9 +115,6 @@ func SelectCommentsByIDs(db *gorm.DB, ids []int64) ([]*model.Comment, error) {
 		Error
 	if err != nil {
 		return nil, mysql.ParseError(err)
-	}
-	if len(comments) == 0 {
-		return nil, consts.ErrRecordNotFound
 	}
 	return comments, nil
 }
